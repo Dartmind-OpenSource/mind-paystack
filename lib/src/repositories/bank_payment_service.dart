@@ -1,14 +1,36 @@
 import 'package:mind_paystack/src/client/mind_paystack_client.dart';
+import 'package:mind_paystack/src/config/retry_policy.dart';
+import 'package:mind_paystack/src/model/bank_model.dart';
+import 'package:mind_paystack/src/ui/app_api_endpoints.dart';
 
-import '../config/retry_policy.dart';
+abstract class BankPaymentService {
+  Future<Map<String, dynamic>> initializePayment({
+    required String accountNumber,
+    required String bankCode,
+    required double amount,
+    required String currency,
+    String? email,
+    Map<String, dynamic>? metadata,
+  });
 
-class BankPaymentService {
-  final MindPaystackClient mindPaystackClient;
+  Future<Map<String, dynamic>> verifyPayment(String paymentReference);
+
+  Future<Map<String, dynamic>> getPaymentStatus(String paymentId);
+
+  Future<List<BankResponse>> fetchBanks();
+}
+
+class BankPaymentServiceImpl implements BankPaymentService {
+  final MindPaystackClient _mindPaystackClient;
   final RetryPolicy _retryPolicy;
 
-  BankPaymentService(this.mindPaystackClient, this._retryPolicy);
+  BankPaymentServiceImpl(
+      {required RetryPolicy retryPolicy,
+      required MindPaystackClient mindPaystackClient})
+      : _mindPaystackClient = mindPaystackClient,
+        _retryPolicy = retryPolicy;
 
-  /// Initialize a bank payment
+  @override
   Future<Map<String, dynamic>> initializePayment({
     required String accountNumber,
     required String bankCode,
@@ -17,74 +39,46 @@ class BankPaymentService {
     String? email,
     Map<String, dynamic>? metadata,
   }) async {
-    return await _retryPolicy.retry(() async {
-      final response = await mindPaystackClient.post(
-        'https://api.example.com/payments/initialize',
-        data: {
-          'account_number': accountNumber,
-          'bank_code': bankCode,
-          'amount': amount,
-          'currency': currency,
-          'email': email,
-          'metadata': metadata,
-        },
-      );
-      return _parseResponse(response);
-    });
+    final response = await _mindPaystackClient.post<Map<String, dynamic>>(
+      AppApiEndpoints.initializePayment,
+      data: {
+        'account_number': accountNumber,
+        'bank_code': bankCode,
+        'amount': amount,
+        'currency': currency,
+        'email': email,
+        'metadata': metadata,
+      },
+    );
+    return response;
   }
 
-  /// Verify a payment by its reference
+  @override
   Future<Map<String, dynamic>> verifyPayment(String paymentReference) async {
-    return await _retryPolicy.retry(() async {
-      final response = await mindPaystackClient.get(
-        'https://api.example.com/payments/verify/$paymentReference',
-      );
-      return _parseResponse(response);
-    });
+    final response = await _mindPaystackClient.get<Map<String, dynamic>>(
+        AppApiEndpoints.verifyPayment,
+        queryParams: {'paymentReference': paymentReference});
+    return response;
   }
 
-  /// Get payment status
-  Future<String> getPaymentStatus(String paymentId) async {
-    return await _retryPolicy.retry(() async {
-      final response = await mindPaystackClient.get(
-        'https://api.example.com/payments/status/$paymentId',
-      );
-      final data = _parseResponse(response);
-      return data['status'] ?? 'unknown';
-    });
+  @override
+  Future<Map<String, dynamic>> getPaymentStatus(String paymentId) async {
+    final response = await _mindPaystackClient.get<Map<String, dynamic>>(
+        AppApiEndpoints.getPaymentStatus,
+        queryParams: {'paymentId': paymentId});
+
+    return response;
   }
 
-  /// Fetch supported banks
-  Future<List<Map<String, String>>> fetchBanks() async {
-    return await _retryPolicy.retry(() async {
-      final response = await mindPaystackClient.get(
-        'https://api.example.com/banks',
-      );
-      final data = _parseResponse(response);
-      return List<Map<String, String>>.from(data['banks'] ?? []);
-    });
-  }
-
-  /// Resolve a bank account to confirm details
-  Future<Map<String, dynamic>> resolveBankAccount({
-    required String accountNumber,
-    required String bankCode,
-  }) async {
-    return await _retryPolicy.retry(() async {
-      final response = await mindPaystackClient.get(
-        'https://api.example.com/banks/resolve',
-        body: {'account_number': accountNumber, 'bank_code': bankCode},
-      );
-      return _parseResponse(response);
-    });
-  }
-
-  /// Parse and handle the HTTP response
-  dynamic _parseResponse(dynamic response) {
-    try {
-      return response is String ? json.decode(response) : response;
-    } catch (e) {
-      throw Exception('Failed to parse response: $e');
-    }
+  @override
+  Future<List<BankResponse>> fetchBanks() async {
+    final response = await _mindPaystackClient.get<Map<String, dynamic>>(
+      AppApiEndpoints.getBanks,
+    );
+    final List<dynamic> transactions = response['data'] as List<dynamic>;
+    return transactions
+        .map((json) =>
+            BankResponse.fromJson(Map<String, dynamic>.from(json as Map)))
+        .toList();
   }
 }
