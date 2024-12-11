@@ -7,8 +7,6 @@ class MPLogger {
       methodCount: 0,
       errorMethodCount: 5,
       lineLength: 50,
-      colors: true,
-      printEmojis: true,
       printTime: true,
     ),
   );
@@ -37,11 +35,15 @@ class MPLogger {
     _log(LogLevel.error, message, error, stackTrace);
   }
 
-  static void _log(LogLevel level, String message,
-      [dynamic error, StackTrace? stackTrace]) {
+  static void _log(
+    LogLevel level,
+    String message, [
+    dynamic error,
+    StackTrace? stackTrace,
+  ]) {
     // First log to custom logger if available
     try {
-      _customLogger?.call(level, message);
+      _customLogger.call(level, message);
     } catch (e) {
       _logger.e('Custom logger failed', error: e);
     }
@@ -55,7 +57,6 @@ class MPLogger {
           error: error,
           stackTrace: stackTrace,
         );
-        break;
       case LogLevel.info:
         _logger.i(
           message,
@@ -63,7 +64,6 @@ class MPLogger {
           error: error,
           stackTrace: stackTrace,
         );
-        break;
       case LogLevel.warning:
         _logger.w(
           message,
@@ -71,7 +71,6 @@ class MPLogger {
           error: error,
           stackTrace: stackTrace,
         );
-        break;
       case LogLevel.error:
         _logger.e(
           message,
@@ -79,7 +78,6 @@ class MPLogger {
           error: error,
           stackTrace: stackTrace,
         );
-        break;
     }
   }
 
@@ -114,11 +112,11 @@ class MPLogger {
   }
 
   static void logAPIRequest(String endpoint, Map<String, dynamic> data) {
-    debug('API Request to $endpoint: ${data.toString()}');
+    debug('API Request to $endpoint: $data');
   }
 
   static void logAPIResponse(String endpoint, Map<String, dynamic> response) {
-    debug('API Response from $endpoint: ${response.toString()}');
+    debug('API Response from $endpoint: $response');
   }
 
   static void logAPIError(String endpoint, dynamic error) {

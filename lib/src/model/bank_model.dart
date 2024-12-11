@@ -1,7 +1,4 @@
 class BankResponse {
-  final String name;
-  final String code;
-
   BankResponse({
     required this.name,
     required this.code,
@@ -14,6 +11,8 @@ class BankResponse {
       code: json['code'] as String,
     );
   }
+  final String name;
+  final String code;
 
   /// Converts a Bank instance to JSON
   Map<String, dynamic> toJson() {

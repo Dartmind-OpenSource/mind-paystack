@@ -21,14 +21,13 @@ abstract class BankPaymentService {
 }
 
 class BankPaymentServiceImpl implements BankPaymentService {
+  BankPaymentServiceImpl({
+    required RetryPolicy retryPolicy,
+    required MindPaystackClient mindPaystackClient,
+  })  : _mindPaystackClient = mindPaystackClient,
+        _retryPolicy = retryPolicy;
   final MindPaystackClient _mindPaystackClient;
   final RetryPolicy _retryPolicy;
-
-  BankPaymentServiceImpl(
-      {required RetryPolicy retryPolicy,
-      required MindPaystackClient mindPaystackClient})
-      : _mindPaystackClient = mindPaystackClient,
-        _retryPolicy = retryPolicy;
 
   @override
   Future<Map<String, dynamic>> initializePayment({
@@ -56,16 +55,18 @@ class BankPaymentServiceImpl implements BankPaymentService {
   @override
   Future<Map<String, dynamic>> verifyPayment(String paymentReference) async {
     final response = await _mindPaystackClient.get<Map<String, dynamic>>(
-        AppApiEndpoints.verifyPayment,
-        queryParams: {'paymentReference': paymentReference});
+      AppApiEndpoints.verifyPayment,
+      queryParams: {'paymentReference': paymentReference},
+    );
     return response;
   }
 
   @override
   Future<Map<String, dynamic>> getPaymentStatus(String paymentId) async {
     final response = await _mindPaystackClient.get<Map<String, dynamic>>(
-        AppApiEndpoints.getPaymentStatus,
-        queryParams: {'paymentId': paymentId});
+      AppApiEndpoints.getPaymentStatus,
+      queryParams: {'paymentId': paymentId},
+    );
 
     return response;
   }
@@ -75,10 +76,12 @@ class BankPaymentServiceImpl implements BankPaymentService {
     final response = await _mindPaystackClient.get<Map<String, dynamic>>(
       AppApiEndpoints.getBanks,
     );
-    final List<dynamic> transactions = response['data'] as List<dynamic>;
+    final transactions = response['data'] as List<dynamic>;
     return transactions
-        .map((json) =>
-            BankResponse.fromJson(Map<String, dynamic>.from(json as Map)))
+        .map(
+          (json) =>
+              BankResponse.fromJson(Map<String, dynamic>.from(json as Map)),
+        )
         .toList();
   }
 }

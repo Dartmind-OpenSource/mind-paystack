@@ -9,31 +9,34 @@ abstract class TransactionService {
 }
 
 class TransactionServiceImpl implements TransactionService {
+  TransactionServiceImpl({
+    required RetryPolicy retryPolicy,
+    required MindPaystackClient mindPaystackClient,
+  })  : _mindPaystackClient = mindPaystackClient,
+        _retryPolicy = retryPolicy;
   final MindPaystackClient _mindPaystackClient;
   final RetryPolicy _retryPolicy;
 
-  TransactionServiceImpl(
-      {required RetryPolicy retryPolicy,
-      required MindPaystackClient mindPaystackClient})
-      : _mindPaystackClient = mindPaystackClient,
-        _retryPolicy = retryPolicy;
-
   @override
   Future<Map<String, dynamic>> getTransactionStatus(
-      String transactionId) async {
+    String transactionId,
+  ) async {
     final response = await _mindPaystackClient.get<Map<String, dynamic>>(
-        AppApiEndpoints.getTransactionStatus,
-        queryParams: {'transactionId': transactionId});
+      AppApiEndpoints.getTransactionStatus,
+      queryParams: {'transactionId': transactionId},
+    );
 
     return response;
   }
 
   @override
   Future<Map<String, dynamic>> verifyTransaction(
-      String transactionReference) async {
+    String transactionReference,
+  ) async {
     final response = await _mindPaystackClient.get<Map<String, dynamic>>(
-        AppApiEndpoints.verifyTransaction,
-        queryParams: {'transactionReference': transactionReference});
+      AppApiEndpoints.verifyTransaction,
+      queryParams: {'transactionReference': transactionReference},
+    );
     return response;
   }
 }
