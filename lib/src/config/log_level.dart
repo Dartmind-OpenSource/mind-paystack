@@ -43,6 +43,6 @@ enum LogLevel {
   }
 
   bool canLog(LogLevel minimumLevel) {
-    return this.priority >= minimumLevel.priority;
+    return priority >= minimumLevel.priority;
   }
 }

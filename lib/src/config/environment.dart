@@ -26,7 +26,7 @@ enum Environment {
   }
 
   Map<String, String> get headers {
-    final Map<String, String> headers = {
+    final headers = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };

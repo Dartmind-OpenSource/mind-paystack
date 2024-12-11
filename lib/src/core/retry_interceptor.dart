@@ -5,16 +5,15 @@ import 'package:dio/dio.dart';
 import 'package:mind_paystack/src/config/retry_policy.dart';
 
 class RetryInterceptor extends Interceptor {
-  final Dio dio;
-  final RetryPolicy retryPolicy;
-  final void Function(String message)? logger;
-  final _pendingRequests = <String, Completer<void>>{};
-
   RetryInterceptor({
     required this.dio,
     required this.retryPolicy,
     this.logger,
   });
+  final Dio dio;
+  final RetryPolicy retryPolicy;
+  final void Function(String message)? logger;
+  final _pendingRequests = <String, Completer<void>>{};
 
   @override
   Future<void> onError(
@@ -146,10 +145,12 @@ class RetryInterceptor extends Interceptor {
 /// Extension to add retry functionality to Dio
 extension RetryDioExtension on Dio {
   void addRetryPolicy(RetryPolicy policy, {void Function(String)? logger}) {
-    interceptors.add(RetryInterceptor(
-      dio: this,
-      retryPolicy: policy,
-      logger: logger,
-    ));
+    interceptors.add(
+      RetryInterceptor(
+        dio: this,
+        retryPolicy: policy,
+        logger: logger,
+      ),
+    );
   }
 }

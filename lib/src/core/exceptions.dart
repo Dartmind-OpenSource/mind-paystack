@@ -2,6 +2,12 @@
 
 /// Base exception class for Mind Paystack SDK
 class PaystackException implements Exception {
+  PaystackException({
+    required this.message,
+    required this.code,
+    this.details,
+  });
+
   /// Human-readable error message
   final String message;
 
@@ -10,12 +16,6 @@ class PaystackException implements Exception {
 
   /// Additional error details
   final Map<String, dynamic>? details;
-
-  PaystackException({
-    required this.message,
-    required this.code,
-    this.details,
-  });
 
   @override
   String toString() => 'PaystackException: $message (Code: $code)';

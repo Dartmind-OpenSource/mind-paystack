@@ -2,6 +2,24 @@
 import 'dart:math';
 
 class RetryPolicy {
+  const RetryPolicy({
+    this.maxAttempts = 3,
+    this.baseDelay = 1000,
+    this.maxDelay = 10000,
+    this.backoffFactor = 2.0,
+    Set<int>? retryStatusCodes,
+  }) : retryStatusCodes = retryStatusCodes ?? const {408, 500, 502, 503, 504};
+
+  /// Create a policy for testing with shorter delays
+  factory RetryPolicy.testing() {
+    return const RetryPolicy(
+      maxAttempts: 2,
+      baseDelay: 100,
+      maxDelay: 1000,
+      backoffFactor: 1.5,
+    );
+  }
+
   /// Maximum number of retry attempts
   final int maxAttempts;
 
@@ -17,14 +35,6 @@ class RetryPolicy {
   /// Set of status codes that should trigger a retry
   final Set<int> retryStatusCodes;
 
-  const RetryPolicy({
-    this.maxAttempts = 3,
-    this.baseDelay = 1000,
-    this.maxDelay = 10000,
-    this.backoffFactor = 2.0,
-    Set<int>? retryStatusCodes,
-  }) : retryStatusCodes = retryStatusCodes ?? const {408, 500, 502, 503, 504};
-
   /// Calculate delay for a specific attempt
   Duration getDelayForAttempt(int attempt) {
     if (attempt <= 0) return Duration.zero;
@@ -38,16 +48,6 @@ class RetryPolicy {
   /// Should retry based on status code and attempt number
   bool shouldRetry(int statusCode, int attempt) {
     return attempt < maxAttempts && retryStatusCodes.contains(statusCode);
-  }
-
-  /// Create a policy for testing with shorter delays
-  factory RetryPolicy.testing() {
-    return const RetryPolicy(
-      maxAttempts: 2,
-      baseDelay: 100,
-      maxDelay: 1000,
-      backoffFactor: 1.5,
-    );
   }
 
   RetryPolicy copyWith({

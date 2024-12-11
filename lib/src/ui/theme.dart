@@ -1,6 +1,33 @@
 import 'package:flutter/material.dart';
 
 class MPTheme {
+  const MPTheme({
+    this.primaryColor = const Color(0xFF2D5AF0),
+    this.secondaryColor = const Color(0xFF0D1F3C),
+    this.backgroundColor = Colors.white,
+    this.textColor = const Color(0xFF1A1A1A),
+    this.errorColor = const Color(0xFFE41338),
+    this.successColor = const Color(0xFF00C853),
+    this.borderRadius = 8.0,
+    this.headingStyle = const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF1A1A1A),
+    ),
+    this.bodyStyle = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      color: Color(0xFF1A1A1A),
+    ),
+    this.buttonStyle = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    ),
+    this.padding = const EdgeInsets.all(16),
+    this.animationDuration = const Duration(milliseconds: 300),
+  });
+
   /// Primary color for buttons and important elements
   final Color primaryColor;
 
@@ -37,50 +64,23 @@ class MPTheme {
   /// Animation duration for state changes
   final Duration animationDuration;
 
-  const MPTheme({
-    this.primaryColor = const Color(0xFF2D5AF0),
-    this.secondaryColor = const Color(0xFF0D1F3C),
-    this.backgroundColor = Colors.white,
-    this.textColor = const Color(0xFF1A1A1A),
-    this.errorColor = const Color(0xFFE41338),
-    this.successColor = const Color(0xFF00C853),
-    this.borderRadius = 8.0,
-    this.headingStyle = const TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      color: Color(0xFF1A1A1A),
-    ),
-    this.bodyStyle = const TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.normal,
-      color: Color(0xFF1A1A1A),
-    ),
-    this.buttonStyle = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
-    ),
-    this.padding = const EdgeInsets.all(16.0),
-    this.animationDuration = const Duration(milliseconds: 300),
-  });
-
   /// Default theme
-  static final defaultTheme = MPTheme();
+  static const defaultTheme = MPTheme();
 
   /// Dark theme
-  static final darkTheme = MPTheme(
-    primaryColor: const Color(0xFF3D6BFF),
-    secondaryColor: const Color(0xFF1E293B),
-    backgroundColor: const Color(0xFF121212),
+  static const darkTheme = MPTheme(
+    primaryColor: Color(0xFF3D6BFF),
+    secondaryColor: Color(0xFF1E293B),
+    backgroundColor: Color(0xFF121212),
     textColor: Colors.white,
-    errorColor: const Color(0xFFFF3B30),
-    successColor: const Color(0xFF34C759),
-    headingStyle: const TextStyle(
+    errorColor: Color(0xFFFF3B30),
+    successColor: Color(0xFF34C759),
+    headingStyle: TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     ),
-    bodyStyle: const TextStyle(
+    bodyStyle: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.normal,
       color: Colors.white,
