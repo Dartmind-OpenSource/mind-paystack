@@ -6,6 +6,40 @@ import 'package:mind_paystack/src/ui/theme.dart';
 import 'package:mind_paystack/src/utils/logger.dart';
 
 class MindPaystackConfig {
+
+  MindPaystackConfig({
+    required this.publicKey,
+    Environment environment = Environment.test,
+    LogLevel logLevel = LogLevel.info,
+    this.retryPolicy = const RetryPolicy(),
+    String currency = 'NGN',
+    String locale = 'en',
+    MPTheme? theme,
+    Duration? timeout,
+  })  : _environment = environment,
+        _logLevel = logLevel,
+        _currency = currency,
+        _locale = locale,
+        _theme = theme,
+        timeout = timeout ?? const Duration(seconds: 30) {
+    _validateConfig();
+    _initializeLogger();
+  }
+
+  /// Create config from environment variables
+  factory MindPaystackConfig.fromEnvironment() {
+    const publicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
+    const environment =
+        String.fromEnvironment('PAYSTACK_ENVIRONMENT', defaultValue: 'test');
+    const logLevel =
+        String.fromEnvironment('PAYSTACK_LOG_LEVEL', defaultValue: 'info');
+
+    return MindPaystackConfig(
+      publicKey: publicKey,
+      environment: Environment.fromString(environment),
+      logLevel: LogLevel.fromString(logLevel),
+    );
+  }
   /// API public key from Paystack dashboard
   final String publicKey;
 
@@ -32,25 +66,6 @@ class MindPaystackConfig {
 
   /// Timeout duration for API requests
   final Duration timeout;
-
-  MindPaystackConfig({
-    required this.publicKey,
-    Environment environment = Environment.test,
-    LogLevel logLevel = LogLevel.info,
-    this.retryPolicy = const RetryPolicy(),
-    String currency = 'NGN',
-    String locale = 'en',
-    MPTheme? theme,
-    Duration? timeout,
-  })  : _environment = environment,
-        _logLevel = logLevel,
-        _currency = currency,
-        _locale = locale,
-        _theme = theme,
-        timeout = timeout ?? const Duration(seconds: 30) {
-    _validateConfig();
-    _initializeLogger();
-  }
 
   /// Environment getter
   Environment get environment => _environment;
@@ -112,21 +127,6 @@ class MindPaystackConfig {
     _logger = value;
     MPLogger.initialize(value);
     MPLogger.info('Custom logger set');
-  }
-
-  /// Create config from environment variables
-  factory MindPaystackConfig.fromEnvironment() {
-    const publicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
-    const environment =
-        String.fromEnvironment('PAYSTACK_ENVIRONMENT', defaultValue: 'test');
-    const logLevel =
-        String.fromEnvironment('PAYSTACK_LOG_LEVEL', defaultValue: 'info');
-
-    return MindPaystackConfig(
-      publicKey: publicKey,
-      environment: Environment.fromString(environment),
-      logLevel: LogLevel.fromString(logLevel),
-    );
   }
 
   /// Validate configuration
@@ -193,7 +193,7 @@ class MindPaystackConfig {
       retryPolicy: retryPolicy ?? this.retryPolicy,
       currency: currency ?? this.currency,
       locale: locale ?? this.locale,
-      theme: theme ?? this._theme,
+      theme: theme ?? _theme,
       timeout: timeout ?? this.timeout,
     );
   }
