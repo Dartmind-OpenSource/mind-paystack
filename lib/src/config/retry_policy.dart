@@ -2,7 +2,6 @@
 import 'dart:math';
 
 class RetryPolicy {
-
   const RetryPolicy({
     this.maxAttempts = 3,
     this.baseDelay = 1000,
@@ -20,6 +19,7 @@ class RetryPolicy {
       backoffFactor: 1.5,
     );
   }
+
   /// Maximum number of retry attempts
   final int maxAttempts;
 
