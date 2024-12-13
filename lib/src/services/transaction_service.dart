@@ -1,6 +1,6 @@
 import 'package:mind_paystack/src/client/mind_paystack_client.dart';
 import 'package:mind_paystack/src/config/retry_policy.dart';
-import 'package:mind_paystack/src/ui/app_api_endpoints.dart';
+import 'package:mind_paystack/src/utils/app_api_endpoints.dart';
 
 abstract class TransactionService {
   Future<Map<String, dynamic>> verifyTransaction(String transactionReference);
