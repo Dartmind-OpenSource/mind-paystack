@@ -3,6 +3,7 @@ import 'package:mind_paystack/src/config/retry_policy.dart';
 import 'package:mind_paystack/src/model/bank_model.dart';
 import 'package:mind_paystack/src/utils/app_api_endpoints.dart';
 
+
 abstract class BankPaymentService {
   Future<Map<String, dynamic>> initializePayment({
     required String accountNumber,
@@ -28,6 +29,7 @@ class BankPaymentServiceImpl implements BankPaymentService {
         _retryPolicy = retryPolicy;
   final MindPaystackClient _mindPaystackClient;
   final RetryPolicy _retryPolicy;
+
 
   @override
   Future<Map<String, dynamic>> initializePayment({
