@@ -1,4 +1,7 @@
 import 'package:mind_paystack/src/client/mind_paystack_client.dart';
+// import 'package:mind_paystack/src/model/bank_payment_model.dart';
+// import 'package:mind_paystack/src/model/card_payment_model.dart';
+import 'package:mind_paystack/src/model/payment_model.dart';
 
 abstract class ChargeApiService {
   ChargeApiService({
@@ -10,55 +13,44 @@ abstract class ChargeApiService {
   final String apiUrl;
 
   /// Initiate Charge (Common for both Card and Bank)
-  Future<Map<String, dynamic>> initiateCharge(Map<String, dynamic> chargeDetails) async {
+
+  Future<Map<String, dynamic>> initiateCharge({
+    CardPaymentRequest? cardDetails,
+    BankPaymentRequest? bankDetails,
+    required PaymentType type,
+  }) async {
+    // Choose payment details based on type
+    final paymentDetails = switch (type) {
+      PaymentType.card => cardDetails?.toJson() ?? 
+        (throw ArgumentError('Card details required for card payment')),
+      PaymentType.bank => bankDetails?.toJson() ?? 
+        (throw ArgumentError('Bank details required for bank payment')),
+    };
+
     final response = await client.post<Map<String, dynamic>>(
       '$apiUrl/charge',
-      data: chargeDetails,
+      data: paymentDetails,
     );
-
-    return response; // Assuming the `response` is already parsed to a Map.
+    return response;
   }
 
   /// Charge Using Card
   Future<Map<String, dynamic>> chargeCard({
-    required String email,
-    required String cardNumber,
-    required String cvv,
-    required String expiryMonth,
-    required String expiryYear,
-    required double amount,
-
+    required CardPaymentRequest chargeDetails,
   }) async {
-    final chargeDetails = {
-      "email": email,
-      "amount": (amount * 100).toInt(), // Convert amount to kobo
-      "card": {
-        "number": cardNumber,
-        "cvv": cvv,
-        "expiry_month": expiryMonth,
-        "expiry_year": expiryYear,
-      },
-    };
-
-    return await initiateCharge(chargeDetails);
+    return await initiateCharge(
+      cardDetails: chargeDetails,
+      type:PaymentType.card,
+    );
   }
 
   /// Charge Using Bank
   Future<Map<String, dynamic>> chargeBank({
-    required String email,
-    required String accountNumber,
-    required String bankCode,
-    required double amount,
+  required  BankPaymentRequest bankDetails
   }) async {
-    final chargeDetails = {
-      "email": email,
-      "amount": (amount * 100).toInt(), // Convert amount to kobo
-      "bank": {
-        "account_number": accountNumber,
-        "code": bankCode,
-      },
-    };
-
-    return await initiateCharge(chargeDetails);
+    return await initiateCharge(
+        bankDetails: bankDetails,
+        type:PaymentType.bank,
+      );
   }
 }

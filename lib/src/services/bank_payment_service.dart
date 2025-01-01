@@ -35,7 +35,7 @@ class BankPaymentServiceImpl implements BankPaymentService {
   Future<Map<String, dynamic>> initializePayment({
     required String accountNumber,
     required String bankCode,
-    required double amount,
+    required double amount, 
     required String currency,
     String? email,
     Map<String, dynamic>? metadata,
