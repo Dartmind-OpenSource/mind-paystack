@@ -1,6 +1,4 @@
 import 'package:mind_paystack/src/client/mind_paystack_client.dart';
-// import 'package:mind_paystack/src/model/bank_payment_model.dart';
-// import 'package:mind_paystack/src/model/card_payment_model.dart';
 import 'package:mind_paystack/src/model/payment_model.dart';
 
 abstract class ChargeApiService {
