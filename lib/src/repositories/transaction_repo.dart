@@ -25,7 +25,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       MPLogger.error('Failed to save auth data', e);
       throw PaystackException(
         message: 'Failed to get transaction status',
-        code: 'error occurred',
+        code: 'error occurred $e',
       );
     }
   }
@@ -40,7 +40,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       MPLogger.error('Failed to save auth data', e);
       throw PaystackException(
         message: 'Failed to verify transaction ',
-        code: 'error occurred',
+        code: 'error occurred $e',
       );
     }
   }
