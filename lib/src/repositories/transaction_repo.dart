@@ -22,7 +22,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     try {
       return await _transactionService.getTransactionStatus(transactionId);
     } catch (e) {
-      MPLogger.error('Failed to save auth data', e);
+      MPLogger.error('Failed to get transaction status');
       throw PaystackException(
         message: 'Failed to get transaction status',
         code: 'error occurred $e',
@@ -37,9 +37,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
     try {
       return await _transactionService.verifyTransaction(transactionReference);
     } catch (e) {
-      MPLogger.error('Failed to save auth data', e);
+      MPLogger.error('Failed to verify transaction',);
       throw PaystackException(
-        message: 'Failed to verify transaction ',
+        message: 'Failed to verify transaction',
         code: 'error occurred $e',
       );
     }

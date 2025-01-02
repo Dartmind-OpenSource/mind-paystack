@@ -1,6 +1,7 @@
 import 'package:mind_paystack/src/core/exceptions.dart';
 import 'package:mind_paystack/src/model/bank_model.dart';
 import 'package:mind_paystack/src/services/bank_payment_service.dart';
+import 'package:mind_paystack/src/utils/logger.dart';
 
 abstract class BankPaymentRepository {
   Future<Map<String, dynamic>> initializePayment({
@@ -45,6 +46,9 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
         metadata: metadata,
       );
     } catch (e) {
+      MPLogger.error(
+        'Failed to initialize transaction status',
+      );
       throw PaystackException(
         message: 'Failed to initialize transaction status',
         code: 'error occurred $e',
@@ -57,9 +61,12 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
     try {
       return await _bankPaymentService.verifyPayment(paymentReference);
     } catch (e) {
+      MPLogger.error(
+        'Failed to verify payment',
+      );
       throw PaystackException(
         message: 'Failed to verify payment',
-        code: 'error occurred $e' ,
+        code: 'error occurred $e',
       );
     }
   }
@@ -69,6 +76,9 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
     try {
       return await _bankPaymentService.getPaymentStatus(paymentId);
     } catch (e) {
+      MPLogger.error(
+        'Failed to get payment status',
+      );
       throw PaystackException(
         message: 'Failed to get payment status',
         code: 'error occurred $e',
@@ -81,6 +91,9 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
     try {
       return await _bankPaymentService.fetchBanks();
     } catch (e) {
+      MPLogger.error(
+        'Failed to get fetch bank',
+      );
       throw PaystackException(
         message: 'Failed to get fetch banks',
         code: 'error occurred $e',
