@@ -5,12 +5,7 @@ import 'package:mind_paystack/src/utils/logger.dart';
 
 abstract class BankPaymentRepository {
   Future<Map<String, dynamic>> initializePayment({
-    required String accountNumber,
-    required String bankCode,
-    required double amount,
-    required String currency,
-    String? email,
-    Map<String, dynamic>? metadata,
+    required PaymentInitializationRequest request,
   });
 
   Future<Map<String, dynamic>> verifyPayment(String paymentReference);
@@ -29,21 +24,15 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
 
   @override
   Future<Map<String, dynamic>> initializePayment({
-    required String accountNumber,
-    required String bankCode,
-    required double amount,
-    required String currency,
-    String? email,
-    Map<String, dynamic>? metadata,
+    required PaymentInitializationRequest request,
   }) async {
     try {
       return await _bankPaymentService.initializePayment(
-        accountNumber: accountNumber,
-        bankCode: bankCode,
-        amount: amount,
-        currency: currency,
-        email: email,
-        metadata: metadata,
+        accountNumber: request.accountNumber,
+        bankCode: request.bankCode,
+        amount: request.amount,
+        currency: request.currency,
+        email: request.email,
       );
     } catch (e) {
       MPLogger.error(
@@ -101,3 +90,4 @@ class BankPaymentRepositoryImpl implements BankPaymentRepository {
     }
   }
 }
+
