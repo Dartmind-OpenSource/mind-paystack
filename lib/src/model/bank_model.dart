@@ -22,3 +22,20 @@ class BankResponse {
     };
   }
 }
+
+
+class PaymentInitializationRequest {
+  final String accountNumber;
+  final String bankCode;
+  final double amount;
+  final String currency;
+  final String email;
+
+  PaymentInitializationRequest({
+    required this.accountNumber,
+    required this.bankCode,
+    required this.amount,
+    required this.currency,
+    required this.email,
+  });
+}
