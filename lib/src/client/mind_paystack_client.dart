@@ -44,4 +44,5 @@ abstract class MindPaystackClient {
 
   /// Cancel all pending requests
   void cancelRequests();
+
 }
