@@ -10,8 +10,9 @@ class MPLogger {
       printTime: true,
     ),
   );
+  static void Function(LogLevel, String) _customLogger = (level, message) {};
 
-  static late void Function(LogLevel, String) _customLogger;
+  //static late void Function(LogLevel, String) _customLogger;
 
   static void initialize(void Function(LogLevel, String)? customLogger) {
     if (customLogger != null) {
