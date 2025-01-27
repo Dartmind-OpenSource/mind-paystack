@@ -1,15 +1,13 @@
-import 'dart:convert';
-
-
 /// Enum defining payment types
 enum PaymentType {
   /// Card payment type
   card,
+
   /// Bank transfer payment type
   bank
 }
 
- class Card {
+class Card {
   final String number;
   final String cvv;
   final String expiryMonth;
@@ -35,18 +33,18 @@ enum PaymentType {
 
   /// Converts the card details to JSON map
   Map<String, dynamic> toJson() => {
-    'number': number,
-    'cvv': cvv,
-    'expiry_month': expiryMonth,
-    'expiry_year': expiryYear,
-  };
+        'number': number,
+        'cvv': cvv,
+        'expiry_month': expiryMonth,
+        'expiry_year': expiryYear,
+      };
 
   /// Validates the card details
-  bool isValid() => 
-    number.isNotEmpty && 
-    cvv.isNotEmpty && 
-    expiryMonth.isNotEmpty && 
-    expiryYear.isNotEmpty;
+  bool isValid() =>
+      number.isNotEmpty &&
+      cvv.isNotEmpty &&
+      expiryMonth.isNotEmpty &&
+      expiryYear.isNotEmpty;
 }
 
 /// Model class representing bank account details
@@ -70,9 +68,9 @@ class Bank {
 
   /// Converts the bank details to JSON map
   Map<String, dynamic> toJson() => {
-    'account_number': accountNumber,
-    'code': code,
-  };
+        'account_number': accountNumber,
+        'code': code,
+      };
 
   /// Validates the bank details
   bool isValid() => accountNumber.isNotEmpty && code.isNotEmpty;
@@ -82,13 +80,13 @@ class Bank {
 abstract class PaymentRequest {
   /// Email address of the customer
   String get email;
-  
+
   /// Payment amount in main currency
   double get amount;
-  
+
   /// Converts the payment request to JSON map
   Map<String, dynamic> toJson();
-  
+
   /// Validates the payment request
   bool isValid();
 }
@@ -121,19 +119,18 @@ class CardPaymentRequest implements PaymentRequest {
   }
 
   @override
+
   /// Converts the card payment request to JSON map
   Map<String, dynamic> toJson() => {
-    'email': email,
-    'amount': amountInKobo,
-    'card': card.toJson(),
-  };
+        'email': email,
+        'amount': amountInKobo,
+        'card': card.toJson(),
+      };
 
   @override
+
   /// Validates the card payment request
-  bool isValid() => 
-    email.isNotEmpty && 
-    amount > 0 && 
-    card.isValid();
+  bool isValid() => email.isNotEmpty && amount > 0 && card.isValid();
 }
 
 /// Implementation of bank-based payment request
@@ -164,17 +161,16 @@ class BankPaymentRequest implements PaymentRequest {
   }
 
   @override
+
   /// Converts the bank payment request to JSON map
   Map<String, dynamic> toJson() => {
-    'email': email,
-    'amount': amountInKobo,
-    'bank': bank.toJson(),
-  };
+        'email': email,
+        'amount': amountInKobo,
+        'bank': bank.toJson(),
+      };
 
   @override
+
   /// Validates the bank payment request
-  bool isValid() => 
-    email.isNotEmpty && 
-    amount > 0 && 
-    bank.isValid();
+  bool isValid() => email.isNotEmpty && amount > 0 && bank.isValid();
 }

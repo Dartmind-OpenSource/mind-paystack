@@ -6,7 +6,6 @@ import 'package:mind_paystack/src/ui/theme.dart';
 import 'package:mind_paystack/src/utils/logger.dart';
 
 class MindPaystackConfig {
-
   MindPaystackConfig({
     required this.publicKey,
     Environment environment = Environment.test,
@@ -40,6 +39,7 @@ class MindPaystackConfig {
       logLevel: LogLevel.fromString(logLevel),
     );
   }
+
   /// API public key from Paystack dashboard
   final String publicKey;
 
