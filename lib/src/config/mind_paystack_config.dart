@@ -1,107 +1,125 @@
+import 'package:injectable/injectable.dart' hide Environment;
 import 'package:mind_paystack/src/config/environment.dart';
 import 'package:mind_paystack/src/config/log_level.dart';
 import 'package:mind_paystack/src/config/retry_policy.dart';
-import 'package:mind_paystack/src/core/exceptions.dart';
-import 'package:mind_paystack/src/ui/theme.dart';
+import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
 import 'package:mind_paystack/src/utils/logger.dart';
 
-class MindPaystackConfig {
-  MindPaystackConfig({
+/// Configuration for the MindPaystack SDK
+///
+/// This class manages all configuration options for the SDK including
+/// environment settings, API keys, logging, retry policies, and more.
+class PaystackConfig {
+  /// Creates a new PaystackConfig instance with the specified options
+  ///
+  /// [publicKey] is required and must be a valid Paystack public key
+  /// [secretKey] is required for backend operations
+  /// [environment] defaults to test environment
+  /// [logLevel] controls the verbosity of SDK logs
+  /// [retryPolicy] defines how failed requests should be retried
+  /// [currency] sets the default currency for transactions (defaults to NGN)
+  /// [locale] sets the default locale for UI components
+  /// [theme] customizes the appearance of UI components
+  /// [timeout] sets the default timeout for API requests
+  PaystackConfig({
     required this.publicKey,
+    required this.secretKey,
     Environment environment = Environment.test,
     LogLevel logLevel = LogLevel.info,
     this.retryPolicy = const RetryPolicy(),
     String currency = 'NGN',
     String locale = 'en',
-    MPTheme? theme,
+    // MPTheme? theme,
     Duration? timeout,
   })  : _environment = environment,
         _logLevel = logLevel,
         _currency = currency,
         _locale = locale,
-        _theme = theme,
+        // _theme = theme,
         timeout = timeout ?? const Duration(seconds: 30) {
     _validateConfig();
     _initializeLogger();
   }
 
-  /// Create config from environment variables
-  factory MindPaystackConfig.fromEnvironment() {
+  /// Creates a configuration instance from environment variables
+  ///
+  /// Looks for the following environment variables:
+  /// - PAYSTACK_PUBLIC_KEY
+  /// - PAYSTACK_SECRET_KEY
+  /// - PAYSTACK_ENVIRONMENT
+  /// - PAYSTACK_LOG_LEVEL
+  @factoryMethod
+  static PaystackConfig fromEnvironment() {
     const publicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
+    const secretKey = String.fromEnvironment('PAYSTACK_SECRET_KEY');
     const environment =
         String.fromEnvironment('PAYSTACK_ENVIRONMENT', defaultValue: 'test');
     const logLevel =
         String.fromEnvironment('PAYSTACK_LOG_LEVEL', defaultValue: 'info');
 
-    return MindPaystackConfig(
+    return PaystackConfig(
       publicKey: publicKey,
+      secretKey: secretKey,
       environment: Environment.fromString(environment),
       logLevel: LogLevel.fromString(logLevel),
     );
   }
 
-  /// API public key from Paystack dashboard
+  /// Public key for Paystack API authentication
   final String publicKey;
 
-  /// Current environment (test, staging, production)
+  /// Secret key for Paystack API authentication
+  final String secretKey;
+
   Environment _environment;
-
-  /// Log level for SDK operations
   LogLevel _logLevel;
-
-  /// Custom retry policy for failed requests
   final RetryPolicy retryPolicy;
-
-  /// Default currency for transactions
   String _currency;
-
-  /// Default locale for UI components
   String _locale;
-
-  /// Custom theme configuration
-  MPTheme? _theme;
-
-  /// Custom logger function
-  void Function(LogLevel, String)? _logger;
-
-  /// Timeout duration for API requests
+  // MPTheme? _theme;
+  LogHandler? _logger;
   final Duration timeout;
 
-  /// Environment getter
+  /// Current environment (test, staging, production)
   Environment get environment => _environment;
 
-  /// Log level getter
+  /// Current log level for SDK operations
   LogLevel get logLevel => _logLevel;
 
-  /// Currency getter
+  /// Default currency for transactions
   String get currency => _currency;
 
-  /// Locale getter
+  /// Default locale for UI components
   String get locale => _locale;
 
-  /// Theme getter
-  MPTheme get theme => _theme ?? MPTheme.defaultTheme;
+  /// Theme configuration for UI components
+  // MPTheme get theme => _theme ?? MPTheme.defaultTheme;
 
-  /// Logger getter
-  void Function(LogLevel, String)? get logger => _logger;
+  /// Custom logger function
+  LogHandler? get mindLogger => _logger;
 
-  /// Set environment
+  /// Updates the environment setting
+  ///
+  /// Throws [MindException] if trying to use test keys in production
   set environment(Environment value) {
+    _validateEnvironmentKey(value);
     _environment = value;
     MPLogger.info('Environment changed to: ${value.name}');
   }
 
-  /// Set log level
+  /// Updates the log level
   set logLevel(LogLevel value) {
     _logLevel = value;
     MPLogger.setLogLevel(value);
     MPLogger.info('Log level changed to: ${value.name}');
   }
 
-  /// Set currency
+  /// Updates the default currency
+  ///
+  /// Throws [MindException] if currency is not supported
   set currency(String value) {
     if (!_isValidCurrency(value)) {
-      throw PaystackException(
+      throw MindException(
         message: 'Invalid currency code: $value',
         code: 'invalid_currency',
       );
@@ -110,53 +128,68 @@ class MindPaystackConfig {
     MPLogger.info('Currency changed to: $value');
   }
 
-  /// Set locale
+  /// Updates the locale setting
   set locale(String value) {
     _locale = value;
     MPLogger.info('Locale changed to: $value');
   }
 
-  /// Set theme
-  set theme(MPTheme? value) {
-    _theme = value;
-    MPLogger.info('Theme updated');
-  }
+  /// Updates the theme configuration
+  // set theme(MPTheme? value) {
+  //   _theme = value;
+  //   MPLogger.info('Theme updated');
+  // }
 
-  /// Set logger
-  set logger(void Function(LogLevel, String)? value) {
+  /// Sets a custom logger function
+  set logger(LogHandler value) {
     _logger = value;
-    MPLogger.initialize(value);
+    MPLogger.initialize(handler: value);
     MPLogger.info('Custom logger set');
   }
 
-  /// Validate configuration
+  /// Validates the current configuration
   void _validateConfig() {
-    if (publicKey.isEmpty) {
-      throw PaystackException(
-        message: 'Public key is required',
+    if (publicKey.isEmpty || secretKey.isEmpty) {
+      throw const MindException(
+        message: 'Both public and secret keys are required',
         code: 'invalid_config',
       );
     }
 
     if (!_isValidPublicKey(publicKey)) {
-      throw PaystackException(
+      throw const MindException(
         message: 'Invalid public key format',
         code: 'invalid_config',
       );
     }
 
-    if (environment.isProduction && publicKey.startsWith('pk_test_')) {
-      throw PaystackException(
-        message: 'Test public key cannot be used in production environment',
+    if (!_isValidSecretKey(secretKey)) {
+      throw const MindException(
+        message: 'Invalid secret key format',
         code: 'invalid_config',
       );
     }
+
+    _validateEnvironmentKey(_environment);
   }
 
-  /// Initialize logger
+  /// Validates environment and key combination
+  void _validateEnvironmentKey(Environment env) {
+    if (env.isProduction) {
+      if (publicKey.startsWith('pk_test_') ||
+          secretKey.startsWith('sk_test_')) {
+        throw const MindException(
+          message: 'Test keys cannot be used in production environment',
+          code: 'invalid_config',
+        );
+      }
+    }
+  }
+
+  /// Initializes the logger with current settings
   void _initializeLogger() {
     MPLogger.setLogLevel(logLevel);
-    MPLogger.initialize(logger);
+    MPLogger.initialize(handler: mindLogger);
     MPLogger.info('MindPaystack SDK initialized with config: '
         'environment=${environment.name}, '
         'logLevel=${logLevel.name}, '
@@ -164,44 +197,52 @@ class MindPaystackConfig {
         'locale=$locale');
   }
 
-  /// Check if currency code is valid
+  /// Checks if a currency code is supported
   bool _isValidCurrency(String currency) {
-    final validCurrencies = ['NGN', 'USD', 'GHS', 'ZAR', 'KES'];
+    const validCurrencies = {'NGN', 'USD', 'GHS', 'ZAR', 'KES'};
     return validCurrencies.contains(currency.toUpperCase());
   }
 
-  /// Check if public key format is valid
+  /// Validates public key format
   bool _isValidPublicKey(String key) {
     return key.startsWith('pk_') && key.length > 10;
   }
 
-  /// Copy config with new values
-  MindPaystackConfig copyWith({
+  /// Validates secret key format
+  bool _isValidSecretKey(String key) {
+    return key.startsWith('sk_') && key.length > 10;
+  }
+
+  /// Creates a copy of this configuration with optional new values
+  PaystackConfig copyWith({
     String? publicKey,
+    String? secretKey,
     Environment? environment,
     LogLevel? logLevel,
     RetryPolicy? retryPolicy,
     String? currency,
     String? locale,
-    MPTheme? theme,
+    // MPTheme? theme,
     Duration? timeout,
   }) {
-    return MindPaystackConfig(
+    return PaystackConfig(
       publicKey: publicKey ?? this.publicKey,
+      secretKey: secretKey ?? this.secretKey,
       environment: environment ?? this.environment,
       logLevel: logLevel ?? this.logLevel,
       retryPolicy: retryPolicy ?? this.retryPolicy,
       currency: currency ?? this.currency,
       locale: locale ?? this.locale,
-      theme: theme ?? _theme,
+      // theme: theme ?? _theme,
       timeout: timeout ?? this.timeout,
     );
   }
 
   @override
   String toString() {
-    return 'MindPaystackConfig('
+    return 'PaystackConfig('
         'publicKey: ${publicKey.substring(0, 10)}..., '
+        'secretKey: ${secretKey.substring(0, 10)}..., '
         'environment: ${environment.name}, '
         'logLevel: ${logLevel.name}, '
         'currency: $currency, '

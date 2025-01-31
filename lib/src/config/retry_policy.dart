@@ -1,68 +1,93 @@
-// lib/src/config/retry_policy.dart
-import 'dart:math';
+import 'dart:math' as math;
 
+/// Configuration for request retry behavior
 class RetryPolicy {
+  /// Creates a new retry policy
   const RetryPolicy({
     this.maxAttempts = 3,
-    this.baseDelay = 1000,
-    this.maxDelay = 10000,
+    this.initialDelayMs = 1000,
+    this.maxDelayMs = 30000,
     this.backoffFactor = 2.0,
-    Set<int>? retryStatusCodes,
-  }) : retryStatusCodes = retryStatusCodes ?? const {408, 500, 502, 503, 504};
-
-  /// Create a policy for testing with shorter delays
-  factory RetryPolicy.testing() {
-    return const RetryPolicy(
-      maxAttempts: 2,
-      baseDelay: 100,
-      maxDelay: 1000,
-      backoffFactor: 1.5,
-    );
-  }
+    this.jitterFactor = 0.2,
+    this.retryNonIdempotentRequests = false,
+    this.retryableStatusCodes = const {
+      408, // Request Timeout
+      429, // Too Many Requests
+      500, // Internal Server Error
+      502, // Bad Gateway
+      503, // Service Unavailable
+      504, // Gateway Timeout
+    },
+  });
 
   /// Maximum number of retry attempts
   final int maxAttempts;
 
-  /// Base delay between retries in milliseconds
-  final int baseDelay;
+  /// Initial delay between retries in milliseconds
+  final int initialDelayMs;
 
   /// Maximum delay between retries in milliseconds
-  final int maxDelay;
+  final int maxDelayMs;
 
-  /// Factor to multiply delay by after each retry attempt
+  /// Factor to multiply delay by for each attempt
   final double backoffFactor;
 
-  /// Set of status codes that should trigger a retry
-  final Set<int> retryStatusCodes;
+  /// Random jitter factor to add to delay (0.0 to 1.0)
+  final double jitterFactor;
 
-  /// Calculate delay for a specific attempt
-  Duration getDelayForAttempt(int attempt) {
-    if (attempt <= 0) return Duration.zero;
+  /// Whether to retry non-idempotent requests (POST, PATCH)
+  final bool retryNonIdempotentRequests;
 
-    final exponentialDelay = baseDelay * pow(backoffFactor, attempt - 1);
-    final boundedDelay = min(exponentialDelay, maxDelay.toDouble());
+  /// HTTP status codes that should trigger a retry
+  final Set<int> retryableStatusCodes;
 
-    return Duration(milliseconds: boundedDelay.round());
-  }
-
-  /// Should retry based on status code and attempt number
-  bool shouldRetry(int statusCode, int attempt) {
-    return attempt < maxAttempts && retryStatusCodes.contains(statusCode);
-  }
-
+  /// Creates a copy of this retry policy with the given values
   RetryPolicy copyWith({
     int? maxAttempts,
-    int? baseDelay,
-    int? maxDelay,
+    int? initialDelayMs,
+    int? maxDelayMs,
     double? backoffFactor,
-    Set<int>? retryStatusCodes,
+    double? jitterFactor,
+    bool? retryNonIdempotentRequests,
+    Set<int>? retryableStatusCodes,
   }) {
     return RetryPolicy(
       maxAttempts: maxAttempts ?? this.maxAttempts,
-      baseDelay: baseDelay ?? this.baseDelay,
-      maxDelay: maxDelay ?? this.maxDelay,
+      initialDelayMs: initialDelayMs ?? this.initialDelayMs,
+      maxDelayMs: maxDelayMs ?? this.maxDelayMs,
       backoffFactor: backoffFactor ?? this.backoffFactor,
-      retryStatusCodes: retryStatusCodes ?? this.retryStatusCodes,
+      jitterFactor: jitterFactor ?? this.jitterFactor,
+      retryNonIdempotentRequests:
+          retryNonIdempotentRequests ?? this.retryNonIdempotentRequests,
+      retryableStatusCodes: retryableStatusCodes ?? this.retryableStatusCodes,
     );
+  }
+
+  /// Calculates the delay duration for a given attempt number
+  Duration getDelayForAttempt(int attempt) {
+    if (attempt <= 0) return Duration.zero;
+
+    // Calculate base delay with exponential backoff
+    final baseDelay = initialDelayMs * math.pow(backoffFactor, attempt - 1);
+
+    // Apply max delay limit
+    final cappedDelay = math.min(baseDelay, maxDelayMs.toDouble());
+
+    // Add random jitter
+    final jitter =
+        cappedDelay * jitterFactor * (math.Random().nextDouble() * 2 - 1);
+    final finalDelay = cappedDelay + jitter;
+
+    return Duration(milliseconds: finalDelay.round());
+  }
+
+  @override
+  String toString() {
+    return 'RetryPolicy('
+        'maxAttempts: $maxAttempts, '
+        'initialDelay: ${initialDelayMs}ms, '
+        'maxDelay: ${maxDelayMs}ms, '
+        'backoffFactor: $backoffFactor, '
+        'jitterFactor: $jitterFactor)';
   }
 }
