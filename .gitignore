@@ -42,3 +42,6 @@ app.*.map.json
 
 # Test related
 coverage
+lib/src/core/di/_trash_register_module.dart
+examples/dart/sample_payment/.env
+_trash_register_module.dart
