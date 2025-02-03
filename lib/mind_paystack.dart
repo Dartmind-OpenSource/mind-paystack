@@ -5,6 +5,7 @@ import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/di/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
 import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
+import 'package:mind_paystack/src/features/payment_channels/services/payment_channel_service.dart';
 import 'package:mind_paystack/src/features/payment_methods/services/payment_method_service.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 
@@ -83,6 +84,13 @@ class MindPaystack {
   TransactionService get transaction {
     // _checkInitialized();
     return resolveWithParameter<TransactionService, PaystackConfig>(
+      parameter: config,
+    );
+  }
+
+  PaymentChannelService get paymentChannel {
+    _checkInitialized();
+    return resolveWithParameter<PaymentChannelService, PaystackConfig>(
       parameter: config,
     );
   }

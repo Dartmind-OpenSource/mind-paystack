@@ -3,6 +3,8 @@ import 'package:mind_paystack/mind_paystack.dart';
 import 'package:mind_paystack/src/core/network/http_client.dart';
 import 'package:mind_paystack/src/features/charge/repositories/charge_repository.dart';
 import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
+import 'package:mind_paystack/src/features/payment_channels/repositories/payment_channel_repository.dart';
+import 'package:mind_paystack/src/features/payment_channels/services/payment_channel_service.dart';
 import 'package:mind_paystack/src/features/payment_methods/repositories/payment_method_repository.dart';
 import 'package:mind_paystack/src/features/payment_methods/services/payment_method_service.dart';
 import 'package:mind_paystack/src/features/transaction/repositories/transaction_repository.dart';
@@ -34,6 +36,12 @@ abstract class RegisterModule {
       TransactionRepository(provideHttpClient(config));
 
   @factoryMethod
+  PaymentChannelRepository paymentChannelRepository(
+    @factoryParam PaystackConfig config,
+  ) =>
+      PaymentChannelRepository(provideHttpClient(config));
+
+  @factoryMethod
   PaymentMethodService paymentMethodService(
     @factoryParam PaystackConfig config,
   ) =>
@@ -50,4 +58,10 @@ abstract class RegisterModule {
     @factoryParam PaystackConfig config,
   ) =>
       ChargeService(chargeRepository(config));
+
+  @factoryMethod
+  PaymentChannelService paymentChannelService(
+    @factoryParam PaystackConfig config,
+  ) =>
+      PaymentChannelService(paymentChannelRepository(config));
 }

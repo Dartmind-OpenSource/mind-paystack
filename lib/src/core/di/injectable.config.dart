@@ -14,6 +14,10 @@ import 'package:injectable/injectable.dart' as _i526;
 import '../../../mind_paystack.dart' as _i10;
 import '../../features/charge/repositories/charge_repository.dart' as _i79;
 import '../../features/charge/services/charge_service.dart' as _i208;
+import '../../features/payment_channels/repositories/payment_channel_repository.dart'
+    as _i173;
+import '../../features/payment_channels/services/payment_channel_service.dart'
+    as _i775;
 import '../../features/payment_methods/repositories/payment_method_repository.dart'
     as _i122;
 import '../../features/payment_methods/services/payment_method_service.dart'
@@ -56,6 +60,12 @@ _i174.GetIt init(
     _,
   ) =>
       registerModule.transactionRepository(config));
+  gh.factoryParam<_i173.PaymentChannelRepository, _i10.PaystackConfig, dynamic>(
+      (
+    config,
+    _,
+  ) =>
+          registerModule.paymentChannelRepository(config));
   gh.factoryParam<_i376.PaymentMethodService, _i10.PaystackConfig, dynamic>((
     config,
     _,
@@ -71,6 +81,11 @@ _i174.GetIt init(
     _,
   ) =>
       registerModule.chargeService(config));
+  gh.factoryParam<_i775.PaymentChannelService, _i10.PaystackConfig, dynamic>((
+    config,
+    _,
+  ) =>
+      registerModule.paymentChannelService(config));
   return getIt;
 }
 

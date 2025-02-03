@@ -9,19 +9,19 @@ part 'charge_response.g.dart';
 class ChargeResponse with _$ChargeResponse {
   const factory ChargeResponse({
     /// Unique identifier for the transaction
-    required String reference,
+    required String? reference,
 
     /// Status of the charge (success, pending, failed)
-    required String status,
+    required bool? status,
 
     /// Transaction amount in lowest currency unit
-    required int amount,
+    required int? amount,
 
     /// Currency of the transaction
-    @Default('NGN') String currency,
+    @Default('NGN') String? currency,
 
     /// Email of the customer
-    required String email,
+    required String? email,
 
     /// Authorization URL for completing the transaction
     String? authorizationUrl,
@@ -30,7 +30,7 @@ class ChargeResponse with _$ChargeResponse {
     String? accessCode,
 
     /// Message describing the status
-    required String message,
+    required String? message,
 
     /// Authorization details if successful
     ChargeAuthorization? authorization,
@@ -39,10 +39,10 @@ class ChargeResponse with _$ChargeResponse {
     String? nextAction,
 
     /// Gateway response message
-    required String gatewayResponse,
+    required String? gatewayResponse,
 
     /// Channel used for the transaction
-    required String channel,
+    required String? channel,
 
     /// IP address of the request
     String? ipAddress,
@@ -51,10 +51,10 @@ class ChargeResponse with _$ChargeResponse {
     Map<String, dynamic>? metadata,
 
     /// Creation timestamp
-    required DateTime createdAt,
+    required DateTime? createdAt,
 
     /// Last update timestamp
-    required DateTime updatedAt,
+    required DateTime? updatedAt,
   }) = _ChargeResponse;
 
   factory ChargeResponse.fromJson(Map<String, dynamic> json) =>

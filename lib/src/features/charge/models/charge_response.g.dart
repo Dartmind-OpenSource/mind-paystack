@@ -8,25 +8,29 @@ part of 'charge_response.dart';
 
 _$ChargeResponseImpl _$$ChargeResponseImplFromJson(Map<String, dynamic> json) =>
     _$ChargeResponseImpl(
-      reference: json['reference'] as String,
-      status: json['status'] as String,
-      amount: (json['amount'] as num).toInt(),
+      reference: json['reference'] as String?,
+      status: json['status'] as bool?,
+      amount: (json['amount'] as num?)?.toInt(),
       currency: json['currency'] as String? ?? 'NGN',
-      email: json['email'] as String,
+      email: json['email'] as String?,
       authorizationUrl: json['authorizationUrl'] as String?,
       accessCode: json['accessCode'] as String?,
-      message: json['message'] as String,
+      message: json['message'] as String?,
       authorization: json['authorization'] == null
           ? null
           : ChargeAuthorization.fromJson(
               json['authorization'] as Map<String, dynamic>),
       nextAction: json['nextAction'] as String?,
-      gatewayResponse: json['gatewayResponse'] as String,
-      channel: json['channel'] as String,
+      gatewayResponse: json['gatewayResponse'] as String?,
+      channel: json['channel'] as String?,
       ipAddress: json['ipAddress'] as String?,
       metadata: json['metadata'] as Map<String, dynamic>?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$$ChargeResponseImplToJson(
@@ -46,6 +50,6 @@ Map<String, dynamic> _$$ChargeResponseImplToJson(
       'channel': instance.channel,
       'ipAddress': instance.ipAddress,
       'metadata': instance.metadata,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

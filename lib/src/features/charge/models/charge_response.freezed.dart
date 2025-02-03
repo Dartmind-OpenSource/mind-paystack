@@ -21,19 +21,19 @@ ChargeResponse _$ChargeResponseFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ChargeResponse {
   /// Unique identifier for the transaction
-  String get reference => throw _privateConstructorUsedError;
+  String? get reference => throw _privateConstructorUsedError;
 
   /// Status of the charge (success, pending, failed)
-  String get status => throw _privateConstructorUsedError;
+  bool? get status => throw _privateConstructorUsedError;
 
   /// Transaction amount in lowest currency unit
-  int get amount => throw _privateConstructorUsedError;
+  int? get amount => throw _privateConstructorUsedError;
 
   /// Currency of the transaction
-  String get currency => throw _privateConstructorUsedError;
+  String? get currency => throw _privateConstructorUsedError;
 
   /// Email of the customer
-  String get email => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
 
   /// Authorization URL for completing the transaction
   String? get authorizationUrl => throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ mixin _$ChargeResponse {
   String? get accessCode => throw _privateConstructorUsedError;
 
   /// Message describing the status
-  String get message => throw _privateConstructorUsedError;
+  String? get message => throw _privateConstructorUsedError;
 
   /// Authorization details if successful
   ChargeAuthorization? get authorization => throw _privateConstructorUsedError;
@@ -51,10 +51,10 @@ mixin _$ChargeResponse {
   String? get nextAction => throw _privateConstructorUsedError;
 
   /// Gateway response message
-  String get gatewayResponse => throw _privateConstructorUsedError;
+  String? get gatewayResponse => throw _privateConstructorUsedError;
 
   /// Channel used for the transaction
-  String get channel => throw _privateConstructorUsedError;
+  String? get channel => throw _privateConstructorUsedError;
 
   /// IP address of the request
   String? get ipAddress => throw _privateConstructorUsedError;
@@ -63,10 +63,10 @@ mixin _$ChargeResponse {
   Map<String, dynamic>? get metadata => throw _privateConstructorUsedError;
 
   /// Creation timestamp
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Last update timestamp
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this ChargeResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -85,22 +85,22 @@ abstract class $ChargeResponseCopyWith<$Res> {
       _$ChargeResponseCopyWithImpl<$Res, ChargeResponse>;
   @useResult
   $Res call(
-      {String reference,
-      String status,
-      int amount,
-      String currency,
-      String email,
+      {String? reference,
+      bool? status,
+      int? amount,
+      String? currency,
+      String? email,
       String? authorizationUrl,
       String? accessCode,
-      String message,
+      String? message,
       ChargeAuthorization? authorization,
       String? nextAction,
-      String gatewayResponse,
-      String channel,
+      String? gatewayResponse,
+      String? channel,
       String? ipAddress,
       Map<String, dynamic>? metadata,
-      DateTime createdAt,
-      DateTime updatedAt});
+      DateTime? createdAt,
+      DateTime? updatedAt});
 
   $ChargeAuthorizationCopyWith<$Res>? get authorization;
 }
@@ -120,44 +120,44 @@ class _$ChargeResponseCopyWithImpl<$Res, $Val extends ChargeResponse>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? reference = null,
-    Object? status = null,
-    Object? amount = null,
-    Object? currency = null,
-    Object? email = null,
+    Object? reference = freezed,
+    Object? status = freezed,
+    Object? amount = freezed,
+    Object? currency = freezed,
+    Object? email = freezed,
     Object? authorizationUrl = freezed,
     Object? accessCode = freezed,
-    Object? message = null,
+    Object? message = freezed,
     Object? authorization = freezed,
     Object? nextAction = freezed,
-    Object? gatewayResponse = null,
-    Object? channel = null,
+    Object? gatewayResponse = freezed,
+    Object? channel = freezed,
     Object? ipAddress = freezed,
     Object? metadata = freezed,
-    Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_value.copyWith(
-      reference: null == reference
+      reference: freezed == reference
           ? _value.reference
           : reference // ignore: cast_nullable_to_non_nullable
-              as String,
-      status: null == status
+              as String?,
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
-      amount: null == amount
+              as bool?,
+      amount: freezed == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
-      currency: null == currency
+              as int?,
+      currency: freezed == currency
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
+              as String?,
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       authorizationUrl: freezed == authorizationUrl
           ? _value.authorizationUrl
           : authorizationUrl // ignore: cast_nullable_to_non_nullable
@@ -166,10 +166,10 @@ class _$ChargeResponseCopyWithImpl<$Res, $Val extends ChargeResponse>
           ? _value.accessCode
           : accessCode // ignore: cast_nullable_to_non_nullable
               as String?,
-      message: null == message
+      message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       authorization: freezed == authorization
           ? _value.authorization
           : authorization // ignore: cast_nullable_to_non_nullable
@@ -178,14 +178,14 @@ class _$ChargeResponseCopyWithImpl<$Res, $Val extends ChargeResponse>
           ? _value.nextAction
           : nextAction // ignore: cast_nullable_to_non_nullable
               as String?,
-      gatewayResponse: null == gatewayResponse
+      gatewayResponse: freezed == gatewayResponse
           ? _value.gatewayResponse
           : gatewayResponse // ignore: cast_nullable_to_non_nullable
-              as String,
-      channel: null == channel
+              as String?,
+      channel: freezed == channel
           ? _value.channel
           : channel // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       ipAddress: freezed == ipAddress
           ? _value.ipAddress
           : ipAddress // ignore: cast_nullable_to_non_nullable
@@ -194,14 +194,14 @@ class _$ChargeResponseCopyWithImpl<$Res, $Val extends ChargeResponse>
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>?,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
+              as DateTime?,
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ) as $Val);
   }
 
@@ -229,22 +229,22 @@ abstract class _$$ChargeResponseImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String reference,
-      String status,
-      int amount,
-      String currency,
-      String email,
+      {String? reference,
+      bool? status,
+      int? amount,
+      String? currency,
+      String? email,
       String? authorizationUrl,
       String? accessCode,
-      String message,
+      String? message,
       ChargeAuthorization? authorization,
       String? nextAction,
-      String gatewayResponse,
-      String channel,
+      String? gatewayResponse,
+      String? channel,
       String? ipAddress,
       Map<String, dynamic>? metadata,
-      DateTime createdAt,
-      DateTime updatedAt});
+      DateTime? createdAt,
+      DateTime? updatedAt});
 
   @override
   $ChargeAuthorizationCopyWith<$Res>? get authorization;
@@ -263,44 +263,44 @@ class __$$ChargeResponseImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? reference = null,
-    Object? status = null,
-    Object? amount = null,
-    Object? currency = null,
-    Object? email = null,
+    Object? reference = freezed,
+    Object? status = freezed,
+    Object? amount = freezed,
+    Object? currency = freezed,
+    Object? email = freezed,
     Object? authorizationUrl = freezed,
     Object? accessCode = freezed,
-    Object? message = null,
+    Object? message = freezed,
     Object? authorization = freezed,
     Object? nextAction = freezed,
-    Object? gatewayResponse = null,
-    Object? channel = null,
+    Object? gatewayResponse = freezed,
+    Object? channel = freezed,
     Object? ipAddress = freezed,
     Object? metadata = freezed,
-    Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_$ChargeResponseImpl(
-      reference: null == reference
+      reference: freezed == reference
           ? _value.reference
           : reference // ignore: cast_nullable_to_non_nullable
-              as String,
-      status: null == status
+              as String?,
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
-      amount: null == amount
+              as bool?,
+      amount: freezed == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
-      currency: null == currency
+              as int?,
+      currency: freezed == currency
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
+              as String?,
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       authorizationUrl: freezed == authorizationUrl
           ? _value.authorizationUrl
           : authorizationUrl // ignore: cast_nullable_to_non_nullable
@@ -309,10 +309,10 @@ class __$$ChargeResponseImplCopyWithImpl<$Res>
           ? _value.accessCode
           : accessCode // ignore: cast_nullable_to_non_nullable
               as String?,
-      message: null == message
+      message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       authorization: freezed == authorization
           ? _value.authorization
           : authorization // ignore: cast_nullable_to_non_nullable
@@ -321,14 +321,14 @@ class __$$ChargeResponseImplCopyWithImpl<$Res>
           ? _value.nextAction
           : nextAction // ignore: cast_nullable_to_non_nullable
               as String?,
-      gatewayResponse: null == gatewayResponse
+      gatewayResponse: freezed == gatewayResponse
           ? _value.gatewayResponse
           : gatewayResponse // ignore: cast_nullable_to_non_nullable
-              as String,
-      channel: null == channel
+              as String?,
+      channel: freezed == channel
           ? _value.channel
           : channel // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       ipAddress: freezed == ipAddress
           ? _value.ipAddress
           : ipAddress // ignore: cast_nullable_to_non_nullable
@@ -337,14 +337,14 @@ class __$$ChargeResponseImplCopyWithImpl<$Res>
           ? _value._metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>?,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
+              as DateTime?,
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ));
   }
 }
@@ -376,24 +376,24 @@ class _$ChargeResponseImpl implements _ChargeResponse {
 
   /// Unique identifier for the transaction
   @override
-  final String reference;
+  final String? reference;
 
   /// Status of the charge (success, pending, failed)
   @override
-  final String status;
+  final bool? status;
 
   /// Transaction amount in lowest currency unit
   @override
-  final int amount;
+  final int? amount;
 
   /// Currency of the transaction
   @override
   @JsonKey()
-  final String currency;
+  final String? currency;
 
   /// Email of the customer
   @override
-  final String email;
+  final String? email;
 
   /// Authorization URL for completing the transaction
   @override
@@ -405,7 +405,7 @@ class _$ChargeResponseImpl implements _ChargeResponse {
 
   /// Message describing the status
   @override
-  final String message;
+  final String? message;
 
   /// Authorization details if successful
   @override
@@ -417,11 +417,11 @@ class _$ChargeResponseImpl implements _ChargeResponse {
 
   /// Gateway response message
   @override
-  final String gatewayResponse;
+  final String? gatewayResponse;
 
   /// Channel used for the transaction
   @override
-  final String channel;
+  final String? channel;
 
   /// IP address of the request
   @override
@@ -442,11 +442,11 @@ class _$ChargeResponseImpl implements _ChargeResponse {
 
   /// Creation timestamp
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   /// Last update timestamp
   @override
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
 
   @override
   String toString() {
@@ -526,45 +526,45 @@ class _$ChargeResponseImpl implements _ChargeResponse {
 
 abstract class _ChargeResponse implements ChargeResponse {
   const factory _ChargeResponse(
-      {required final String reference,
-      required final String status,
-      required final int amount,
-      final String currency,
-      required final String email,
+      {required final String? reference,
+      required final bool? status,
+      required final int? amount,
+      final String? currency,
+      required final String? email,
       final String? authorizationUrl,
       final String? accessCode,
-      required final String message,
+      required final String? message,
       final ChargeAuthorization? authorization,
       final String? nextAction,
-      required final String gatewayResponse,
-      required final String channel,
+      required final String? gatewayResponse,
+      required final String? channel,
       final String? ipAddress,
       final Map<String, dynamic>? metadata,
-      required final DateTime createdAt,
-      required final DateTime updatedAt}) = _$ChargeResponseImpl;
+      required final DateTime? createdAt,
+      required final DateTime? updatedAt}) = _$ChargeResponseImpl;
 
   factory _ChargeResponse.fromJson(Map<String, dynamic> json) =
       _$ChargeResponseImpl.fromJson;
 
   /// Unique identifier for the transaction
   @override
-  String get reference;
+  String? get reference;
 
   /// Status of the charge (success, pending, failed)
   @override
-  String get status;
+  bool? get status;
 
   /// Transaction amount in lowest currency unit
   @override
-  int get amount;
+  int? get amount;
 
   /// Currency of the transaction
   @override
-  String get currency;
+  String? get currency;
 
   /// Email of the customer
   @override
-  String get email;
+  String? get email;
 
   /// Authorization URL for completing the transaction
   @override
@@ -576,7 +576,7 @@ abstract class _ChargeResponse implements ChargeResponse {
 
   /// Message describing the status
   @override
-  String get message;
+  String? get message;
 
   /// Authorization details if successful
   @override
@@ -588,11 +588,11 @@ abstract class _ChargeResponse implements ChargeResponse {
 
   /// Gateway response message
   @override
-  String get gatewayResponse;
+  String? get gatewayResponse;
 
   /// Channel used for the transaction
   @override
-  String get channel;
+  String? get channel;
 
   /// IP address of the request
   @override
@@ -604,11 +604,11 @@ abstract class _ChargeResponse implements ChargeResponse {
 
   /// Creation timestamp
   @override
-  DateTime get createdAt;
+  DateTime? get createdAt;
 
   /// Last update timestamp
   @override
-  DateTime get updatedAt;
+  DateTime? get updatedAt;
 
   /// Create a copy of ChargeResponse
   /// with the given fields replaced by the non-null parameter values.
