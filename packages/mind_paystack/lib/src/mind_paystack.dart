@@ -1,6 +1,3 @@
-/// MindPaystack SDK main entry point
-library mind_paystack;
-
 import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/di/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';

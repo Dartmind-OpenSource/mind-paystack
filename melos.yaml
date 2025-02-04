@@ -1,0 +1,15 @@
+name:  MindPaystackWorkspace
+
+packages:
+  - packages/**
+  - apps/**
+
+command:
+  version:
+    branch: main
+    releaseUrl: true
+
+scripts:
+  format: 
+    run: melos exec -- dart format . --fix
+    description: Run `dart format` on all packages

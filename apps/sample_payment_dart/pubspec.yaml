@@ -1,7 +1,6 @@
-name: sample_payment
+name: sample_payment_dart
 description: A sample command-line application.
 version: 1.0.0
-publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
@@ -10,8 +9,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   # path: ^1.8.0
-  mind_paystack:
-    path: ../../../
+  mind_paystack: ^0.1.0+1
 
 dev_dependencies:
   lints: ^4.0.0
