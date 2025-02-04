@@ -13,3 +13,11 @@ scripts:
   format: 
     run: melos exec -- dart format . --fix
     description: Run `dart format` on all packages
+  
+  analyze:
+    run: melos exec -- dart analyze
+    description: Run `dart analyze` on all packages
+
+  fix:
+    run: melos exec -- dart fix --apply
+    description: Run `dart fix` on all packages
