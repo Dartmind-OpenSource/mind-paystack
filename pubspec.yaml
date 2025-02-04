@@ -1,29 +1,8 @@
-name: mind_paystack
-description: My new Flutter package
-version: 0.1.0+1
-publish_to: none
+name: melos_presentation_workspace
 
 environment:
   sdk: ^3.5.0
-  flutter: ^3.24.0
-
-dependencies:
-  dio: ^5.7.0
-  flutter:
-    sdk: flutter
-  freezed_annotation: ^2.4.4
-  get_it: ^8.0.2
-  injectable: ^2.5.0
-  logger: ^2.5.0
-  uuid: ^4.5.1
+  flutter: ">=1.17.0"
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  mockito: ^5.4.4
-  mocktail: ^1.0.4
-  very_good_analysis: ^7.0.0
-  injectable_generator: ^2.6.2
-  build_runner: ^2.4.13
-  freezed: ^2.5.7
-  json_serializable: ^6.9.0
+  melos: ^6.3.2 
