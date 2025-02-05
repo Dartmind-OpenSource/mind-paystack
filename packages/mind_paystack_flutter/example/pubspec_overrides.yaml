@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: mind_paystack,mind_paystack_flutter
+dependency_overrides:
+  mind_paystack:
+    path: ../../mind_paystack
+  mind_paystack_flutter:
+    path: ..
