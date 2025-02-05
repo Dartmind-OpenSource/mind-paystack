@@ -1,4 +1,6 @@
 name:  MindPaystackWorkspace
+repository: https://github.com/Dartmind-OpenSource/mind-paystack
+
 
 packages:
   - packages/**
