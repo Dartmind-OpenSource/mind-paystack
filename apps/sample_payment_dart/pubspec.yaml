@@ -1,6 +1,6 @@
 name: sample_payment_dart
 description: A sample command-line application.
-version: 1.1.0
+version: 1.2.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
