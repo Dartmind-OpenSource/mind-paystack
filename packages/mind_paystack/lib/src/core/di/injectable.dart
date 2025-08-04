@@ -1,10 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mind_paystack/mind_paystack.dart';
 import 'package:mind_paystack/src/core/di/injectable.config.dart';
-import 'package:mind_paystack/src/core/network/http_client.dart';
-import 'package:mind_paystack/src/features/payment_methods/repositories/payment_method_repository.dart';
-import 'package:mind_paystack/src/features/payment_methods/services/payment_method_service.dart';
 
 final GetIt _getIt = GetIt.instance;
 

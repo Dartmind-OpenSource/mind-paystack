@@ -3,5 +3,5 @@ import 'package:sample_payment_dart/sample_payment_dart.dart'
 
 void main(List<String> arguments) {
   // print('Hello world: ${sample_payment_dart.calculate()}!');
-  sample_payment_dart.SamplePaymentDart().chargeCard();
+  sample_payment_dart.SamplePaymentDart().initialize();
 }

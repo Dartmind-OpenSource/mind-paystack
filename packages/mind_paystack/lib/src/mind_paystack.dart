@@ -13,7 +13,9 @@ export 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
 /// Main class for interacting with the MindPaystack SDK
 class MindPaystack {
   /// Creates a new instance of MindPaystack with the provided configuration
-  MindPaystack(this._config);
+  MindPaystack._(this._config);
+
+  static MindPaystack? _instance;
 
   final PaystackConfig _config;
   bool _isInitialized = false;
@@ -23,6 +25,41 @@ class MindPaystack {
 
   /// Whether the SDK has been initialized
   bool get isInitialized => _isInitialized;
+
+  static Future<void> init(PaystackConfig config) async {
+    if (_instance != null) {
+      // Instance already exists, just update config if needed
+      return;
+    }
+
+    _instance = MindPaystack._(config);
+
+    try {
+      await configureDependencies();
+      _instance!._isInitialized = true;
+    } catch (e) {
+      if (e.toString().contains('already registered')) {
+        // Dependencies already registered, we can consider this initialized
+        _instance!._isInitialized = true;
+        print(
+          'Dependencies already registered, continuing with existing configuration',
+        );
+      } else {
+        // Unexpected error, rethrow
+        rethrow;
+      }
+    }
+  }
+
+  static MindPaystack get instance {
+    if (_instance == null) {
+      throw MindException(
+        message: 'MindPaystack has not been initialized',
+        code: 'not_initialized',
+      );
+    }
+    return _instance!;
+  }
 
   /// Initialize the SDK with configuration
   ///
@@ -40,16 +77,16 @@ class MindPaystack {
   ///
   /// await paystack.initialize();
   /// ```
-  Future<void> initialize() async {
-    if (_isInitialized) {
-      throw const MindException(
-        message: 'SDK is already initialized',
-        code: 'already_initialized',
-      );
-    }
-    await configureDependencies();
-    _isInitialized = true;
-  }
+  // Future<void> initialize() async {
+  //   if (_isInitialized) {
+  //     throw const MindException(
+  //       message: 'SDK is already initialized',
+  //       code: 'already_initialized',
+  //     );
+  //   }
+  //   await configureDependencies();
+  //   _isInitialized = true;
+  // }
 
   /// Get the transaction service instance
   // ITransactionService get transactions {
@@ -86,7 +123,7 @@ class MindPaystack {
   }
 
   PaymentChannelService get paymentChannel {
-    _checkInitialized();
+    // _checkInitialized();
     return resolveWithParameter<PaymentChannelService, PaystackConfig>(
       parameter: config,
     );

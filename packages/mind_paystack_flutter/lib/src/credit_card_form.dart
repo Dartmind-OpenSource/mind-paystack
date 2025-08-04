@@ -3,11 +3,11 @@ import 'package:flutter/src/services/text_formatter.dart';
 import 'package:mind_paystack_flutter/src/models/credit_card_model.dart';
 import 'package:mind_paystack_flutter/src/models/input_configuration.dart';
 
-import 'masked_text_controller.dart';
-import 'utils/constants.dart';
-import 'utils/helpers.dart';
-import 'utils/typedefs.dart';
-import 'utils/validators.dart';
+import 'package:mind_paystack_flutter/src/masked_text_controller.dart';
+import 'package:mind_paystack_flutter/src/utils/constants.dart';
+import 'package:mind_paystack_flutter/src/utils/helpers.dart';
+import 'package:mind_paystack_flutter/src/utils/typedefs.dart';
+import 'package:mind_paystack_flutter/src/utils/validators.dart';
 
 class CreditCardForm extends StatefulWidget {
   const CreditCardForm({
@@ -398,3 +398,28 @@ class _CreditCardFormState extends State<CreditCardForm> {
     widget.onFormComplete?.call();
   }
 }
+
+// ├── src/
+//   │   ├── core/
+//   │   │   ├── constants/
+//   │   │   │   ├── colors.dart
+//   │   │   │   └── themes.dart
+//   │   │   ├── models/
+//   │   │   │   ├── card_details.dart
+//   │   │   │   └── payment_result.dart
+//   │   │   └── services/
+//   │   │       └── paystack_service.dart
+//   │   ├── widgets/
+//   │   │   ├── card_input/
+//   │   │   │   ├── animated_card_input.dart
+//   │   │   │   ├── card_brand_detector.dart
+//   │   │   │   └── card_input_formatter.dart
+//   │   │   ├── payment_sheet/
+//   │   │   │   ├── payment_sheet.dart
+//   │   │   │   └── payment_sheet_content.dart
+//   │   │   └── shared/
+//   │   │       ├── animated_button.dart
+//   │   │       └── input_field.dart
+//   │   └── helpers/
+//   │       ├── card_utils.dart
+//   │       └── validators.dart

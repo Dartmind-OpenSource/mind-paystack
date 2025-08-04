@@ -26,7 +26,8 @@ class MaskedTextController extends TextEditingController {
   late Map<String, RegExp> translator;
 
   Function afterChange = (String previous, String next) {};
-  Function beforeChange = (String previous, String next) {
+  bool Function(String previous, String next) beforeChange =
+      (String previous, String next) {
     return true;
   };
 
