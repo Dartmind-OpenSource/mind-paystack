@@ -5,10 +5,8 @@
     {
       "group": "Overview",
       "pages": [
-        "index.md",
-        "getting-started.md",
-        "configuration.md",
-        "core-concepts.md"
+        "docs/index.mdx",
+        "docs/getting-started.mdx"
       ]
     },
     {
