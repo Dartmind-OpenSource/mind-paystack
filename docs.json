@@ -1,21 +1,37 @@
 {
-  "name": "My Docs",
-  "description": "My documentation site",
+  "name": "MindPaystack",
+  "description": "Modern Dart SDK for Paystack with clean architecture, dependency injection, and multi-platform support.",
   "sidebar": [
-  {
-    "group": "Getting Started",
-    "pages": [
-      {
-        "title": "Getting to know docs.page",
-        "href": "/",
-        "icon": "rocket"
-      },
-      {
-        "title": "Next Steps",
-        "href": "/next-steps",
-        "icon": "arrow-right"
-      }
-    ]
-  }
-]
+    {
+      "group": "Overview",
+      "pages": [
+        "index.md",
+        "getting-started.md",
+        "configuration.md",
+        "core-concepts.md"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/payments.md",
+        "guides/transactions.md",
+        "guides/payment-methods.md",
+        "guides/payment-channels.md"
+      ]
+    },
+    {
+      "group": "Integrations",
+      "pages": [
+        "integrations/flutter.md",
+        "integrations/backend.md"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference.md"
+      ]
+    }
+  ]
 }
