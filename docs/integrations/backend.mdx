@@ -1,0 +1,33 @@
+### Backend Integration
+
+Use the core SDK in Dart backends (e.g., Shelf, Dart Frog, Serverpod) for secure operations with the secret key.
+
+#### Setup
+
+```sh
+dart pub add mind_paystack
+```
+
+#### Initialize once per process
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+void main() async {
+  await MindPaystack.init(
+    PaystackConfig(
+      publicKey: const String.fromEnvironment('PAYSTACK_PUBLIC_KEY'),
+      secretKey: const String.fromEnvironment('PAYSTACK_SECRET_KEY'),
+      environment: Environment.test,
+      logLevel: LogLevel.info,
+    ),
+  );
+  // start server
+}
+```
+
+#### Typical flows
+
+- Initialize and verify transactions server‑side
+- Handle webhooks and reconcile status
+- Create and manage payment methods with tokens from clients
