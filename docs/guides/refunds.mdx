@@ -1,0 +1,15 @@
+### Refunds
+
+Initiate and manage refunds using the Transaction API.
+
+#### Initiate refund
+
+```dart
+final refund = await MindPaystack.instance.transaction.initiateRefund(
+  reference: 'tx_ref_123',
+  amount: 100000, // 1000.00
+  customerNote: 'Product not delivered',
+);
+```
+
+Track refund state via transaction timeline or list APIs.
