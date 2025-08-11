@@ -1,0 +1,97 @@
+# Accepting Payments
+
+This guide walks you through creating a payment flow using the **MindPaystack** SDK.
+
+---
+
+## 1. Initialize the SDK
+
+Before accepting payments, make sure the SDK is initialized:
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> main() async {
+  await MindPaystack.init(
+    PaystackConfig(
+      publicKey: 'pk_test_1234567890',
+      secretKey: 'sk_test_1234567890',
+      environment: Environment.test,
+    ),
+  );
+
+  final paystack = MindPaystack.instance;
+}
+```
+
+---
+
+## 2. Choose a Payment Method
+
+You can retrieve available payment methods:
+
+```dart
+final methods = await paystack.paymentMethods.getAll();
+print('Available methods: $methods');
+```
+
+You can also fetch available payment channels:
+
+```dart
+final channels = await paystack.paymentChannel.getAll();
+print('Available channels: $channels');
+```
+
+---
+
+## 3. Create a Charge
+
+A **charge** represents an intent to collect payment from a customer.
+
+```dart
+final charge = await paystack.charge.create(
+  amount: 5000, // in kobo (₦50.00)
+  email: 'customer@example.com',
+  reference: 'unique_ref_12345',
+);
+```
+
+---
+
+## 4. Verify the Transaction
+
+Once the payment is completed, verify it:
+
+```dart
+final transaction = await paystack.transaction.verify('unique_ref_12345');
+if (transaction.status == 'success') {
+  print('Payment successful!');
+} else {
+  print('Payment failed or pending.');
+}
+```
+
+---
+
+## 5. Error Handling
+
+Always wrap calls in a `try/catch` block:
+
+```dart
+try {
+  final charge = await paystack.charge.create(
+    amount: 5000,
+    email: 'customer@example.com',
+    reference: 'unique_ref_12345',
+  );
+} on MindException catch (e) {
+  print('Error: ${e.message} (code: ${e.code})');
+}
+```
+
+---
+
+## Tips
+- Always use `Environment.test` for development.
+- Generate **unique references** for every transaction.
+- Log transaction data for reconciliation.
