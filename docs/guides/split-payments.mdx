@@ -1,0 +1,17 @@
+### Subaccounts & Split Payments
+
+Route proceeds to subaccounts or split settlements. While dedicated Split endpoints aren’t modeled in this SDK yet, you can use `initializeTransaction` with `subaccount`, `transactionCharge`, `bearer`, and `splitCode`.
+
+```dart
+await MindPaystack.instance.transaction.initializeTransaction(
+  amount: 500000,
+  email: 'user@example.com',
+  currency: 'NGN',
+  subaccount: 'ACCT_xxx',          // route to subaccount
+  transactionCharge: 5000,         // your commission
+  bearer: 'account',               // who bears charge
+  splitCode: 'SPL_xxx',            // optional split code
+);
+```
+
+Confirm splits on your backend via Paystack’s API if needed.
