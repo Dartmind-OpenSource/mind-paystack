@@ -1,0 +1,8 @@
+### Security Best Practices
+
+- Use test keys (`pk_test_`, `sk_test_`) in non‑production. Only use live keys in `Environment.production`.
+- Never embed secret keys in client apps. In Flutter, prefer initializing with public key only and proxy sensitive operations via your backend when needed.
+- Always verify transactions on your backend using the secret key.
+- Rotate keys regularly; restrict keys by permissions where possible.
+- Log at `LogLevel.info` or lower in production; avoid printing sensitive data.
+- Use webhooks to confirm payment states instead of trusting client‑side events.
