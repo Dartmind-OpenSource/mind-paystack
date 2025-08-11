@@ -1,0 +1,15 @@
+### CLI Tools
+
+You can build CLI utilities on top of the core SDK to automate tasks like exporting transactions, reconciling refunds, etc.
+
+#### Example: export transactions
+
+```dart
+final url = await MindPaystack.instance.transaction.exportTransactions(
+  status: 'success',
+  format: 'csv',
+);
+print('Download: $url');
+```
+
+Wrap this in a Dart command‑line app (`bin/`) and distribute internally.
