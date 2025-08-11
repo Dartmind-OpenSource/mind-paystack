@@ -1,0 +1,30 @@
+### Custom Payment Flow
+
+This example shows a direct card charge with required follow‑ups.
+
+```dart
+final svc = MindPaystack.instance.paymentChannel;
+
+final init = await svc.chargeCard(
+  amount: 300000,
+  email: 'user@example.com',
+  cardNumber: '4084084084084081',
+  cvv: '408',
+  expiryMonth: '12',
+  expiryYear: '30',
+  pin: '1234',
+);
+
+// If OTP is required
+await svc.submitChannelCharge(
+  reference: init.reference,
+  type: 'otp',
+  value: '123456',
+);
+
+// If AVS validation is required
+await svc.validateChannelCharge(
+  reference: init.reference,
+  validation: {'avs_address': '...', 'avs_zip': '...'},
+);
+```
