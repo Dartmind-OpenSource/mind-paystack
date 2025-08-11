@@ -1,0 +1,53 @@
+# Configuration
+
+The `PaystackConfig` class is used to configure the MindPaystack SDK.  
+You must provide a valid `publicKey`, `secretKey`, and an `environment` before using any features.
+
+---
+
+## Example
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> main() async {
+  await MindPaystack.init(
+    PaystackConfig(
+      publicKey: 'pk_test_1234567890',
+      secretKey: 'sk_test_1234567890',
+      environment: Environment.test, // or Environment.live
+    ),
+  );
+}
+```
+
+---
+
+## Parameters
+
+| Parameter     | Type            | Required | Description |
+|---------------|----------------|----------|-------------|
+| `publicKey`   | `String`       | ✅       | Your Paystack **public key** from the dashboard |
+| `secretKey`   | `String`       | ✅       | Your Paystack **secret key** from the dashboard |
+| `environment` | `Environment`  | ✅       | `Environment.test` or `Environment.live` |
+| `currency`    | `String?`      | ❌       | Optional currency code (e.g., `NGN`) |
+
+---
+
+## Environments
+
+The SDK supports two environments:
+
+```dart
+enum Environment {
+  test, // For sandbox and test transactions
+  live, // For real transactions
+}
+```
+
+---
+
+## Tips
+- Keep your `secretKey` **private** — never expose it in client apps.
+- Always test with `Environment.test` before going live.
+- Store configuration in secure storage if you need to reuse it.
