@@ -1,0 +1,7 @@
+### Troubleshooting
+
+- SDK not initialized: Ensure `await MindPaystack.init(PaystackConfig(...))` before usage.
+- Invalid keys in production: Use live keys with `Environment.production`.
+- Network timeouts: Increase `timeout`, tune `RetryPolicy`.
+- 401/403 errors: Recheck API keys and environment.
+- Validation errors: Inspect `MindException.validationErrors`.

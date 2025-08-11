@@ -53,7 +53,7 @@ class MindPaystack {
 
   static MindPaystack get instance {
     if (_instance == null) {
-      throw MindException(
+      throw const MindException(
         message: 'MindPaystack has not been initialized',
         code: 'not_initialized',
       );

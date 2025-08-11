@@ -1,90 +1,50 @@
-# Core Concepts
+### Core Concepts
 
-This page explains the fundamental building blocks of the **MindPaystack** SDK.
+This SDK follows a clean, layered architecture with DI and clear error semantics.
 
----
+#### Dependency Injection
 
-## 1. Initialization
-
-Before using any service, you must initialize the SDK with `MindPaystack.init()`.
-
-```dart
-await MindPaystack.init(
-  PaystackConfig(
-    publicKey: 'pk_test_1234567890',
-    secretKey: 'sk_test_1234567890',
-    environment: Environment.test,
-  ),
-);
-```
-
-Once initialized, you can access the SDK through:
+- Uses `get_it` and `injectable` to wire repositories and services.
+- Initialize once with `MindPaystack.init(config)`. Services are resolved with the same `PaystackConfig`.
 
 ```dart
 final paystack = MindPaystack.instance;
+final txService = paystack.transaction;      // TransactionService
+final chargeService = paystack.charge;       // ChargeService
+final pmService = paystack.paymentMethods;   // PaymentMethodService
+final channelService = paystack.paymentChannel; // PaymentChannelService
 ```
 
----
+#### Networking
 
-## 2. Services
+- Built on `dio` with interceptors:
+  - Request enrichment: request IDs, idempotency, SDK metadata, environment
+  - Authentication: Bearer header (uses secret key by default)
+  - Retry: exponential backoff and jitter
+  - Error mapping: converts Dio errors to `MindException`
+  - Logging: structured logs configurable by `LogLevel`
 
-MindPaystack uses a **service-oriented architecture**.  
-Each feature is accessed through its dedicated service:
+#### Errors
 
-| Service                 | Accessor                          | Purpose |
-|-------------------------|------------------------------------|---------|
-| `PaymentMethodService`  | `paystack.paymentMethods`          | Manage and retrieve payment methods |
-| `ChargeService`         | `paystack.charge`                  | Create and manage charges |
-| `TransactionService`    | `paystack.transaction`             | Handle transactions |
-| `PaymentChannelService` | `paystack.paymentChannel`          | Get available payment channels |
-
-Example:
-
-```dart
-final methods = await paystack.paymentMethods.getAll();
-final transaction = await paystack.transaction.verify('trx_ref');
-```
-
----
-
-## 3. Dependency Injection
-
-MindPaystack uses **dependency injection (DI)** internally via `get_it` and `injectable`.
-
-- `configureDependencies()` sets up all required services.
-- `resolveWithParameter<T, P>()` allows retrieving services with a configuration parameter.
-
-You rarely need to call DI methods directly unless you’re extending the SDK.
-
----
-
-## 4. Error Handling
-
-All SDK errors are wrapped in the `MindException` class.
+All SDK methods throw `MindException` with:
+- `message`, `code`
+- `category` (network, authentication, validation, server, unknown)
+- `severity` (info, warning, error, fatal)
+- `metadata` (requestId, statusCode, url, etc.)
 
 ```dart
 try {
-  final result = await paystack.charge.create(amount: 5000);
+  await paystack.transaction.verifyTransaction('ref');
 } on MindException catch (e) {
-  print('Error: ${e.message} (code: ${e.code})');
+  // e.category, e.isRetriable, e.displayMessage
 }
 ```
 
----
+#### Amounts and currency
 
-## 5. Configuration Management
+- Amounts are in the lowest denomination (e.g., kobo for NGN).
+- Default currency is `NGN`; override per call or via config.
 
-The `PaystackConfig` provided at initialization is used throughout the SDK:
+#### Models and typing
 
-```dart
-final config = paystack.config;
-print(config.publicKey);
-```
-
----
-
-## Key Points
-- Always **initialize before use**.
-- Use services for organized access to features.
-- Handle errors with `MindException`.
-- Configuration is immutable once initialized.
+Responses are strongly typed using `freezed` data models across features.

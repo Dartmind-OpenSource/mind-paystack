@@ -1,0 +1,34 @@
+### Flutter Integration
+
+Use `mind_paystack_flutter` for Flutter apps. It re‑exports the core SDK and provides UI helpers (e.g., credit card form).
+
+#### Install
+
+```sh
+dart pub add mind_paystack_flutter
+```
+
+#### Initialize
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:mind_paystack_flutter/mind_paystack_flutter.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MindPaystack.init(
+    PaystackConfig(publicKey: 'pk_test_xxx', secretKey: 'sk_test_xxx'),
+  );
+  // runApp(...)
+}
+```
+
+#### Use the credit card form
+
+```dart
+import 'package:mind_paystack_flutter/mind_paystack_flutter.dart';
+
+// See src/credit_card_form.dart for customizable inputs and validation
+```
+
+See the included example app under `packages/mind_paystack_flutter/example` for a full demo (home, payment method list, card payment, success screen, transaction history).

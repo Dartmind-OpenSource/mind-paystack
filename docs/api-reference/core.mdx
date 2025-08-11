@@ -1,0 +1,32 @@
+### Core API
+
+#### MindPaystack
+
+- `init(PaystackConfig config) → Future<void>`: Initialize the SDK (call once)
+- `instance`: Access the singleton
+- `paymentMethods → PaymentMethodService`
+- `charge → ChargeService`
+- `transaction → TransactionService`
+- `paymentChannel → PaymentChannelService`
+
+#### PaystackConfig
+
+```dart
+PaystackConfig({
+  required String publicKey,
+  required String secretKey,
+  Environment environment = Environment.test,
+  LogLevel logLevel = LogLevel.info,
+  RetryPolicy retryPolicy = const RetryPolicy(),
+  String currency = 'NGN',
+  String locale = 'en',
+  Duration? timeout,
+})
+```
+
+Also: `fromEnvironment()` reads compile‑time env values.
+
+#### HttpClient behavior
+
+- Base URL: `https://api.paystack.co`
+- Interceptors: request enricher, auth, retry, error, logging

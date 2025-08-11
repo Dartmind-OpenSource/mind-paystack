@@ -1,97 +1,53 @@
-# Accepting Payments
+### Payments
 
-This guide walks you through creating a payment flow using the **MindPaystack** SDK.
+End‑to‑end flows for collecting payments with Paystack using the SDK.
 
----
+#### Card payments (Charge API)
 
-## 1. Initialize the SDK
+Use the channel‑agnostic Transaction flow for hosted checkout, or use Charge when you manage the steps yourself.
 
-Before accepting payments, make sure the SDK is initialized:
+Initialize via hosted checkout:
 
 ```dart
-import 'package:mind_paystack/mind_paystack.dart';
-
-Future<void> main() async {
-  await MindPaystack.init(
-    PaystackConfig(
-      publicKey: 'pk_test_1234567890',
-      secretKey: 'sk_test_1234567890',
-      environment: Environment.test,
-    ),
-  );
-
-  final paystack = MindPaystack.instance;
-}
+final tx = await MindPaystack.instance.transaction.initializeTransaction(
+  amount: 150000,
+  email: 'user@example.com',
+  currency: 'NGN',
+);
+// Open tx.authorizationUrl
 ```
 
----
-
-## 2. Choose a Payment Method
-
-You can retrieve available payment methods:
+Charge directly (advanced):
 
 ```dart
-final methods = await paystack.paymentMethods.getAll();
-print('Available methods: $methods');
+final charge = await MindPaystack.instance.paymentChannel.chargeCard(
+  amount: 150000,
+  email: 'user@example.com',
+  cardNumber: '4084084084084081',
+  cvv: '408',
+  expiryMonth: '12',
+  expiryYear: '30',
+  pin: '1234',
+);
+
+// For OTP/PIN/address validation flows, follow up with:
+// submitChannelCharge(reference: charge.reference, type: 'otp'|'phone'|'birthday', value: '...')
+// validateChannelCharge(reference: charge.reference, validation: {...})
 ```
 
-You can also fetch available payment channels:
+#### Verify payments
 
 ```dart
-final channels = await paystack.paymentChannel.getAll();
-print('Available channels: $channels');
+final result = await MindPaystack.instance.transaction.verifyTransaction(tx.reference);
 ```
 
----
-
-## 3. Create a Charge
-
-A **charge** represents an intent to collect payment from a customer.
+#### Partial debit
 
 ```dart
-final charge = await paystack.charge.create(
-  amount: 5000, // in kobo (₦50.00)
-  email: 'customer@example.com',
-  reference: 'unique_ref_12345',
+final res = await MindPaystack.instance.charge.createPartialDebit(
+  amount: 50000,
+  email: 'user@example.com',
+  authorizationCode: 'AUTH_XXXX',
+  currency: 'NGN',
 );
 ```
-
----
-
-## 4. Verify the Transaction
-
-Once the payment is completed, verify it:
-
-```dart
-final transaction = await paystack.transaction.verify('unique_ref_12345');
-if (transaction.status == 'success') {
-  print('Payment successful!');
-} else {
-  print('Payment failed or pending.');
-}
-```
-
----
-
-## 5. Error Handling
-
-Always wrap calls in a `try/catch` block:
-
-```dart
-try {
-  final charge = await paystack.charge.create(
-    amount: 5000,
-    email: 'customer@example.com',
-    reference: 'unique_ref_12345',
-  );
-} on MindException catch (e) {
-  print('Error: ${e.message} (code: ${e.code})');
-}
-```
-
----
-
-## Tips
-- Always use `Environment.test` for development.
-- Generate **unique references** for every transaction.
-- Log transaction data for reconciliation.

@@ -1,0 +1,19 @@
+### Backend Quickstart
+
+Build a small Dart server that initializes and verifies transactions.
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> main() async {
+  await MindPaystack.init(
+    PaystackConfig(
+      publicKey: 'pk_test_xxx',
+      secretKey: 'sk_test_xxx',
+    ),
+  );
+
+  // Expose /checkout to call initializeTransaction
+  // Expose /verify?ref=... to call verifyTransaction
+}
+```

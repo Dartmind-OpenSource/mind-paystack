@@ -1,0 +1,75 @@
+### Transactions
+
+Work with the full Transaction lifecycle: initialize, list, get, verify, refund, analytics, timeline, sessions, export.
+
+#### Initialize
+
+```dart
+final tx = await MindPaystack.instance.transaction.initializeTransaction(
+  amount: 250000,
+  email: 'buyer@example.com',
+  currency: 'NGN',
+  reference: 'order_123',
+  metadata: {'orderId': '123'},
+  channels: ['card','bank','ussd'],
+);
+```
+
+#### Verify
+
+```dart
+await MindPaystack.instance.transaction.verifyTransaction(tx.reference);
+```
+
+#### List
+
+```dart
+final items = await MindPaystack.instance.transaction.listTransactions(
+  status: 'success',
+  page: 1,
+  perPage: 20,
+);
+```
+
+#### Get
+
+```dart
+final one = await MindPaystack.instance.transaction.getTransaction('ref_or_id');
+```
+
+#### Refund
+
+```dart
+final refund = await MindPaystack.instance.transaction.initiateRefund(
+  reference: tx.reference,
+  amount: 250000,
+  customerNote: 'Customer requested refund',
+);
+```
+
+#### Totals/Analytics
+
+```dart
+final totals = await MindPaystack.instance.transaction.getTransactionTotals();
+```
+
+#### Timeline
+
+```dart
+final events = await MindPaystack.instance.transaction.getTransactionTimeline(tx.reference);
+```
+
+#### Sessions
+
+```dart
+final sessions = await MindPaystack.instance.transaction.getTransactionSessions(tx.reference);
+```
+
+#### Export
+
+```dart
+final downloadUrl = await MindPaystack.instance.transaction.exportTransactions(
+  status: 'success',
+  format: 'csv',
+);
+```

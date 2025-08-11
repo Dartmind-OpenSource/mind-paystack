@@ -1,0 +1,10 @@
+### FAQ
+
+#### Do I need both public and secret keys in Flutter?
+Prefer using only the public key on the client and delegate secret‑key operations to your backend.
+
+#### Are amounts in Naira?
+Use the lowest denomination (kobo for NGN). 100000 = ₦1,000.00
+
+#### How do I verify payments?
+Always verify via `verifyTransaction(reference)` on your backend.
