@@ -1,12 +1,17 @@
 {
-  "name": "MindPaystack Docs",
-  "description": "Official documentation for the MindPaystack SDK and integrations.",
+  "name": "MindPaystack",
+  "description": "Modern Dart SDK for Paystack with clean architecture, dependency injection, and multi-platform support (Flutter, Server, CLI).",
   "sidebar": [
     {
-      "group": "Getting Started",
+      "group": "Overview",
       "pages": [
         {
           "title": "Introduction",
+          "href": "/index",
+          "icon": "book-open"
+        },
+        {
+          "title": "Getting Started",
           "href": "/getting-started",
           "icon": "rocket"
         },
@@ -14,16 +19,16 @@
           "title": "Configuration",
           "href": "/configuration",
           "icon": "settings"
-        }
-      ]
-    },
-    {
-      "group": "Core Concepts",
-      "pages": [
+        },
         {
           "title": "Core Concepts",
           "href": "/core-concepts",
           "icon": "layers"
+        },
+        {
+          "title": "Security Best Practices",
+          "href": "/security",
+          "icon": "shield-check"
         }
       ]
     },
@@ -31,9 +36,84 @@
       "group": "Guides",
       "pages": [
         {
-          "title": "Accepting Payments",
+          "title": "Payments",
           "href": "/guides/payments",
           "icon": "credit-card"
+        },
+        {
+          "title": "Transactions",
+          "href": "/guides/transactions",
+          "icon": "receipt"
+        },
+        {
+          "title": "Payment Methods",
+          "href": "/guides/payment-methods",
+          "icon": "list"
+        },
+        {
+          "title": "Payment Channels",
+          "href": "/guides/payment-channels",
+          "icon": "shuffle"
+        },
+        {
+          "title": "Webhooks",
+          "href": "/guides/webhooks",
+          "icon": "link"
+        },
+        {
+          "title": "Refunds",
+          "href": "/guides/refunds",
+          "icon": "rotate-ccw"
+        },
+        {
+          "title": "Subaccounts & Split Payments",
+          "href": "/guides/split-payments",
+          "icon": "split"
+        }
+      ]
+    },
+    {
+      "group": "Integrations",
+      "pages": [
+        {
+          "title": "Flutter",
+          "href": "/integrations/flutter",
+          "icon": "smartphone"
+        },
+        {
+          "title": "Backend (Dart Frog, Shelf, Serverpod)",
+          "href": "/integrations/backend",
+          "icon": "server"
+        },
+        {
+          "title": "CLI Tools",
+          "href": "/integrations/cli",
+          "icon": "terminal"
+        }
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        {
+          "title": "Flutter Quickstart",
+          "href": "/examples/flutter-quickstart",
+          "icon": "zap"
+        },
+        {
+          "title": "Backend Quickstart",
+          "href": "/examples/backend-quickstart",
+          "icon": "zap"
+        },
+        {
+          "title": "Custom Payment Flow",
+          "href": "/examples/custom-payment-flow",
+          "icon": "git-branch"
+        },
+        {
+          "title": "Testing with Mock APIs",
+          "href": "/examples/testing",
+          "icon": "beaker"
         }
       ]
     },
@@ -41,19 +121,44 @@
       "group": "API Reference",
       "pages": [
         {
-          "title": "MindPaystack Class",
-          "href": "/api/mind-paystack",
+          "title": "Core API",
+          "href": "/api-reference/core",
+          "icon": "code"
+        },
+        {
+          "title": "Entities & Models",
+          "href": "/api-reference/entities",
           "icon": "package"
         },
         {
-          "title": "Services",
-          "href": "/api/services",
-          "icon": "server"
+          "title": "Enums & Constants",
+          "href": "/api-reference/enums",
+          "icon": "list-tree"
+        }
+      ]
+    },
+    {
+      "group": "Support",
+      "pages": [
+        {
+          "title": "Troubleshooting",
+          "href": "/support/troubleshooting",
+          "icon": "life-buoy"
         },
         {
-          "title": "Errors",
-          "href": "/api/errors",
-          "icon": "alert-triangle"
+          "title": "FAQ",
+          "href": "/support/faq",
+          "icon": "help-circle"
+        },
+        {
+          "title": "Contributing",
+          "href": "/support/contributing",
+          "icon": "git-pull-request"
+        },
+        {
+          "title": "Changelog",
+          "href": "/support/changelog",
+          "icon": "history"
         }
       ]
     }
