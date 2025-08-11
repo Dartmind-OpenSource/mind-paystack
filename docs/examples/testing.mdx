@@ -1,0 +1,9 @@
+### Testing with Mock APIs
+
+For integration tests, substitute the HTTP client with a mock or point to a test gateway.
+
+#### Tips
+
+- Use `Environment.test` and test keys
+- Stub network via `dio` interceptors in your tests
+- Assert that services throw `MindException` with the right `category` and `code`
