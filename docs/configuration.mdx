@@ -1,53 +1,75 @@
-# Configuration
+### Configuration
 
-The `PaystackConfig` class is used to configure the MindPaystack SDK.  
-You must provide a valid `publicKey`, `secretKey`, and an `environment` before using any features.
+`PaystackConfig` centralizes environment, keys, logging, retry behavior, and defaults used by the SDK.
 
----
-
-## Example
+#### Basics
 
 ```dart
-import 'package:mind_paystack/mind_paystack.dart';
+final config = PaystackConfig(
+  publicKey: 'pk_test_xxx',
+  secretKey: 'sk_test_xxx',
+  environment: Environment.test,  // test | staging | production
+  logLevel: LogLevel.info,        // debug | info | warning | error
+  retryPolicy: const RetryPolicy(),
+  // currency: 'NGN',
+  // locale: 'en',
+  // timeout: Duration(seconds: 30),
+);
 
-Future<void> main() async {
-  await MindPaystack.init(
-    PaystackConfig(
-      publicKey: 'pk_test_1234567890',
-      secretKey: 'sk_test_1234567890',
-      environment: Environment.test, // or Environment.live
-    ),
-  );
-}
+await MindPaystack.init(config);
 ```
 
----
+#### Keys and environments
 
-## Parameters
-
-| Parameter     | Type            | Required | Description |
-|---------------|----------------|----------|-------------|
-| `publicKey`   | `String`       | ✅       | Your Paystack **public key** from the dashboard |
-| `secretKey`   | `String`       | ✅       | Your Paystack **secret key** from the dashboard |
-| `environment` | `Environment`  | ✅       | `Environment.test` or `Environment.live` |
-| `currency`    | `String?`      | ❌       | Optional currency code (e.g., `NGN`) |
-
----
-
-## Environments
-
-The SDK supports two environments:
+- Use `pk_test_...`/`sk_test_...` keys in non‑production; production requires `pk_live_...`/`sk_live_...`.
+- The SDK prevents test keys in `Environment.production`.
 
 ```dart
-enum Environment {
-  test, // For sandbox and test transactions
-  live, // For real transactions
-}
+config.environment = Environment.production; // validates keys
 ```
 
----
+#### Logging
 
-## Tips
-- Keep your `secretKey` **private** — never expose it in client apps.
-- Always test with `Environment.test` before going live.
-- Store configuration in secure storage if you need to reuse it.
+```dart
+config.logLevel = LogLevel.debug; // verbose logs via internal logger
+```
+
+#### Retry policy
+
+`RetryPolicy` handles exponential backoff with jitter for retryable status codes.
+
+```dart
+final retry = const RetryPolicy(
+  maxAttempts: 3,
+  initialDelayMs: 1000,
+  maxDelayMs: 30000,
+  backoffFactor: 2.0,
+  jitterFactor: 0.2,
+  retryNonIdempotentRequests: false,
+  retryableStatusCodes: {408,429,500,502,503,504},
+);
+
+final config = PaystackConfig(
+  publicKey: 'pk_test_xxx',
+  secretKey: 'sk_test_xxx',
+  retryPolicy: retry,
+);
+```
+
+#### Timeouts and headers
+
+All requests use `timeout` from `PaystackConfig`. The client adds:
+- `Authorization: Bearer <key>`
+- `x-request-id`, `idempotency-key`, `x-sdk-name`, `x-sdk-version`, `x-environment`
+
+#### Environment base URLs
+
+The HTTP client targets `https://api.paystack.co`. You can still set `Environment` for meta headers and validations.
+
+#### Creating from environment variables
+
+```dart
+final config = PaystackConfig.fromEnvironment();
+```
+
+Reads `PAYSTACK_PUBLIC_KEY`, `PAYSTACK_SECRET_KEY`, `PAYSTACK_ENVIRONMENT`, `PAYSTACK_LOG_LEVEL` from compile‑time environment.
