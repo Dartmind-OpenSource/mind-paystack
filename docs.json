@@ -1,17 +1,12 @@
 {
-  "name": "MindPaystack",
-  "description": "Modern Dart SDK for Paystack with clean architecture, dependency injection, and multi-platform support.",
+  "name": "MindPaystack Docs",
+  "description": "Official documentation for the MindPaystack SDK and integrations.",
   "sidebar": [
     {
-      "group": "Overview",
+      "group": "Getting Started",
       "pages": [
         {
           "title": "Introduction",
-          "href": "/index",
-          "icon": "book-open"
-        },
-        {
-          "title": "Getting Started",
           "href": "/getting-started",
           "icon": "rocket"
         },
@@ -19,7 +14,12 @@
           "title": "Configuration",
           "href": "/configuration",
           "icon": "settings"
-        },
+        }
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
         {
           "title": "Core Concepts",
           "href": "/core-concepts",
@@ -31,39 +31,9 @@
       "group": "Guides",
       "pages": [
         {
-          "title": "Payments",
+          "title": "Accepting Payments",
           "href": "/guides/payments",
           "icon": "credit-card"
-        },
-        {
-          "title": "Transactions",
-          "href": "/guides/transactions",
-          "icon": "receipt"
-        },
-        {
-          "title": "Payment Methods",
-          "href": "/guides/payment-methods",
-          "icon": "list"
-        },
-        {
-          "title": "Payment Channels",
-          "href": "/guides/payment-channels",
-          "icon": "shuffle"
-        }
-      ]
-    },
-    {
-      "group": "Integrations",
-      "pages": [
-        {
-          "title": "Flutter",
-          "href": "/integrations/flutter",
-          "icon": "smartphone"
-        },
-        {
-          "title": "Backend",
-          "href": "/integrations/backend",
-          "icon": "server"
         }
       ]
     },
@@ -71,9 +41,19 @@
       "group": "API Reference",
       "pages": [
         {
-          "title": "API Reference",
-          "href": "/api-reference",
-          "icon": "code"
+          "title": "MindPaystack Class",
+          "href": "/api/mind-paystack",
+          "icon": "package"
+        },
+        {
+          "title": "Services",
+          "href": "/api/services",
+          "icon": "server"
+        },
+        {
+          "title": "Errors",
+          "href": "/api/errors",
+          "icon": "alert-triangle"
         }
       ]
     }
