@@ -5,30 +5,76 @@
     {
       "group": "Overview",
       "pages": [
-        "docs/index.mdx",
-        "docs/getting-started.mdx"
+        {
+          "title": "Introduction",
+          "href": "/index",
+          "icon": "book-open"
+        },
+        {
+          "title": "Getting Started",
+          "href": "/getting-started",
+          "icon": "rocket"
+        },
+        {
+          "title": "Configuration",
+          "href": "/configuration",
+          "icon": "settings"
+        },
+        {
+          "title": "Core Concepts",
+          "href": "/core-concepts",
+          "icon": "layers"
+        }
       ]
     },
     {
       "group": "Guides",
       "pages": [
-        "guides/payments.md",
-        "guides/transactions.md",
-        "guides/payment-methods.md",
-        "guides/payment-channels.md"
+        {
+          "title": "Payments",
+          "href": "/guides/payments",
+          "icon": "credit-card"
+        },
+        {
+          "title": "Transactions",
+          "href": "/guides/transactions",
+          "icon": "receipt"
+        },
+        {
+          "title": "Payment Methods",
+          "href": "/guides/payment-methods",
+          "icon": "list"
+        },
+        {
+          "title": "Payment Channels",
+          "href": "/guides/payment-channels",
+          "icon": "shuffle"
+        }
       ]
     },
     {
       "group": "Integrations",
       "pages": [
-        "integrations/flutter.md",
-        "integrations/backend.md"
+        {
+          "title": "Flutter",
+          "href": "/integrations/flutter",
+          "icon": "smartphone"
+        },
+        {
+          "title": "Backend",
+          "href": "/integrations/backend",
+          "icon": "server"
+        }
       ]
     },
     {
       "group": "API Reference",
       "pages": [
-        "api-reference.md"
+        {
+          "title": "API Reference",
+          "href": "/api-reference",
+          "icon": "code"
+        }
       ]
     }
   ]
