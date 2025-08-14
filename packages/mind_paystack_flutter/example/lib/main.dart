@@ -1,8 +1,9 @@
-import 'package:example/app_colors.dart';
 import 'package:example/screens/home_screen.dart';
+import 'package:example/screens/payment/bank_transfer_screen.dart';
 import 'package:example/screens/payment/card_payment_screen.dart';
 import 'package:example/screens/payment/payment_success_screen.dart';
 import 'package:example/screens/payment/payment_method_screen.dart';
+import 'package:example/screens/payment/ussd_payment_screen.dart';
 import 'package:example/screens/transaction_history_screen.dart';
 import 'package:example/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,8 @@ class PaystackApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/payment-methods': (context) => const PaymentMethodScreen(),
         '/card-payment': (context) => const CardPaymentScreen(),
+        '/bank-transfer': (context) => const BankTransferScreen(),
+        '/ussd-payment': (context) => const UssdPaymentScreen(),
         '/payment-success': (context) => const PaymentSuccessScreen(),
         '/transaction-history': (context) => const TransactionHistoryScreen(),
       },

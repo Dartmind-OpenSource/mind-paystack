@@ -325,10 +325,24 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           );
           break;
         case 'bank_transfer':
+          Navigator.pushNamed(
+            context,
+            '/bank-transfer',
+            arguments: {
+              'amount': double.tryParse(_amountController.text) ?? 0.0,
+              'email': _emailController.text,
+            },
+          );
+          break;
         case 'ussd':
-          // For demo purposes, we'll just show a snackbar
-          _showErrorSnackBar(
-              '🚧 This payment method is not fully implemented in the demo');
+          Navigator.pushNamed(
+            context,
+            '/ussd-payment',
+            arguments: {
+              'amount': double.tryParse(_amountController.text) ?? 0.0,
+              'email': _emailController.text,
+            },
+          );
           break;
         default:
           _showErrorSnackBar('⚠️ Please select a payment method');
