@@ -1,24 +1,46 @@
-### Getting Started
+# Getting Started
 
-MindPaystack is a modern Dart SDK for Paystack with a clean, testable architecture. This page helps you install and initialize the SDK, then run your first payment.
+This guide shows how to **install**, **initialize**, and **make your first payment** with MindPaystack.  
+For an overview of its architecture and design, see [Introduction](../introduction).
 
-#### Install
+---
 
-Add the core SDK:
+## Quick workflow
+
+<div align="center">
+
+```mermaid
+flowchart LR
+    A[Install SDK] --> B[Initialize MindPaystack]
+    B --> C[Create Payment<br/>Initialize Transaction]
+    C --> D[Verify Payment]
+```
+
+*Figure 1: MindPaystack integration steps.*
+</div>
+
+---
+
+## 1. Install
+
+Add the **core SDK** (works in any Dart project):
 
 ```sh
 dart pub add mind_paystack
 ```
 
-For Flutter apps, also add the Flutter helpers and UI components:
+If you’re building a **Flutter app**, also add the Flutter integration layer:
 
 ```sh
 dart pub add mind_paystack_flutter
 ```
 
-#### Initialize the SDK
+---
 
-Initialize once at app start with your keys. Use test keys in non‑production environments.
+## 2. Initialize the SDK
+
+Initialize once at app start using your Paystack keys.  
+**Use test keys** in non-production environments.
 
 ```dart
 import 'package:mind_paystack/mind_paystack.dart';
@@ -29,7 +51,7 @@ Future<void> main() async {
       publicKey: 'pk_test_xxx',
       secretKey: 'sk_test_xxx',
       // environment: Environment.test, // default
-      // logLevel: LogLevel.info,      // default
+      // logLevel: LogLevel.info,       // default
     ),
   );
 
@@ -37,7 +59,7 @@ Future<void> main() async {
 }
 ```
 
-In Flutter, initialize before `runApp`:
+In Flutter, call `MindPaystack.init()` **before** `runApp()`:
 
 ```dart
 import 'package:flutter/widgets.dart';
@@ -55,9 +77,11 @@ Future<void> main() async {
 }
 ```
 
-#### Make a payment (Initialize Transaction)
+---
 
-Use the high‑level Transaction API to create a payment session.
+## 3. Make a Payment
+
+Use the **Transaction API** to initialize a payment session:
 
 ```dart
 final paystack = MindPaystack.instance;
@@ -74,7 +98,7 @@ final tx = await paystack.transaction.initializeTransaction(
 );
 
 // tx.authorizationUrl → open in a webview/browser
-// tx.reference         → keep for verification
+// tx.reference         → store for verification
 ```
 
 Verify the payment when the user returns from checkout:
@@ -86,8 +110,10 @@ if (verification.status == 'success') {
 }
 ```
 
-#### Next steps
+---
 
-- Configuration options: see `Configuration`
-- Learn architectural choices: see `Core Concepts`
-- Follow end‑to‑end recipes: see Guides → `Payments`, `Transactions`
+## 4. Next Steps
+
+- Explore configuration options → **Configuration**  
+- Learn SDK internals → **Core Concepts**  
+- Follow end-to-end guides → **Payments**, **Transactions**  
