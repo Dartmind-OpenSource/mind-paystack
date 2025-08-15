@@ -1,7 +1,7 @@
 # MindPaystack
 
-[![Pub Version](https://img.shields.io/pub/v/mind_paystack.svg)](https://pub.dev/packages/mind_paystack)
-[![License](https://img.shields.io/github/license/your-org/mind_paystack.svg)](LICENSE)
+<!-- [![Pub Version](https://img.shields.io/pub/v/mind_paystack.svg)](https://pub.dev/packages/mind_paystack)
+[![License](https://img.shields.io/github/license/your-org/mind_paystack.svg)](LICENSE) -->
 
 **MindPaystack** is a modern, developer-friendly Dart SDK for [Paystack](https://paystack.com).  
 Built with **clean architecture**, **dependency injection**, and **extensibility** at its core,  
