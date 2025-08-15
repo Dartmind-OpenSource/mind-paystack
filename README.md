@@ -1,33 +1,73 @@
-# My Project
+# MindPaystack
 
-> This README automatically lists all documentation files in `/docs`
+[![Pub Version](https://img.shields.io/pub/v/mind_paystack.svg)](https://pub.dev/packages/mind_paystack)
+[![License](https://img.shields.io/github/license/your-org/mind_paystack.svg)](LICENSE)
 
-## Documentation
+**MindPaystack** is a modern, developer-friendly Dart SDK for [Paystack](https://paystack.com).  
+Built with **clean architecture**, **dependency injection**, and **extensibility** at its core,  
+it provides a strongly-typed, elegant way to integrate Paystack into both **Dart** and **Flutter** apps.
 
-- [configuration](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/configuration.mdx)
-- [index](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/index.mdx)
-- [api-reference/entities](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/api-reference/entities.mdx)
-- [api-reference/enums](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/api-reference/enums.mdx)
-- [api-reference/core](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/api-reference/core.mdx)
-- [integrations/cli](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/integrations/cli.mdx)
-- [integrations/flutter](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/integrations/flutter.mdx)
-- [integrations/backend](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/integrations/backend.mdx)
-- [support/contributing](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/support/contributing.mdx)
-- [support/changelog](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/support/changelog.mdx)
-- [support/faq](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/support/faq.mdx)
-- [support/troubleshooting](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/support/troubleshooting.mdx)
-- [getting-started](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/getting-started.mdx)
-- [guides/webhooks](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/webhooks.mdx)
-- [guides/payment-methods](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/payment-methods.mdx)
-- [guides/transactions](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/transactions.mdx)
-- [guides/split-payments](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/split-payments.mdx)
-- [guides/payment-channels](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/payment-channels.mdx)
-- [guides/payments](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/payments.mdx)
-- [guides/refunds](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/guides/refunds.mdx)
-- [security](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/security.mdx)
-- [examples/backend-quickstart](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/examples/backend-quickstart.mdx)
-- [examples/testing](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/examples/testing.mdx)
-- [examples/custom-payment-flow](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/examples/custom-payment-flow.mdx)
-- [examples/flutter-quickstart](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/examples/flutter-quickstart.mdx)
-- [next-steps](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/next-steps.mdx)
-- [core-concepts](https://github.com/Dartmind-OpenSource/mind-paystack/tree/main/docs/core-concepts.mdx)
+---
+
+## Features
+
+- **Strongly-typed API responses** → no dynamic surprises  
+- **Dependency-injection ready** → works with [`injectable`](https://pub.dev/packages/injectable)  
+- **Modular services** → swap or extend without rewriting core logic  
+- **Unified error handling** via `MindException`  
+- **Cross-platform** → pure Dart + Flutter support  
+
+---
+
+## Quick Start
+
+Add the SDK:
+
+```sh
+dart pub add mind_paystack
+```
+
+For Flutter projects:
+
+```sh
+dart pub add mind_paystack_flutter
+```
+
+Initialize at app startup:
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> main() async {
+  await MindPaystack.init(
+    PaystackConfig(
+      publicKey: 'pk_test_xxx',
+      secretKey: 'sk_test_xxx',
+    ),
+  );
+  // runApp(...)
+}
+```
+
+---
+
+## Full Documentation
+
+📚 **See the full docs here → [https://docs.mindpaystack.dev](https://mind-paystack-docs.vercel.app/docs)**
+
+- Installation & setup  
+- Core concepts and architecture  
+- Payments, transactions, and advanced guides  
+
+---
+
+## Contributing
+
+Contributions are welcome!  
+Check out the [issues](https://github.com/Dartmind-OpenSource/mind-paystack/issues) or open a PR.
+
+---
+
+## License
+
+[MIT](LICENSE) © Your Name or Org
