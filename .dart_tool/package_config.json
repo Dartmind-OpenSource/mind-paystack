@@ -230,10 +230,9 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2025-02-04T03:26:25.522728Z",
   "generator": "pub",
-  "generatorVersion": "3.5.0",
-  "flutterRoot": "file:///Users/czar/fvm/versions/3.24.0",
-  "flutterVersion": "3.24.0",
+  "generatorVersion": "3.8.1",
+  "flutterRoot": "file:///Users/czar/fvm/versions/3.29.0",
+  "flutterVersion": "3.32.6",
   "pubCache": "file:///Users/czar/.pub-cache"
 }
