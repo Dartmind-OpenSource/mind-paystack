@@ -1,119 +1,277 @@
 # Getting Started
 
-This guide shows how to **install**, **initialize**, and **make your first payment** with MindPaystack.  
-For an overview of its architecture and design, see [Introduction](../introduction).
+Get up and running with MindPaystack in **3 simple steps**. This Dart-first SDK works seamlessly across pure Dart projects, Flutter apps, and server-side applications.
+
+> **🎯 Choose Your Setup:** Pure Dart backend, Flutter mobile app, or full-stack Dart application
 
 ---
 
-## Quick workflow
+## Installation Guide
 
-<div align="center">
+### For Pure Dart Projects (CLI, Server, Backend)
 
-```mermaid
-flowchart LR
-    A[Install SDK] --> B[Initialize MindPaystack]
-    B --> C[Create Payment<br/>Initialize Transaction]
-    C --> D[Verify Payment]
-```
+Perfect for **Dart VM** applications, **server-side** integrations, or **CLI tools**:
 
-*Figure 1: MindPaystack integration steps.*
-</div>
-
----
-
-## 1. Install
-
-Add the **core SDK** (works in any Dart project):
-
-```sh
+```bash
+# Core SDK only - lightweight and framework-agnostic
 dart pub add mind_paystack
 ```
 
-If you’re building a **Flutter app**, also add the Flutter integration layer:
+### For Flutter Applications
 
-```sh
-dart pub add mind_paystack_flutter
+Get the full **mobile-ready** experience with UI components:
+
+```bash
+# Add both core SDK and Flutter integration
+dart pub add mind_paystack mind_paystack_flutter
 ```
+
+### Package Overview
+
+| Package | Use Case | Features |
+|---------|----------|----------|
+| `mind_paystack` | Core SDK for any Dart project | API clients, models, services |
+| `mind_paystack_flutter` | Flutter-specific features | UI widgets, platform integration |
 
 ---
 
-## 2. Initialize the SDK
+## Quick Start: 3 Steps to Payment
 
-Initialize once at app start using your Paystack keys.  
-**Use test keys** in non-production environments.
+### Step 1: Initialize the SDK
 
+**Pure Dart Setup:**
 ```dart
 import 'package:mind_paystack/mind_paystack.dart';
 
 Future<void> main() async {
-  await MindPaystack.init(
+  // Initialize once at application startup
+  await MindPaystack.initialize(
     PaystackConfig(
-      publicKey: 'pk_test_xxx',
-      secretKey: 'sk_test_xxx',
-      // environment: Environment.test, // default
-      // logLevel: LogLevel.info,       // default
+      publicKey: 'pk_test_your_public_key',
+      secretKey: 'sk_test_your_secret_key',
+      environment: Environment.test,
     ),
   );
-
-  // ... run your app
+  
+  // Your application logic here
+  print('MindPaystack initialized successfully!');
 }
 ```
 
-In Flutter, call `MindPaystack.init()` **before** `runApp()`:
-
+**Flutter Setup:**
 ```dart
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:mind_paystack_flutter/mind_paystack_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MindPaystack.init(
+  
+  // Initialize before runApp()
+  await MindPaystack.initialize(
     PaystackConfig(
-      publicKey: 'pk_test_xxx',
-      secretKey: 'sk_test_xxx',
+      publicKey: 'pk_test_your_public_key',
+      secretKey: 'sk_test_your_secret_key',
+      environment: Environment.test,
+      logLevel: LogLevel.debug, // Helpful during development
     ),
   );
-  // runApp(...)
+  
+  runApp(MyApp());
+}
+```
+
+**Environment Variables Setup (Recommended):**
+```dart
+// Create .env file in your project root
+// PAYSTACK_PUBLIC_KEY=pk_test_your_key
+// PAYSTACK_SECRET_KEY=sk_test_your_key
+// PAYSTACK_ENVIRONMENT=test
+
+Future<void> main() async {
+  // Automatically reads from environment variables
+  final sdk = await MindPaystack.fromEnvironment();
+  print('SDK initialized from environment');
+}
+```
+
+### Step 2: Initialize a Transaction
+
+**Type-Safe Transaction Creation:**
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> createPayment() async {
+  final sdk = MindPaystack.instance;
+  
+  try {
+    final transaction = await sdk.transaction.initialize(
+      InitializeTransactionOptions(
+        email: 'customer@example.com',
+        amount: Money.fromCents(50000, Currency.ngn), // ₦500.00
+        reference: 'order_${DateTime.now().millisecondsSinceEpoch}',
+        callbackUrl: 'https://yourapp.com/payment/callback',
+        metadata: {
+          'order_id': '12345',
+          'customer_name': 'John Doe',
+        },
+      ),
+    );
+    
+    // Transaction created successfully
+    print('Payment URL: ${transaction.data.authorizationUrl}');
+    print('Reference: ${transaction.data.reference}');
+    
+    // Open authorization URL in browser/webview
+    // await launchUrl(Uri.parse(transaction.data.authorizationUrl));
+    
+  } on MindException catch (e) {
+    // Handle Paystack-specific errors
+    print('Payment initialization failed: ${e.message}');
+    print('Error code: ${e.code}');
+  }
+}
+```
+
+### Step 3: Verify the Payment
+
+**Secure Payment Verification:**
+```dart
+Future<bool> verifyPayment(String reference) async {
+  final sdk = MindPaystack.instance;
+  
+  try {
+    final verification = await sdk.transaction.verify(
+      VerifyTransactionOptions(reference: reference),
+    );
+    
+    if (verification.data.status == TransactionStatus.success) {
+      print('Payment successful! ₦${verification.data.amount / 100}');
+      print('Gateway response: ${verification.data.gatewayResponse}');
+      return true;
+    } else {
+      print('Payment failed or pending: ${verification.data.status}');
+      return false;
+    }
+    
+  } on MindException catch (e) {
+    print('Verification failed: ${e.message}');
+    return false;
+  }
 }
 ```
 
 ---
 
-## 3. Make a Payment
+## Complete Example: Payment Flow
 
-Use the **Transaction API** to initialize a payment session:
-
-```dart
-final paystack = MindPaystack.instance;
-
-final tx = await paystack.transaction.initializeTransaction(
-  amount: 500000,              // 5000.00 in kobo
-  email: 'customer@example.com',
-  currency: 'NGN',
-  // optional:
-  // reference: 'your-unique-ref',
-  // callbackUrl: 'https://example.com/callback',
-  // channels: ['card', 'bank', 'ussd'],
-  // metadata: {'orderId': '12345'},
-);
-
-// tx.authorizationUrl → open in a webview/browser
-// tx.reference         → store for verification
-```
-
-Verify the payment when the user returns from checkout:
+Here's a **complete working example** that demonstrates the full payment lifecycle:
 
 ```dart
-final verification = await paystack.transaction.verifyTransaction(tx.reference);
-if (verification.status == 'success') {
-  // fulfill the order
+import 'package:mind_paystack/mind_paystack.dart';
+
+class PaymentService {
+  static Future<void> initialize() async {
+    await MindPaystack.initialize(
+      PaystackConfig(
+        publicKey: 'pk_test_your_key',
+        secretKey: 'sk_test_your_key',
+        environment: Environment.test,
+      ),
+    );
+  }
+  
+  static Future<String?> createPayment({
+    required String customerEmail,
+    required int amountInCents,
+    Map<String, dynamic>? metadata,
+  }) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.transaction.initialize(
+        InitializeTransactionOptions(
+          email: customerEmail,
+          amount: Money.fromCents(amountInCents, Currency.ngn),
+          metadata: metadata,
+        ),
+      );
+      
+      return result.data.authorizationUrl;
+    } on MindException catch (e) {
+      print('Payment creation failed: ${e.message}');
+      return null;
+    }
+  }
+  
+  static Future<bool> verifyPayment(String reference) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.transaction.verify(
+        VerifyTransactionOptions(reference: reference),
+      );
+      
+      return result.data.status == TransactionStatus.success;
+    } on MindException catch (e) {
+      print('Verification failed: ${e.message}');
+      return false;
+    }
+  }
+}
+
+// Usage example
+Future<void> main() async {
+  // Step 1: Initialize
+  await PaymentService.initialize();
+  
+  // Step 2: Create payment
+  final paymentUrl = await PaymentService.createPayment(
+    customerEmail: 'customer@example.com',
+    amountInCents: 50000, // ₦500.00
+    metadata: {'product': 'Premium Subscription'},
+  );
+  
+  if (paymentUrl != null) {
+    print('Direct customer to: $paymentUrl');
+    
+    // Step 3: Verify payment (after customer completes payment)
+    // This would typically happen in a webhook or callback
+    // final isSuccessful = await PaymentService.verifyPayment(reference);
+  }
 }
 ```
 
 ---
 
-## 4. Next Steps
+## Development vs Production
 
-- Explore configuration options → **Configuration**  
-- Learn SDK internals → **Core Concepts**  
-- Follow end-to-end guides → **Payments**, **Transactions**  
+### Test Environment (Development)
+```dart
+PaystackConfig(
+  publicKey: 'pk_test_...',  // Test public key
+  secretKey: 'sk_test_...',  // Test secret key  
+  environment: Environment.test,
+  logLevel: LogLevel.debug,   // Verbose logging
+)
+```
+
+### Live Environment (Production)
+```dart
+PaystackConfig(
+  publicKey: 'pk_live_...',  // Live public key
+  secretKey: 'sk_live_...',  // Live secret key
+  environment: Environment.live,
+  logLevel: LogLevel.warning, // Minimal logging
+)
+```
+
+---
+
+## Next Steps
+
+🎨 **Flutter Integration:** [Flutter Widgets & Components →](./flutter-integration)  
+⚙️ **Advanced Configuration:** [SDK Configuration Options →](./configuration)  
+🔧 **Error Handling:** [Exception Management →](./error-handling)  
+📊 **Testing:** [Unit Testing Your Integration →](./testing)  
+
+**🚀 Ready to go deeper?** Explore our comprehensive guides for specific use cases and advanced features.  
