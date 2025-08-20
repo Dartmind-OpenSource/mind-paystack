@@ -1,79 +1,121 @@
 # MindPaystack
 
-> **Quick Overview**  
-> A modern Dart + Flutter SDK for Paystack built with clean architecture, dependency injection, and strongly typed APIs.  
-> Use it to integrate payments faster, with fewer bugs, and a structure that scales from MVPs to production fintech platforms.
+> **The Dart-First Paystack SDK**  
+> Built from the ground up for Dart and Flutter developers, MindPaystack delivers a production-ready payment integration with clean architecture, type safety, and dependency injection out of the box.
 
 ---
 
-## Why MindPaystack?
-Unlike thin API wrappers, MindPaystack is designed to scale with your application architecture.  
-It focuses on **maintainability**, **testability**, and **separation of concerns**, making it easy to integrate into production-grade apps.
+## Why Dart-First Matters
+
+MindPaystack isn't just another API wrapper—it's architected specifically for the **Dart ecosystem** and its principles:
+
+- **🎯 Pure Dart Core** → Framework-agnostic foundation that works everywhere Dart runs
+- **🛠️ Flutter-Native** → Dedicated Flutter layer with UI components and platform integrations  
+- **📦 Pub.dev Ready** → Follows Dart package conventions and best practices
+- **🔒 Null Safety** → Built with sound null safety from day one
+- **⚡ Async/Await Native** → Leverages Dart's async model for clean, readable code
 
 ---
 
-## What Does It Power?
+## Architecture: Dart Ecosystem at its Best
 
-MindPaystack provides a **core SDK** that can adapt to different environments:  
+MindPaystack embraces the **Dart way** of building scalable applications:
 
-- **mind_paystack** → Core, framework-agnostic Dart SDK  
-- **mind_paystack_flutter** → Flutter integration layer  
-- **Future variants** → Planned support for web and server-side use cases  
+### 🧩 **Modular Package Design**
+- **`mind_paystack`** → Pure Dart core for universal compatibility
+- **`mind_paystack_flutter`** → Flutter-specific widgets and integrations
+- **Future packages** → Planned Web, Server, and CLI variants
 
-<div align="center">
+### 🏗️ **Clean Architecture Pattern**
+```dart
+// Singleton pattern with dependency injection
+await MindPaystack.initialize(PaystackConfig(
+  publicKey: 'pk_test_your_key',
+  secretKey: 'sk_test_your_key',
+));
 
-```mermaid
-flowchart TD
-    A[mind_paystack<br/>Core SDK] --> B[mind_paystack_flutter<br/>Flutter Layer]
-    A --> C[Future Variants<br/>Web / Server Support]
+// Service-oriented access
+final sdk = MindPaystack.instance;
+final transaction = await sdk.transaction.initialize(request);
+final verification = await sdk.transaction.verify(reference);
 ```
 
-*Figure 1: MindPaystack layers and planned ecosystem.*
-</div>
-
----
-
-## How Is It Structured?
-
-Internally, the SDK follows a **modular service-oriented design**:  
-
-- **Services** → High-level entry points for payment operations.  
-- **API Clients** → Handle HTTP requests, retries, and authentication.  
-- **Models** → Strongly typed responses for safety and autocompletion.  
-- **Exceptions** → Unified error handling for predictable failure states.  
-
-<details>
-<summary><strong>See full architecture diagram</strong></summary>
-<br/>
-<div align="center">
-
-```mermaid
-flowchart LR
-    A[Services<br/><small>Payment, Transaction, Customer</small>] 
-      --> B[API Clients<br/><small>Network layer with Dio/HTTP</small>] 
-      --> C[Models<br/><small>Typed DTOs & Entities</small>] 
-      --> D[Exceptions<br/><small>MindException & error mapping</small>]
+### 🔧 **Injectable & GetIt Integration**
+Built with [`injectable`](https://pub.dev/packages/injectable) for seamless dependency injection:
+```dart
+@injectable
+class TransactionService implements ITransactionService {
+  // Fully testable and mockable services
+}
 ```
 
-*Figure 2: Internal SDK module flow.*
-</div>
-</details>
+---
+
+## Dart-Centric Developer Experience
+
+### **🎨 Strongly Typed Everything**
+```dart
+// No dynamic types - full IDE support
+final TransactionInitialization result = await sdk.transaction.initialize(
+  InitializeTransactionOptions(
+    email: 'user@example.com',
+    amount: Money.fromCents(50000, Currency.ngn),
+  ),
+);
+```
+
+### **🧪 Test-First Design**
+Built with Dart testing patterns in mind:
+```dart
+// Easy to mock with mocktail/mockito
+final mockService = MockTransactionService();
+when(() => mockService.initialize(any())).thenAnswer((_) async => result);
+```
+
+### **🔍 Freezed & Code Generation**
+Leverages Dart's powerful code generation:
+- **Freezed** for immutable data classes
+- **Json Serialization** for API models
+- **Injectable** for dependency injection setup
 
 ---
 
-## Key Features
-- **Strongly typed API responses** → Avoid dynamic types and runtime surprises.  
-- **Dependency injection ready** → Built with [`injectable`](https://pub.dev/packages/injectable) for modular, testable services.  
-- **Modular service architecture** → Swap or extend services without rewriting core logic.  
-- **Unified error handling** → Consistent failure states via `MindException`.  
-- **Cross-platform support** → Works seamlessly in both Dart and Flutter projects.  
+## Platform Coverage: Pure Dart Flexibility
+
+| Platform | Support | Package |
+|----------|---------|---------|
+| **Flutter Mobile** | ✅ Full | `mind_paystack_flutter` |
+| **Flutter Web** | ✅ Core SDK | `mind_paystack` |
+| **Dart VM** | ✅ Server/CLI | `mind_paystack` |
+| **Flutter Desktop** | ✅ Core SDK | `mind_paystack` |
 
 ---
 
-## When to Use MindPaystack
-- **Mobile apps** → Accept and manage payments directly from Flutter apps.  
-- **Backend / CLI tools** → Server-side integrations using pure Dart.  
-- **Hybrid apps** → Share a common payment layer across multiple platforms.  
+## Built for Dart Developers, By Dart Developers
 
-Whether you’re building a **startup MVP** or a **production fintech platform**,  
-MindPaystack helps you ship faster with fewer integration bugs.
+**Enterprise-Ready Features:**
+- **🔄 Dio HTTP Client** → Interceptors, retries, and request/response logging
+- **📝 Logger Integration** → Structured logging with configurable levels
+- **🛡️ Exception Hierarchy** → `MindException` with detailed error categorization
+- **⚙️ Environment Config** → Support for `.env` files and environment variables
+- **🏷️ Value Objects** → `Money`, `Currency` types for financial safety
+
+**Dart Ecosystem Integration:**
+- **Very Good Analysis** → Strict linting rules for code quality
+- **Mason Templates** → Scaffolding support (coming soon)
+- **Flutter Dev Tools** → Network inspection and debugging support
+
+---
+
+## When to Choose MindPaystack
+
+**✅ Perfect For:**
+- **Flutter Apps** → Native mobile payment experiences
+- **Dart Backend** → Server-side payment processing and webhooks
+- **Full-Stack Dart** → Shared payment logic across client and server
+- **Enterprise Apps** → Type-safe, testable, maintainable payment integrations
+
+**💡 Why It Stands Out:**
+Unlike generic HTTP clients or thin API wrappers, MindPaystack is built specifically for how **Dart and Flutter developers work**. It follows Dart conventions, embraces the type system, and integrates seamlessly with the broader Dart ecosystem.
+
+Whether you're building a **Flutter fintech app**, a **Dart microservice**, or a **full-stack Dart application**, MindPaystack provides the foundation you need to handle payments reliably and maintainably.
