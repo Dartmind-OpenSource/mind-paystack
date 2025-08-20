@@ -1,0 +1,74 @@
+# Transaction Management
+
+Complete guide to handling the full transaction lifecycle with MindPaystack - from initialization to refunds, with real-world examples and best practices.
+
+## 🚀 Quick Overview
+
+The Transaction API handles the core payment flow:
+
+**Create Payment** → **Customer Pays** → **Verify Payment** → **Fulfill Order**
+
+```dart
+// 1. Initialize payment
+final transaction = await sdk.transaction.initialize(...);
+
+// 2. Customer completes payment at transaction.data.authorizationUrl
+
+// 3. Verify payment (webhook or polling)
+final verification = await sdk.transaction.verify(reference);
+
+// 4. Fulfill order if successful
+if (verification.data.status == TransactionStatus.success) {
+  await fulfillOrder();
+}
+```
+
+## 📋 What You'll Learn
+
+This comprehensive guide covers everything you need to build robust payment systems:
+
+### 🎯 Core Operations
+- **[Initialize Payments](./initialize)** - Create payment transactions with advanced configuration
+- **[Verify Transactions](./verify)** - Confirm payment status and handle order fulfillment  
+- **[List & Search](./list)** - Retrieve and filter transaction history with pagination
+- **[Get Details](./fetch)** - Fetch comprehensive transaction information
+
+### 💼 Business Operations
+- **[Process Refunds](./refunds)** - Handle full and partial refunds with proper workflows
+- **[Analytics & Reporting](./analytics)** - Generate insights and performance metrics
+- **[Export Data](./export)** - Export transaction data for accounting and analysis
+
+### 🔍 Advanced Features
+- **[Transaction Timeline](./timeline)** - Track detailed event history and lifecycle
+- **[Payment Sessions](./sessions)** - Monitor active payment sessions and status
+- **[Error Handling](./error-handling)** - Robust error handling patterns
+- **[Best Practices](./best-practices)** - Production-ready implementation guides
+
+## 🎯 Use Cases Covered
+
+| Scenario | Relevant Sections |
+|----------|-------------------|
+| **🛒 E-commerce Checkout** | [Initialize](./initialize), [Verify](./verify), [Error Handling](./error-handling) |
+| **💳 Subscription Billing** | [Initialize](./initialize), [List](./list), [Analytics](./analytics) |
+| **🏦 Financial Reporting** | [List](./list), [Analytics](./analytics), [Export](./export) |
+| **🔄 Refund Management** | [Refunds](./refunds), [Timeline](./timeline), [Best Practices](./best-practices) |
+| **🚨 Troubleshooting** | [Error Handling](./error-handling), [Sessions](./sessions), [Timeline](./timeline) |
+
+## 🏗️ Architecture Overview
+
+MindPaystack transactions are built with:
+
+- **🛡️ Type Safety**: Strongly typed responses and error handling
+- **🔄 Retry Logic**: Built-in resilience for network issues  
+- **📊 Rich Metadata**: Comprehensive tracking and analytics
+- **🎯 Flexible Configuration**: Customizable payment channels and options
+- **🔒 Security First**: Validation, encryption, and audit trails
+
+## 🚦 Getting Started
+
+1. **New to MindPaystack?** Start with [Initialize Payments](./initialize) to create your first transaction
+2. **Building an e-commerce app?** Check out the complete examples in [Verify Transactions](./verify)
+3. **Need production-ready code?** Jump to [Best Practices](./best-practices) for enterprise patterns
+4. **Troubleshooting issues?** Head to [Error Handling](./error-handling) for comprehensive error scenarios
+
+Let's build something amazing! 🚀

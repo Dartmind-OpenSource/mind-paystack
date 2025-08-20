@@ -1,75 +1,1218 @@
-### Transactions
+# Transaction Management Guide
 
-Work with the full Transaction lifecycle: initialize, list, get, verify, refund, analytics, timeline, sessions, export.
+Complete guide to handling the full transaction lifecycle with MindPaystack - from initialization to refunds, with real-world examples and best practices.
 
-#### Initialize
+## 🚀 Quick Overview
 
-```dart
-final tx = await MindPaystack.instance.transaction.initializeTransaction(
-  amount: 250000,
-  email: 'buyer@example.com',
-  currency: 'NGN',
-  reference: 'order_123',
-  metadata: {'orderId': '123'},
-  channels: ['card','bank','ussd'],
-);
-```
+The Transaction API handles the core payment flow:
 
-#### Verify
+**Create Payment** → **Customer Pays** → **Verify Payment** → **Fulfill Order**
 
 ```dart
-await MindPaystack.instance.transaction.verifyTransaction(tx.reference);
+// 1. Initialize payment
+final transaction = await sdk.transaction.initialize(...);
+
+// 2. Customer completes payment at transaction.data.authorizationUrl
+
+// 3. Verify payment (webhook or polling)
+final verification = await sdk.transaction.verify(reference);
+
+// 4. Fulfill order if successful
+if (verification.data.status == TransactionStatus.success) {
+  await fulfillOrder();
+}
 ```
 
-#### List
+---
+
+## 💳 Initialize Transaction
+
+Create a new payment transaction and get the authorization URL for customer payment.
+
+### Basic Usage
 
 ```dart
-final items = await MindPaystack.instance.transaction.listTransactions(
-  status: 'success',
-  page: 1,
-  perPage: 20,
-);
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<String?> createPayment() async {
+  try {
+    final transaction = await MindPaystack.instance.transaction.initialize(
+      InitializeTransactionOptions(
+        amount: '50000', // ₦500.00 in kobo
+        email: 'customer@example.com',
+        currency: 'NGN',
+        reference: 'order_${DateTime.now().millisecondsSinceEpoch}',
+      ),
+    );
+    
+    if (transaction.status && transaction.data != null) {
+      print('✅ Transaction initialized successfully!');
+      print('Payment URL: ${transaction.data!.authorizationUrl}');
+      return transaction.data!.authorizationUrl;
+    }
+    
+  } on MindException catch (e) {
+    print('❌ Payment initialization failed: ${e.message}');
+    // Handle error appropriately
+  }
+  
+  return null;
+}
 ```
 
-#### Get
+### Advanced Configuration
 
 ```dart
-final one = await MindPaystack.instance.transaction.getTransaction('ref_or_id');
+Future<PaymentResult> createAdvancedPayment({
+  required String customerEmail,
+  required int amountInKobo,
+  required String orderId,
+  Map<String, dynamic>? customerData,
+}) async {
+  try {
+    final transaction = await MindPaystack.instance.transaction.initialize(
+      InitializeTransactionOptions(
+        amount: amountInKobo.toString(),
+        email: customerEmail,
+        currency: 'NGN',
+        reference: 'order_${orderId}_${DateTime.now().millisecondsSinceEpoch}',
+        
+        // 🎯 Target specific payment channels
+        channels: [
+          PaymentChannel.card,
+          PaymentChannel.bankTransfer,
+          PaymentChannel.ussd,
+        ],
+        
+        // 📊 Rich metadata for analytics and order tracking
+        metadata: {
+          'order_id': orderId,
+          'customer_id': customerData?['id'],
+          'product_category': 'electronics',
+          'source': 'mobile_app',
+          'version': '1.2.0',
+          ...?customerData,
+        },
+        
+        // 💰 Transaction fees
+        bearer: TransactionBearer.customer, // Customer pays transaction fees
+        
+        // 🔄 Split payments (if needed)
+        // subaccount: 'ACCT_xxxxxxxxx',
+        // transaction_charge: 5000, // ₦50 in kobo
+        
+        // 🕒 Payment timeout
+        // metadata: {
+        //   ...metadata,
+        //   'timeout': '300', // 5 minutes in seconds
+        // },
+      ),
+    );
+    
+    return PaymentResult.success(
+      authorizationUrl: transaction.data!.authorizationUrl,
+      reference: transaction.data!.reference,
+      accessCode: transaction.data!.accessCode,
+    );
+    
+  } on MindException catch (e) {
+    _logger.error('Payment initialization failed', e);
+    return PaymentResult.error(e.message);
+  }
+}
 ```
 
-#### Refund
+### E-commerce Integration Example
 
 ```dart
-final refund = await MindPaystack.instance.transaction.initiateRefund(
-  reference: tx.reference,
-  amount: 250000,
-  customerNote: 'Customer requested refund',
-);
+class CheckoutService {
+  static Future<CheckoutResult> processCheckout({
+    required CartModel cart,
+    required CustomerModel customer,
+    String? couponCode,
+  }) async {
+    try {
+      // Calculate total with discounts
+      final subtotal = cart.calculateSubtotal();
+      final discount = await _calculateDiscount(cart, couponCode);
+      final total = subtotal - discount;
+      
+      // Validate minimum amount (₦1.00 = 100 kobo)
+      if (total < 100) {
+        return CheckoutResult.error('Minimum transaction amount is ₦1.00');
+      }
+      
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: total.toString(),
+          email: customer.email,
+          currency: 'NGN',
+          reference: 'order_${cart.id}_${DateTime.now().millisecondsSinceEpoch}',
+          
+          metadata: {
+            // Order details
+            'cart_id': cart.id,
+            'customer_id': customer.id,
+            'order_total': total,
+            'items_count': cart.items.length,
+            
+            // Customer info
+            'customer_name': '${customer.firstName} ${customer.lastName}',
+            'customer_phone': customer.phone,
+            
+            // Business analytics
+            'coupon_code': couponCode,
+            'discount_amount': discount,
+            'source_platform': Platform.isIOS ? 'ios' : 'android',
+            
+            // Line items for detailed tracking
+            'line_items': cart.items.map((item) => {
+              'product_id': item.productId,
+              'name': item.name,
+              'quantity': item.quantity,
+              'unit_price': item.unitPrice,
+              'total_price': item.totalPrice,
+            }).toList(),
+          },
+          
+          // Customize payment experience
+          channels: _getAvailableChannels(total),
+          bearer: total > 100000 ? TransactionBearer.customer : TransactionBearer.account,
+        ),
+      );
+      
+      // Save transaction reference for later verification
+      await _saveTransactionReference(cart.id, transaction.data!.reference);
+      
+      return CheckoutResult.success(
+        paymentUrl: transaction.data!.authorizationUrl,
+        reference: transaction.data!.reference,
+        orderSummary: OrderSummary(
+          subtotal: subtotal,
+          discount: discount,
+          total: total,
+          estimatedDelivery: DateTime.now().add(Duration(days: 3)),
+        ),
+      );
+      
+    } on MindException catch (e) {
+      _analytics.track('checkout_failed', {'error': e.message});
+      return CheckoutResult.error('Payment setup failed: ${e.message}');
+    }
+  }
+  
+  static List<PaymentChannel> _getAvailableChannels(int amount) {
+    final channels = [PaymentChannel.card, PaymentChannel.bankTransfer];
+    
+    // USSD available for amounts under ₦1,000,000
+    if (amount < 100000000) {
+      channels.add(PaymentChannel.ussd);
+    }
+    
+    // QR code for smaller amounts
+    if (amount < 5000000) {
+      channels.add(PaymentChannel.qr);
+    }
+    
+    return channels;
+  }
+}
 ```
 
-#### Totals/Analytics
+---
+
+## ✅ Verify Transaction
+
+Verify payment status after customer completes payment. **Always verify payments server-side** for security.
+
+### Basic Verification
 
 ```dart
-final totals = await MindPaystack.instance.transaction.getTransactionTotals();
+Future<bool> verifyPayment(String reference) async {
+  try {
+    final verification = await MindPaystack.instance.transaction.verify(
+      VerifyTransactionOptions(reference: reference),
+    );
+    
+    if (verification.status && verification.data != null) {
+      final transaction = verification.data!;
+      
+      switch (transaction.status) {
+        case TransactionStatus.success:
+          print('✅ Payment successful!');
+          print('Amount: ₦${(transaction.amount / 100).toStringAsFixed(2)}');
+          print('Gateway Response: ${transaction.gatewayResponse}');
+          return true;
+          
+        case TransactionStatus.failed:
+          print('❌ Payment failed: ${transaction.gatewayResponse}');
+          return false;
+          
+        case TransactionStatus.abandoned:
+          print('⏰ Payment abandoned by customer');
+          return false;
+          
+        default:
+          print('⏳ Payment pending...');
+          return false;
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('🔍 Verification failed: ${e.message}');
+  }
+  
+  return false;
+}
 ```
 
-#### Timeline
+### Comprehensive Verification with Order Fulfillment
 
 ```dart
-final events = await MindPaystack.instance.transaction.getTransactionTimeline(tx.reference);
+class OrderService {
+  static Future<OrderFulfillmentResult> verifyAndFulfillOrder(
+    String transactionReference,
+  ) async {
+    try {
+      final verification = await MindPaystack.instance.transaction.verify(
+        VerifyTransactionOptions(reference: transactionReference),
+      );
+      
+      if (!verification.status || verification.data == null) {
+        return OrderFulfillmentResult.error('Verification request failed');
+      }
+      
+      final transaction = verification.data!;
+      
+      // Validate transaction details
+      final validationResult = await _validateTransaction(transaction);
+      if (!validationResult.isValid) {
+        _logger.warning('Transaction validation failed', {
+          'reference': transactionReference,
+          'reason': validationResult.reason,
+        });
+        return OrderFulfillmentResult.error(validationResult.reason);
+      }
+      
+      // Process based on status
+      switch (transaction.status) {
+        case TransactionStatus.success:
+          return await _processSuccessfulPayment(transaction);
+          
+        case TransactionStatus.failed:
+          await _handleFailedPayment(transaction);
+          return OrderFulfillmentResult.failed(
+            'Payment failed: ${transaction.gatewayResponse}',
+          );
+          
+        case TransactionStatus.abandoned:
+          await _handleAbandonedPayment(transaction);
+          return OrderFulfillmentResult.abandoned();
+          
+        default:
+          return OrderFulfillmentResult.pending(
+            'Payment is still processing',
+          );
+      }
+      
+    } on MindException catch (e) {
+      _logger.error('Order verification failed', e);
+      return OrderFulfillmentResult.error(
+        'Unable to verify payment: ${e.message}',
+      );
+    }
+  }
+  
+  static Future<OrderFulfillmentResult> _processSuccessfulPayment(
+    Transaction transaction,
+  ) async {
+    try {
+      // 1. Check if order was already fulfilled (prevent double processing)
+      final orderId = transaction.metadata?['order_id'] as String?;
+      if (orderId != null) {
+        final existingOrder = await OrderRepository.findById(orderId);
+        if (existingOrder?.status == OrderStatus.fulfilled) {
+          return OrderFulfillmentResult.alreadyProcessed(existingOrder!);
+        }
+      }
+      
+      // 2. Create order record
+      final order = await OrderRepository.create(
+        OrderCreateRequest(
+          transactionReference: transaction.reference,
+          customerId: transaction.metadata?['customer_id'] as String?,
+          amount: transaction.amount,
+          currency: transaction.currency,
+          paymentMethod: transaction.channel,
+          gatewayResponse: transaction.gatewayResponse,
+          paidAt: transaction.paidAt,
+          metadata: transaction.metadata,
+        ),
+      );
+      
+      // 3. Update inventory
+      if (transaction.metadata?['line_items'] != null) {
+        await InventoryService.updateStock(
+          transaction.metadata!['line_items'] as List<Map<String, dynamic>>,
+        );
+      }
+      
+      // 4. Send confirmation email
+      if (transaction.customer?.email != null) {
+        await EmailService.sendOrderConfirmation(
+          email: transaction.customer!.email,
+          orderDetails: order,
+          transaction: transaction,
+        );
+      }
+      
+      // 5. Trigger fulfillment workflow
+      await FulfillmentService.processOrder(order);
+      
+      // 6. Analytics tracking
+      _analytics.track('order_completed', {
+        'order_id': order.id,
+        'transaction_reference': transaction.reference,
+        'amount': transaction.amount,
+        'payment_method': transaction.channel,
+        'customer_id': transaction.customer?.id,
+      });
+      
+      return OrderFulfillmentResult.success(order);
+      
+    } catch (e) {
+      _logger.error('Order fulfillment failed', e);
+      // Mark transaction for manual review
+      await _flagForManualReview(transaction, e.toString());
+      return OrderFulfillmentResult.error(
+        'Order processing failed. Support has been notified.',
+      );
+    }
+  }
+  
+  static Future<ValidationResult> _validateTransaction(
+    Transaction transaction,
+  ) async {
+    // Validate amount matches expected
+    final expectedAmount = transaction.metadata?['expected_amount'];
+    if (expectedAmount != null && 
+        int.parse(expectedAmount.toString()) != transaction.amount) {
+      return ValidationResult.invalid('Amount mismatch detected');
+    }
+    
+    // Validate customer email
+    final expectedEmail = transaction.metadata?['customer_email'];
+    if (expectedEmail != null && 
+        expectedEmail != transaction.customer?.email) {
+      return ValidationResult.invalid('Customer email mismatch');
+    }
+    
+    // Check for duplicate processing
+    final existingTransaction = await TransactionRepository.findByReference(
+      transaction.reference,
+    );
+    if (existingTransaction?.status == TransactionProcessingStatus.completed) {
+      return ValidationResult.invalid('Transaction already processed');
+    }
+    
+    return ValidationResult.valid();
+  }
+}
 ```
 
-#### Sessions
+### Webhook Verification (Recommended)
 
 ```dart
-final sessions = await MindPaystack.instance.transaction.getTransactionSessions(tx.reference);
+// Instead of polling, use webhooks for real-time verification
+class PaystackWebhookController {
+  @Route.post('/webhooks/paystack')
+  Future<Response> handleWebhook(Request request) async {
+    try {
+      // Verify webhook signature
+      final signature = request.headers['x-paystack-signature'];
+      final body = await request.readAsString();
+      
+      if (!_verifyWebhookSignature(body, signature)) {
+        return Response.forbidden('Invalid signature');
+      }
+      
+      final payload = jsonDecode(body);
+      final event = payload['event'] as String;
+      
+      switch (event) {
+        case 'charge.success':
+          await _handleSuccessfulCharge(payload['data']);
+          break;
+          
+        case 'charge.failed':
+          await _handleFailedCharge(payload['data']);
+          break;
+          
+        // Handle other events as needed
+      }
+      
+      return Response.ok('Webhook processed successfully');
+      
+    } catch (e) {
+      _logger.error('Webhook processing failed', e);
+      return Response.internalServerError();
+    }
+  }
+}
 ```
 
-#### Export
+---
+
+## 📋 List Transactions
+
+Retrieve and paginate through transaction history with filtering options.
+
+### Basic Listing
 
 ```dart
-final downloadUrl = await MindPaystack.instance.transaction.exportTransactions(
-  status: 'success',
-  format: 'csv',
-);
+Future<void> fetchRecentTransactions() async {
+  try {
+    final transactions = await MindPaystack.instance.transaction.list(
+      ListTransactionsOptions(
+        perPage: 50,
+        page: 1,
+        status: TransactionStatus.success,
+        from: DateTime.now().subtract(Duration(days: 30)),
+        to: DateTime.now(),
+      ),
+    );
+    
+    if (transactions.status && transactions.data != null) {
+      print('📊 Found ${transactions.data!.length} transactions');
+      
+      for (final transaction in transactions.data!) {
+        print('Reference: ${transaction.reference}');
+        print('Amount: ₦${(transaction.amount / 100).toStringAsFixed(2)}');
+        print('Status: ${transaction.status}');
+        print('Date: ${transaction.createdAt}');
+        print('---');
+      }
+      
+      // Handle pagination
+      if (transactions.meta?.hasMore == true) {
+        print('More transactions available...');
+        // Fetch next page if needed
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('Failed to fetch transactions: ${e.message}');
+  }
+}
 ```
+
+### Advanced Filtering and Analytics
+
+```dart
+class TransactionAnalytics {
+  static Future<TransactionSummary> generateMonthlySummary({
+    required DateTime month,
+    String? customerId,
+  }) async {
+    try {
+      final startOfMonth = DateTime(month.year, month.month, 1);
+      final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+      
+      final allTransactions = <Transaction>[];
+      int currentPage = 1;
+      const pageSize = 100;
+      
+      // Fetch all transactions for the period
+      while (true) {
+        final response = await MindPaystack.instance.transaction.list(
+          ListTransactionsOptions(
+            perPage: pageSize,
+            page: currentPage,
+            status: TransactionStatus.success,
+            from: startOfMonth,
+            to: endOfMonth,
+            customer: customerId,
+          ),
+        );
+        
+        if (!response.status || response.data == null || response.data!.isEmpty) {
+          break;
+        }
+        
+        allTransactions.addAll(response.data!);
+        
+        // Check if there are more pages
+        if (response.data!.length < pageSize) {
+          break;
+        }
+        
+        currentPage++;
+      }
+      
+      // Analyze the data
+      return _analyzeTransactions(allTransactions, month);
+      
+    } on MindException catch (e) {
+      throw AnalyticsException('Failed to generate summary: ${e.message}');
+    }
+  }
+  
+  static TransactionSummary _analyzeTransactions(
+    List<Transaction> transactions, 
+    DateTime month,
+  ) {
+    final totalAmount = transactions.fold<int>(
+      0, 
+      (sum, tx) => sum + tx.amount,
+    );
+    
+    final paymentMethods = <String, int>{};
+    final dailyTotals = <DateTime, int>{};
+    final topCustomers = <String, CustomerAnalytics>{};
+    
+    for (final transaction in transactions) {
+      // Payment method breakdown
+      final channel = transaction.channel ?? 'unknown';
+      paymentMethods[channel] = (paymentMethods[channel] ?? 0) + transaction.amount;
+      
+      // Daily totals
+      final date = DateTime(
+        transaction.createdAt.year,
+        transaction.createdAt.month,
+        transaction.createdAt.day,
+      );
+      dailyTotals[date] = (dailyTotals[date] ?? 0) + transaction.amount;
+      
+      // Customer analytics
+      if (transaction.customer?.email != null) {
+        final email = transaction.customer!.email;
+        final existing = topCustomers[email];
+        if (existing != null) {
+          topCustomers[email] = existing.copyWith(
+            totalSpent: existing.totalSpent + transaction.amount,
+            transactionCount: existing.transactionCount + 1,
+          );
+        } else {
+          topCustomers[email] = CustomerAnalytics(
+            email: email,
+            totalSpent: transaction.amount,
+            transactionCount: 1,
+          );
+        }
+      }
+    }
+    
+    return TransactionSummary(
+      month: month,
+      transactionCount: transactions.length,
+      totalAmount: totalAmount,
+      averageAmount: transactions.isNotEmpty ? totalAmount ~/ transactions.length : 0,
+      paymentMethodBreakdown: paymentMethods,
+      dailyTotals: dailyTotals,
+      topCustomers: topCustomers.values
+          .toList()
+          ..sort((a, b) => b.totalSpent.compareTo(a.totalSpent)),
+    );
+  }
+}
+```
+
+---
+
+## 🔍 Get Single Transaction
+
+Retrieve detailed information about a specific transaction.
+
+```dart
+Future<void> getTransactionDetails(String reference) async {
+  try {
+    final response = await MindPaystack.instance.transaction.fetch(
+      FetchTransactionOptions(transactionId: reference),
+    );
+    
+    if (response.status && response.data != null) {
+      final transaction = response.data!;
+      
+      print('📋 Transaction Details');
+      print('Reference: ${transaction.reference}');
+      print('Amount: ₦${(transaction.amount / 100).toStringAsFixed(2)}');
+      print('Status: ${transaction.status}');
+      print('Payment Method: ${transaction.channel}');
+      print('Gateway Response: ${transaction.gatewayResponse}');
+      print('Customer: ${transaction.customer?.email}');
+      print('Created: ${transaction.createdAt}');
+      print('Paid At: ${transaction.paidAt}');
+      
+      // Authorization details (if available)
+      if (transaction.authorization != null) {
+        final auth = transaction.authorization!;
+        print('\n💳 Payment Details:');
+        print('Card Type: ${auth.cardType}');
+        print('Last 4: ${auth.last4}');
+        print('Bank: ${auth.bank}');
+        print('Reusable: ${auth.reusable}');
+      }
+      
+      // Metadata
+      if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
+        print('\n📊 Metadata:');
+        transaction.metadata!.forEach((key, value) {
+          print('$key: $value');
+        });
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('Failed to fetch transaction: ${e.message}');
+  }
+}
+```
+
+---
+
+## 💸 Refund Transaction
+
+Process full or partial refunds for completed transactions.
+
+### Basic Refund
+
+```dart
+Future<bool> processRefund({
+  required String transactionReference,
+  int? amount, // null for full refund
+  String? reason,
+}) async {
+  try {
+    final refund = await MindPaystack.instance.transaction.initiateRefund(
+      InitiateRefundOptions(
+        transactionReference: transactionReference,
+        amount: amount?.toString(), // null for full refund
+        customerNote: reason ?? 'Refund requested by customer',
+        merchantNote: 'Processed via app on ${DateTime.now()}',
+      ),
+    );
+    
+    if (refund.status && refund.data != null) {
+      print('✅ Refund initiated successfully');
+      print('Refund ID: ${refund.data!.id}');
+      print('Amount: ₦${(refund.data!.amount / 100).toStringAsFixed(2)}');
+      print('Status: ${refund.data!.status}');
+      
+      // Save refund reference for tracking
+      await RefundRepository.save(refund.data!);
+      
+      return true;
+    }
+    
+  } on MindException catch (e) {
+    print('Refund failed: ${e.message}');
+    
+    // Handle specific error cases
+    if (e.message.contains('transaction not found')) {
+      print('Transaction reference not found');
+    } else if (e.message.contains('not refundable')) {
+      print('Transaction is not eligible for refund');
+    }
+  }
+  
+  return false;
+}
+```
+
+### Advanced Refund Management
+
+```dart
+class RefundService {
+  static Future<RefundResult> processRefundRequest({
+    required String transactionReference,
+    required RefundRequest request,
+    required String processedBy,
+  }) async {
+    try {
+      // 1. Validate refund eligibility
+      final eligibility = await _checkRefundEligibility(transactionReference);
+      if (!eligibility.isEligible) {
+        return RefundResult.rejected(eligibility.reason);
+      }
+      
+      // 2. Calculate refund amount
+      final refundAmount = await _calculateRefundAmount(
+        transactionReference, 
+        request,
+      );
+      
+      // 3. Process refund with Paystack
+      final refund = await MindPaystack.instance.transaction.initiateRefund(
+        InitiateRefundOptions(
+          transactionReference: transactionReference,
+          amount: refundAmount.toString(),
+          customerNote: request.customerReason,
+          merchantNote: _buildMerchantNote(request, processedBy),
+        ),
+      );
+      
+      if (!refund.status || refund.data == null) {
+        return RefundResult.failed('Refund initiation failed');
+      }
+      
+      // 4. Update order status
+      await OrderService.updateRefundStatus(
+        transactionReference: transactionReference,
+        refundId: refund.data!.id,
+        amount: refundAmount,
+        status: RefundStatus.processing,
+      );
+      
+      // 5. Send customer notification
+      await NotificationService.sendRefundConfirmation(
+        customerEmail: request.customerEmail,
+        refundDetails: refund.data!,
+        estimatedDays: 5, // Typical refund processing time
+      );
+      
+      // 6. Log refund for audit trail
+      await AuditService.logRefund(
+        transactionReference: transactionReference,
+        refundId: refund.data!.id,
+        amount: refundAmount,
+        reason: request.customerReason,
+        processedBy: processedBy,
+        timestamp: DateTime.now(),
+      );
+      
+      return RefundResult.success(refund.data!);
+      
+    } on MindException catch (e) {
+      _logger.error('Refund processing failed', {
+        'transaction_reference': transactionReference,
+        'error': e.message,
+        'processed_by': processedBy,
+      });
+      
+      return RefundResult.failed(e.message);
+    }
+  }
+  
+  static String _buildMerchantNote(RefundRequest request, String processedBy) {
+    return '''
+Refund processed on ${DateTime.now().toIso8601String()}
+Processed by: $processedBy
+Reason category: ${request.category}
+Customer reason: ${request.customerReason}
+Internal notes: ${request.internalNotes ?? 'N/A'}
+''';
+  }
+}
+```
+
+---
+
+## 📊 Transaction Analytics
+
+Get insights into your transaction performance and trends.
+
+```dart
+Future<void> getTransactionAnalytics() async {
+  try {
+    final totals = await MindPaystack.instance.transaction.getTotals(
+      GetTransactionTotalsOptions(
+        from: DateTime.now().subtract(Duration(days: 30)),
+        to: DateTime.now(),
+      ),
+    );
+    
+    if (totals.status && totals.data != null) {
+      final data = totals.data!;
+      
+      print('📊 30-Day Transaction Analytics');
+      print('Total Volume: ₦${(data.totalVolume / 100).toStringAsFixed(2)}');
+      print('Total Count: ${data.totalTransactions}');
+      print('Success Rate: ${((data.totalTransactions - data.totalVolumeByDate.length) / data.totalTransactions * 100).toStringAsFixed(1)}%');
+      print('Average Transaction: ₦${(data.totalVolume / data.totalTransactions / 100).toStringAsFixed(2)}');
+      
+      // Daily breakdown
+      if (data.totalVolumeByDate.isNotEmpty) {
+        print('\n📈 Daily Breakdown:');
+        data.totalVolumeByDate.forEach((date, volume) {
+          print('$date: ₦${(volume / 100).toStringAsFixed(2)}');
+        });
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('Analytics failed: ${e.message}');
+  }
+}
+```
+
+---
+
+## 📅 Transaction Timeline
+
+Track the complete lifecycle of a transaction with detailed event history.
+
+```dart
+Future<void> viewTransactionTimeline(String reference) async {
+  try {
+    final timeline = await MindPaystack.instance.transaction.getTimeline(
+      GetTransactionTimelineOptions(transactionId: reference),
+    );
+    
+    if (timeline.status && timeline.data != null) {
+      print('📅 Transaction Timeline for: $reference\n');
+      
+      for (final event in timeline.data!) {
+        final timestamp = event.createdAt.toString();
+        final action = event.type;
+        final message = event.message;
+        
+        print('🕒 $timestamp');
+        print('📝 $action: $message');
+        if (event.history != null && event.history!.isNotEmpty) {
+          print('📋 Details: ${event.history}');
+        }
+        print('---');
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('Timeline fetch failed: ${e.message}');
+  }
+}
+```
+
+---
+
+## 🔄 Payment Sessions
+
+Monitor active payment sessions and their status.
+
+```dart
+Future<void> monitorPaymentSessions(String reference) async {
+  try {
+    final sessions = await MindPaystack.instance.transaction.getSessions(
+      GetTransactionSessionsOptions(transactionId: reference),
+    );
+    
+    if (sessions.status && sessions.data != null) {
+      print('🔄 Active Sessions for: $reference\n');
+      
+      for (final session in sessions.data!) {
+        print('Session ID: ${session.id}');
+        print('Status: ${session.status}');
+        print('Started: ${session.createdAt}');
+        print('Provider: ${session.provider}');
+        if (session.message != null) {
+          print('Message: ${session.message}');
+        }
+        print('---');
+      }
+    }
+    
+  } on MindException catch (e) {
+    print('Sessions fetch failed: ${e.message}');
+  }
+}
+```
+
+---
+
+## 📤 Export Transactions
+
+Export transaction data for accounting, reporting, or analysis.
+
+```dart
+class TransactionExporter {
+  static Future<String?> exportMonthlyReport({
+    required DateTime month,
+    ExportFormat format = ExportFormat.csv,
+    List<TransactionStatus>? statusFilter,
+  }) async {
+    try {
+      final startDate = DateTime(month.year, month.month, 1);
+      final endDate = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+      
+      final export = await MindPaystack.instance.transaction.export(
+        ExportTransactionsOptions(
+          from: startDate,
+          to: endDate,
+          status: statusFilter,
+          settled: true, // Only settled transactions
+          format: format,
+        ),
+      );
+      
+      if (export.status && export.data != null) {
+        final downloadUrl = export.data!.downloadUrl;
+        print('✅ Export ready: $downloadUrl');
+        
+        // Optionally download the file
+        await _downloadExportFile(downloadUrl, month, format);
+        
+        return downloadUrl;
+      }
+      
+    } on MindException catch (e) {
+      print('Export failed: ${e.message}');
+    }
+    
+    return null;
+  }
+  
+  static Future<void> _downloadExportFile(
+    String downloadUrl,
+    DateTime month,
+    ExportFormat format,
+  ) async {
+    try {
+      final response = await http.get(Uri.parse(downloadUrl));
+      if (response.statusCode == 200) {
+        final fileName = 'transactions_${month.year}_${month.month.toString().padLeft(2, '0')}.${format.extension}';
+        final file = File('downloads/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        print('📁 File saved: ${file.path}');
+      }
+    } catch (e) {
+      print('Download failed: $e');
+    }
+  }
+}
+```
+
+---
+
+## 🛡️ Error Handling & Best Practices
+
+### Comprehensive Error Handling
+
+```dart
+class RobustTransactionService {
+  static Future<TransactionResult> handleTransaction(
+    TransactionRequest request,
+  ) async {
+    try {
+      final result = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions.fromRequest(request),
+      );
+      
+      return TransactionResult.success(result.data!);
+      
+    } on MindException catch (e) {
+      return _handleMindException(e);
+    } on SocketException catch (e) {
+      return TransactionResult.networkError(
+        'Network connection failed. Please check your internet connection.',
+      );
+    } on TimeoutException catch (e) {
+      return TransactionResult.timeout(
+        'Request timed out. Please try again.',
+      );
+    } catch (e) {
+      _logger.error('Unexpected error in transaction', e);
+      return TransactionResult.unknownError(
+        'An unexpected error occurred. Please try again.',
+      );
+    }
+  }
+  
+  static TransactionResult _handleMindException(MindException e) {
+    switch (e.category) {
+      case ErrorCategory.validation:
+        return TransactionResult.validationError(
+          e.message,
+          e.validationErrors,
+        );
+        
+      case ErrorCategory.authentication:
+        return TransactionResult.authenticationError(
+          'Authentication failed. Please check your API keys.',
+        );
+        
+      case ErrorCategory.authorization:
+        return TransactionResult.authorizationError(
+          'Insufficient permissions for this operation.',
+        );
+        
+      case ErrorCategory.paystack:
+        return TransactionResult.paystackError(e.message);
+        
+      case ErrorCategory.network:
+        return TransactionResult.networkError(
+          'Network error occurred. Please try again.',
+        );
+        
+      default:
+        return TransactionResult.unknownError(e.message);
+    }
+  }
+}
+```
+
+### Production Best Practices
+
+```dart
+class ProductionTransactionHandler {
+  static const int maxRetries = 3;
+  static const Duration retryDelay = Duration(seconds: 2);
+  
+  /// Initialize transaction with retry logic and circuit breaker
+  static Future<TransactionResult> initializeWithRetry(
+    InitializeTransactionOptions options,
+  ) async {
+    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        final result = await MindPaystack.instance.transaction
+            .initialize(options)
+            .timeout(Duration(seconds: 30));
+            
+        return TransactionResult.success(result.data!);
+        
+      } on MindException catch (e) {
+        // Don't retry validation errors
+        if (e.category == ErrorCategory.validation) {
+          return TransactionResult.validationError(e.message);
+        }
+        
+        if (attempt == maxRetries) {
+          return TransactionResult.failed(e.message);
+        }
+        
+        await Future.delayed(retryDelay * attempt);
+        
+      } catch (e) {
+        if (attempt == maxRetries) {
+          return TransactionResult.failed('Max retries exceeded');
+        }
+        
+        await Future.delayed(retryDelay * attempt);
+      }
+    }
+    
+    return TransactionResult.failed('Transaction initialization failed');
+  }
+  
+  /// Verify with exponential backoff for pending transactions
+  static Future<TransactionResult> verifyWithBackoff(
+    String reference, {
+    Duration maxWaitTime = const Duration(minutes: 5),
+  }) async {
+    const delays = [
+      Duration(seconds: 2),
+      Duration(seconds: 5),
+      Duration(seconds: 10),
+      Duration(seconds: 15),
+      Duration(seconds: 30),
+    ];
+    
+    final startTime = DateTime.now();
+    int delayIndex = 0;
+    
+    while (DateTime.now().difference(startTime) < maxWaitTime) {
+      try {
+        final verification = await MindPaystack.instance.transaction.verify(
+          VerifyTransactionOptions(reference: reference),
+        );
+        
+        if (verification.data?.status == TransactionStatus.success) {
+          return TransactionResult.success(verification.data!);
+        } else if (verification.data?.status == TransactionStatus.failed) {
+          return TransactionResult.failed('Payment failed');
+        }
+        
+        // Still pending, wait before next check
+        final delay = delays[delayIndex.clamp(0, delays.length - 1)];
+        await Future.delayed(delay);
+        delayIndex++;
+        
+      } catch (e) {
+        _logger.warning('Verification attempt failed', e);
+        await Future.delayed(Duration(seconds: 5));
+      }
+    }
+    
+    return TransactionResult.timeout('Verification timeout exceeded');
+  }
+}
+```
+
+---
+
+## 🎯 Real-World Examples
+
+### Complete E-commerce Flow
+
+```dart
+class EcommercePaymentFlow {
+  static Future<CheckoutResult> processOrder(Order order) async {
+    try {
+      // 1. Initialize payment
+      final paymentResult = await _initializePayment(order);
+      if (!paymentResult.isSuccess) {
+        return CheckoutResult.failed(paymentResult.error);
+      }
+      
+      // 2. Save transaction reference
+      await OrderRepository.updatePaymentInfo(
+        orderId: order.id,
+        transactionReference: paymentResult.reference,
+        paymentUrl: paymentResult.paymentUrl,
+      );
+      
+      // 3. Set up verification polling (fallback to webhook)
+      _scheduleVerificationCheck(paymentResult.reference);
+      
+      return CheckoutResult.success(
+        paymentUrl: paymentResult.paymentUrl,
+        reference: paymentResult.reference,
+      );
+      
+    } catch (e) {
+      return CheckoutResult.failed('Checkout initialization failed: $e');
+    }
+  }
+  
+  static Future<PaymentInitResult> _initializePayment(Order order) async {
+    final options = InitializeTransactionOptions(
+      amount: order.totalAmount.toString(),
+      email: order.customer.email,
+      reference: 'order_${order.id}_${DateTime.now().millisecondsSinceEpoch}',
+      metadata: {
+        'order_id': order.id,
+        'customer_id': order.customer.id,
+        'items': order.items.map((item) => {
+          'product_id': item.productId,
+          'quantity': item.quantity,
+          'unit_price': item.unitPrice,
+        }).toList(),
+      },
+      channels: [
+        PaymentChannel.card,
+        PaymentChannel.bankTransfer,
+        if (order.totalAmount < 1000000) PaymentChannel.ussd,
+      ],
+    );
+    
+    return await ProductionTransactionHandler.initializeWithRetry(options);
+  }
+  
+  static void _scheduleVerificationCheck(String reference) {
+    // Use your preferred task scheduler (e.g., package:cron)
+    Timer.periodic(Duration(seconds: 30), (timer) async {
+      final result = await _checkPaymentStatus(reference);
+      
+      if (result.isCompleted) {
+        timer.cancel();
+        await _handlePaymentCompletion(reference, result);
+      }
+      
+      // Stop checking after 10 minutes
+      if (timer.tick > 20) {
+        timer.cancel();
+        await _handlePaymentTimeout(reference);
+      }
+    });
+  }
+}
+```
+
+This comprehensive guide provides everything developers need to implement robust transaction handling with MindPaystack, from basic payments to advanced error handling and production best practices. 🚀

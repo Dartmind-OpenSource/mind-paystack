@@ -1,0 +1,663 @@
+# Initialize Payments
+
+Create payment transactions and get authorization URLs for customer payment completion.
+
+## 💳 Basic Usage
+
+The simplest way to create a payment transaction:
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<String?> createPayment() async {
+  try {
+    final transaction = await MindPaystack.instance.transaction.initialize(
+      InitializeTransactionOptions(
+        amount: '50000', // ₦500.00 in kobo
+        email: 'customer@example.com',
+        currency: 'NGN',
+        reference: 'order_${DateTime.now().millisecondsSinceEpoch}',
+      ),
+    );
+    
+    if (transaction.status && transaction.data != null) {
+      print('✅ Transaction initialized successfully!');
+      print('Payment URL: ${transaction.data!.authorizationUrl}');
+      return transaction.data!.authorizationUrl;
+    }
+    
+  } on MindException catch (e) {
+    print('❌ Payment initialization failed: ${e.message}');
+    // Handle error appropriately
+  }
+  
+  return null;
+}
+```
+
+## ⚙️ Advanced Configuration
+
+For production applications with complex requirements:
+
+```dart
+Future<PaymentResult> createAdvancedPayment({
+  required String customerEmail,
+  required int amountInKobo,
+  required String orderId,
+  Map<String, dynamic>? customerData,
+}) async {
+  try {
+    final transaction = await MindPaystack.instance.transaction.initialize(
+      InitializeTransactionOptions(
+        amount: amountInKobo.toString(),
+        email: customerEmail,
+        currency: 'NGN',
+        reference: 'order_${orderId}_${DateTime.now().millisecondsSinceEpoch}',
+        
+        // 🎯 Target specific payment channels
+        channels: [
+          PaymentChannel.card,
+          PaymentChannel.bankTransfer,
+          PaymentChannel.ussd,
+        ],
+        
+        // 📊 Rich metadata for analytics and order tracking
+        metadata: {
+          'order_id': orderId,
+          'customer_id': customerData?['id'],
+          'product_category': 'electronics',
+          'source': 'mobile_app',
+          'version': '1.2.0',
+          ...?customerData,
+        },
+        
+        // 💰 Transaction fees
+        bearer: TransactionBearer.customer, // Customer pays transaction fees
+        
+        // 🔄 Split payments (if needed)
+        // subaccount: 'ACCT_xxxxxxxxx',
+        // transaction_charge: 5000, // ₦50 in kobo
+        
+        // 🕒 Payment timeout
+        // metadata: {
+        //   ...metadata,
+        //   'timeout': '300', // 5 minutes in seconds
+        // },
+      ),
+    );
+    
+    return PaymentResult.success(
+      authorizationUrl: transaction.data!.authorizationUrl,
+      reference: transaction.data!.reference,
+      accessCode: transaction.data!.accessCode,
+    );
+    
+  } on MindException catch (e) {
+    _logger.error('Payment initialization failed', e);
+    return PaymentResult.error(e.message);
+  }
+}
+```
+
+## 🛒 E-commerce Integration Example
+
+Complete checkout flow with cart processing:
+
+```dart
+class CheckoutService {
+  static Future<CheckoutResult> processCheckout({
+    required CartModel cart,
+    required CustomerModel customer,
+    String? couponCode,
+  }) async {
+    try {
+      // Calculate total with discounts
+      final subtotal = cart.calculateSubtotal();
+      final discount = await _calculateDiscount(cart, couponCode);
+      final total = subtotal - discount;
+      
+      // Validate minimum amount (₦1.00 = 100 kobo)
+      if (total < 100) {
+        return CheckoutResult.error('Minimum transaction amount is ₦1.00');
+      }
+      
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: total.toString(),
+          email: customer.email,
+          currency: 'NGN',
+          reference: 'order_${cart.id}_${DateTime.now().millisecondsSinceEpoch}',
+          
+          metadata: {
+            // Order details
+            'cart_id': cart.id,
+            'customer_id': customer.id,
+            'order_total': total,
+            'items_count': cart.items.length,
+            
+            // Customer info
+            'customer_name': '${customer.firstName} ${customer.lastName}',
+            'customer_phone': customer.phone,
+            
+            // Business analytics
+            'coupon_code': couponCode,
+            'discount_amount': discount,
+            'source_platform': Platform.isIOS ? 'ios' : 'android',
+            
+            // Line items for detailed tracking
+            'line_items': cart.items.map((item) => {
+              'product_id': item.productId,
+              'name': item.name,
+              'quantity': item.quantity,
+              'unit_price': item.unitPrice,
+              'total_price': item.totalPrice,
+            }).toList(),
+          },
+          
+          // Customize payment experience
+          channels: _getAvailableChannels(total),
+          bearer: total > 100000 ? TransactionBearer.customer : TransactionBearer.account,
+        ),
+      );
+      
+      // Save transaction reference for later verification
+      await _saveTransactionReference(cart.id, transaction.data!.reference);
+      
+      return CheckoutResult.success(
+        paymentUrl: transaction.data!.authorizationUrl,
+        reference: transaction.data!.reference,
+        orderSummary: OrderSummary(
+          subtotal: subtotal,
+          discount: discount,
+          total: total,
+          estimatedDelivery: DateTime.now().add(Duration(days: 3)),
+        ),
+      );
+      
+    } on MindException catch (e) {
+      _analytics.track('checkout_failed', {'error': e.message});
+      return CheckoutResult.error('Payment setup failed: ${e.message}');
+    }
+  }
+  
+  static List<PaymentChannel> _getAvailableChannels(int amount) {
+    final channels = [PaymentChannel.card, PaymentChannel.bankTransfer];
+    
+    // USSD available for amounts under ₦1,000,000
+    if (amount < 100000000) {
+      channels.add(PaymentChannel.ussd);
+    }
+    
+    // QR code for smaller amounts
+    if (amount < 5000000) {
+      channels.add(PaymentChannel.qr);
+    }
+    
+    return channels;
+  }
+}
+```
+
+## 💳 Subscription Billing Example
+
+Recurring payment setup with customer authorization:
+
+```dart
+class SubscriptionService {
+  static Future<SubscriptionResult> createSubscription({
+    required String customerEmail,
+    required SubscriptionPlan plan,
+    String? authorizationCode, // For existing customers
+  }) async {
+    try {
+      final reference = 'sub_${plan.id}_${DateTime.now().millisecondsSinceEpoch}';
+      
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: plan.priceInKobo.toString(),
+          email: customerEmail,
+          currency: 'NGN',
+          reference: reference,
+          
+          metadata: {
+            'subscription_plan_id': plan.id,
+            'plan_name': plan.name,
+            'billing_cycle': plan.billingCycle.name,
+            'is_trial': plan.hasTrialPeriod,
+            'trial_days': plan.trialDays,
+            'customer_email': customerEmail,
+            'subscription_type': 'recurring',
+          },
+          
+          // Only allow card payments for subscriptions
+          channels: [PaymentChannel.card],
+          
+          // Customer pays transaction fees for subscriptions
+          bearer: TransactionBearer.customer,
+        ),
+      );
+      
+      // Store subscription info for post-payment processing
+      await SubscriptionRepository.createPending(
+        customerId: await _getCustomerId(customerEmail),
+        planId: plan.id,
+        transactionReference: reference,
+        status: SubscriptionStatus.pending,
+      );
+      
+      return SubscriptionResult.success(
+        paymentUrl: transaction.data!.authorizationUrl,
+        subscriptionReference: reference,
+        plan: plan,
+      );
+      
+    } on MindException catch (e) {
+      return SubscriptionResult.error(
+        'Subscription setup failed: ${e.message}',
+      );
+    }
+  }
+}
+```
+
+## 🎯 Payment Channel Configuration
+
+Smart channel selection based on amount and customer preferences:
+
+```dart
+class PaymentChannelManager {
+  static List<PaymentChannel> getOptimalChannels({
+    required int amountInKobo,
+    required CustomerProfile customer,
+    String? preferredChannel,
+  }) {
+    final channels = <PaymentChannel>[];
+    
+    // Always include card payments
+    channels.add(PaymentChannel.card);
+    
+    // Bank transfer for larger amounts
+    if (amountInKobo >= 100000) { // ₦1,000+
+      channels.add(PaymentChannel.bankTransfer);
+    }
+    
+    // USSD for amounts under ₦1M
+    if (amountInKobo < 100000000) {
+      channels.add(PaymentChannel.ussd);
+    }
+    
+    // QR code for smaller amounts and tech-savvy customers
+    if (amountInKobo < 5000000 && customer.isTechSavvy) {
+      channels.add(PaymentChannel.qr);
+    }
+    
+    // Mobile money where available
+    if (customer.region == 'ghana') {
+      channels.add(PaymentChannel.mobileMoney);
+    }
+    
+    // Prioritize customer's preferred channel
+    if (preferredChannel != null) {
+      final preferred = PaymentChannel.fromString(preferredChannel);
+      if (channels.contains(preferred)) {
+        channels.remove(preferred);
+        channels.insert(0, preferred);
+      }
+    }
+    
+    return channels;
+  }
+}
+```
+
+## 🔄 Split Payments
+
+Configure split payments for marketplace scenarios:
+
+```dart
+Future<PaymentResult> createMarketplacePayment({
+  required String customerEmail,
+  required int totalAmount,
+  required List<VendorSplit> vendorSplits,
+  required String orderId,
+}) async {
+  try {
+    // Calculate platform fee
+    final platformFee = (totalAmount * 0.025).round(); // 2.5%
+    final vendorTotal = totalAmount - platformFee;
+    
+    final transaction = await MindPaystack.instance.transaction.initialize(
+      InitializeTransactionOptions(
+        amount: totalAmount.toString(),
+        email: customerEmail,
+        currency: 'NGN',
+        reference: 'marketplace_${orderId}_${DateTime.now().millisecondsSinceEpoch}',
+        
+        metadata: {
+          'order_id': orderId,
+          'platform_fee': platformFee,
+          'vendor_count': vendorSplits.length,
+          'split_type': 'marketplace',
+          'vendor_splits': vendorSplits.map((split) => {
+            'vendor_id': split.vendorId,
+            'amount': split.amount,
+            'percentage': (split.amount / vendorTotal * 100).round(),
+          }).toList(),
+        },
+        
+        // Configure split payment
+        subaccount: vendorSplits.first.subaccountCode,
+        transactionCharge: platformFee,
+        bearer: TransactionBearer.customer,
+        
+        // Split configuration for multiple vendors
+        splitCode: await _createSplitConfiguration(vendorSplits, platformFee),
+      ),
+    );
+    
+    return PaymentResult.success(
+      authorizationUrl: transaction.data!.authorizationUrl,
+      reference: transaction.data!.reference,
+    );
+    
+  } on MindException catch (e) {
+    return PaymentResult.error('Marketplace payment setup failed: ${e.message}');
+  }
+}
+```
+
+## 📱 Mobile App Integration
+
+Optimize for mobile payment flows:
+
+```dart
+class MobilePaymentService {
+  static Future<MobilePaymentResult> initializeMobilePayment({
+    required PaymentRequest request,
+    required BuildContext context,
+  }) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PaymentLoadingDialog(),
+      );
+      
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: request.amountInKobo.toString(),
+          email: request.customerEmail,
+          currency: 'NGN',
+          reference: 'mobile_${request.orderId}_${DateTime.now().millisecondsSinceEpoch}',
+          
+          metadata: {
+            'platform': Platform.operatingSystem,
+            'app_version': await _getAppVersion(),
+            'device_id': await _getDeviceId(),
+            'user_agent': await _getUserAgent(),
+            ...request.metadata,
+          },
+          
+          // Mobile-optimized channels
+          channels: [
+            PaymentChannel.card,
+            PaymentChannel.bankTransfer,
+            PaymentChannel.ussd,
+            if (Platform.isAndroid) PaymentChannel.qr,
+          ],
+          
+          bearer: TransactionBearer.customer,
+        ),
+      );
+      
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      // Launch payment webview or redirect
+      return await _handleMobilePayment(transaction.data!, context);
+      
+    } on MindException catch (e) {
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment setup failed: ${e.message}')),
+      );
+      
+      return MobilePaymentResult.error(e.message);
+    }
+  }
+  
+  static Future<MobilePaymentResult> _handleMobilePayment(
+    TransactionData transaction,
+    BuildContext context,
+  ) async {
+    if (Platform.isIOS) {
+      // Use SFSafariViewController on iOS
+      return await _launchSafariViewController(transaction.authorizationUrl);
+    } else {
+      // Use Chrome Custom Tabs on Android or in-app webview
+      return await _launchCustomTabs(transaction.authorizationUrl);
+    }
+  }
+}
+```
+
+## 🎨 Custom UI Integration
+
+Build custom payment forms with MindPaystack:
+
+```dart
+class CustomPaymentForm extends StatefulWidget {
+  final PaymentRequest request;
+  final VoidCallback onSuccess;
+  final Function(String) onError;
+
+  const CustomPaymentForm({
+    Key? key,
+    required this.request,
+    required this.onSuccess,
+    required this.onError,
+  }) : super(key: key);
+
+  @override
+  State<CustomPaymentForm> createState() => _CustomPaymentFormState();
+}
+
+class _CustomPaymentFormState extends State<CustomPaymentForm> {
+  bool _isLoading = false;
+  PaymentChannel _selectedChannel = PaymentChannel.card;
+  
+  Future<void> _processPayment() async {
+    if (_isLoading) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: widget.request.amountInKobo.toString(),
+          email: widget.request.customerEmail,
+          currency: 'NGN',
+          reference: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+          
+          // Use selected channel only
+          channels: [_selectedChannel],
+          
+          metadata: {
+            'ui_type': 'custom_form',
+            'selected_channel': _selectedChannel.name,
+            ...widget.request.metadata,
+          },
+        ),
+      );
+      
+      // Handle success
+      await _handlePaymentInitialization(transaction.data!);
+      
+    } on MindException catch (e) {
+      widget.onError('Payment initialization failed: ${e.message}');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Complete Your Payment',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            SizedBox(height: 16),
+            
+            // Amount display
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Total Amount'),
+                  Text(
+                    '₦${(widget.request.amountInKobo / 100).toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            SizedBox(height: 16),
+            
+            // Payment method selection
+            Text('Select Payment Method'),
+            SizedBox(height: 8),
+            
+            ...PaymentChannel.values.map((channel) => 
+              RadioListTile<PaymentChannel>(
+                title: Text(_getChannelDisplayName(channel)),
+                subtitle: Text(_getChannelDescription(channel)),
+                value: channel,
+                groupValue: _selectedChannel,
+                onChanged: (value) {
+                  setState(() => _selectedChannel = value!);
+                },
+              ),
+            ),
+            
+            SizedBox(height: 24),
+            
+            // Pay button
+            ElevatedButton(
+              onPressed: _isLoading ? null : _processPayment,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _isLoading
+                  ? CircularProgressIndicator()
+                  : Text('Pay ₦${(widget.request.amountInKobo / 100).toStringAsFixed(2)}'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## 🔐 Security Best Practices
+
+Ensure secure transaction initialization:
+
+```dart
+class SecurePaymentService {
+  static Future<PaymentResult> createSecurePayment(
+    PaymentRequest request,
+  ) async {
+    try {
+      // 1. Validate request on server-side
+      final validationResult = await _validatePaymentRequest(request);
+      if (!validationResult.isValid) {
+        return PaymentResult.validationError(validationResult.errors);
+      }
+      
+      // 2. Generate secure reference with timestamp and hash
+      final reference = _generateSecureReference(request);
+      
+      // 3. Encrypt sensitive metadata
+      final encryptedMetadata = await _encryptMetadata({
+        'customer_id': request.customerId,
+        'order_details': request.orderDetails,
+        'internal_notes': request.internalNotes,
+      });
+      
+      final transaction = await MindPaystack.instance.transaction.initialize(
+        InitializeTransactionOptions(
+          amount: request.amountInKobo.toString(),
+          email: request.customerEmail,
+          currency: 'NGN',
+          reference: reference,
+          
+          metadata: {
+            // Public metadata only
+            'order_id': request.orderId,
+            'customer_email': request.customerEmail,
+            'amount_display': '₦${(request.amountInKobo / 100).toStringAsFixed(2)}',
+            
+            // Encrypted sensitive data
+            'encrypted_data': encryptedMetadata,
+            'encryption_version': '1.0',
+            
+            // Security tracking
+            'request_ip': await _getRequestIP(),
+            'user_agent': await _getUserAgent(),
+            'session_id': await _getSessionId(),
+            'timestamp': DateTime.now().toIso8601String(),
+          },
+          
+          channels: request.allowedChannels,
+          bearer: TransactionBearer.customer,
+        ),
+      );
+      
+      // 4. Log transaction creation for audit
+      await SecurityAuditService.logTransactionCreated(
+        reference: reference,
+        customerId: request.customerId,
+        amount: request.amountInKobo,
+        ipAddress: await _getRequestIP(),
+      );
+      
+      return PaymentResult.success(
+        authorizationUrl: transaction.data!.authorizationUrl,
+        reference: reference,
+        securityToken: await _generateSecurityToken(reference),
+      );
+      
+    } on MindException catch (e) {
+      await SecurityAuditService.logPaymentError(
+        error: e.message,
+        request: request,
+      );
+      
+      return PaymentResult.error(e.message);
+    }
+  }
+}
+```
+
+## 🔗 Next Steps
+
+- **[Verify Transactions](./verify)** - Learn how to verify payment status and fulfill orders
+- **[Error Handling](./error-handling)** - Handle initialization errors gracefully
+- **[Best Practices](./best-practices)** - Production-ready patterns and security considerations
