@@ -367,7 +367,7 @@ Our detailed contribution guide covers:
 
 ```bash
 # 1. Fork and clone the repository
-git clone https://github.com/your-username/mind-paystack.git
+git clone https://github.com/Dartmind-OpenSource/mind-paystack.git
 cd mind-paystack
 
 # 2. Install Melos and bootstrap packages
