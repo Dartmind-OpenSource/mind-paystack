@@ -11,22 +11,22 @@ const geist = Open_Sans({
 
 
 export const metadata = {
-  metadataBase: new URL('https://nextra.site'),
+  metadataBase: new URL('https://mind-paystack-docs.vercel.app'),
   title: {
-    template: '%s - Nextra'
+    template: '%s - MindPaystack'
   },
-  description: 'Nextra: the Next.js site builder',
-  applicationName: 'Nextra',
+  description: 'MindPaystack: The Dart-First Paystack SDK',
+  applicationName: 'MindPaystack',
   generator: 'Next.js',
   appleWebApp: {
-    title: 'Nextra'
+    title: 'MindPaystack'
   },
   other: {
     'msapplication-TileImage': '/ms-icon-144x144.png',
     'msapplication-TileColor': '#fff'
   },
   twitter: {
-    site: 'https://nextra.site'
+    site: 'https://mind-paystack-docs.vercel.app'
   }
 }
 
@@ -34,26 +34,28 @@ export default async function RootLayout({ children }) {
   const navbar = (
     <Navbar
       logo={
-        <div>
-          <b>Mind Paystack</b>{' '}
-          {/* <span style={{ opacity: '60%' }}>The Next Docs Builder</span> */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src="/logo.svg" alt="MindPaystack" style={{ width: '24px', height: '24px' }} />
+          <b>MindPaystack</b>
         </div>
       }
-      // Next.js discord server
-      chatLink="https://discord.gg/hEM84NMkRv"
+      chatLink="https://discord.gg/dartmind"
     />
   )
   const pageMap = await getPageMap()
   return (
     <html lang="en" className={geist.className} dir="ltr" suppressHydrationWarning>
-      <Head faviconGlyph="✦" />
+      <Head>
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
+      </Head>
       <body>
         <Layout
           // banner={<Banner storageKey="Nextra 2">Nextra 2 Alpha</Banner>}
           navbar={navbar}
-          footer={<Footer>MIT {new Date().getFullYear()} © Dartmind.</Footer>}
+          footer={<Footer>MIT {new Date().getFullYear()} © MindPaystack by Dartmind.</Footer>}
           editLink="Edit this page on GitHub"
-          docsRepositoryBase="https://github.com/shuding/nextra/blob/main/examples/docs"
+          docsRepositoryBase="https://github.com/Dartmind-OpenSource/mind-paystack/blob/main/docs/src/content"
           sidebar={{ defaultMenuCollapseLevel: 1 }}
           pageMap={pageMap}
         >

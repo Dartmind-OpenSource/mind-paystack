@@ -22,17 +22,17 @@ class CustomerMapper extends ClassMapperBase<Customer> {
 
   static int _$id(Customer v) => v.id;
   static const Field<Customer, int> _f$id = Field('id', _$id);
+  static String _$email(Customer v) => v.email;
+  static const Field<Customer, String> _f$email = Field('email', _$email);
+  static String _$customerCode(Customer v) => v.customerCode;
+  static const Field<Customer, String> _f$customerCode =
+      Field('customerCode', _$customerCode, key: r'customer_code');
   static String? _$firstName(Customer v) => v.firstName;
   static const Field<Customer, String> _f$firstName =
       Field('firstName', _$firstName, opt: true);
   static String? _$lastName(Customer v) => v.lastName;
   static const Field<Customer, String> _f$lastName =
       Field('lastName', _$lastName, opt: true);
-  static String _$email(Customer v) => v.email;
-  static const Field<Customer, String> _f$email = Field('email', _$email);
-  static String _$customerCode(Customer v) => v.customerCode;
-  static const Field<Customer, String> _f$customerCode =
-      Field('customerCode', _$customerCode, key: r'customer_code');
   static String? _$phone(Customer v) => v.phone;
   static const Field<Customer, String> _f$phone =
       Field('phone', _$phone, opt: true);
@@ -46,10 +46,10 @@ class CustomerMapper extends ClassMapperBase<Customer> {
   @override
   final MappableFields<Customer> fields = const {
     #id: _f$id,
-    #firstName: _f$firstName,
-    #lastName: _f$lastName,
     #email: _f$email,
     #customerCode: _f$customerCode,
+    #firstName: _f$firstName,
+    #lastName: _f$lastName,
     #phone: _f$phone,
     #metadata: _f$metadata,
     #riskAction: _f$riskAction,
@@ -58,10 +58,10 @@ class CustomerMapper extends ClassMapperBase<Customer> {
   static Customer _instantiate(DecodingData data) {
     return Customer(
         id: data.dec(_f$id),
-        firstName: data.dec(_f$firstName),
-        lastName: data.dec(_f$lastName),
         email: data.dec(_f$email),
         customerCode: data.dec(_f$customerCode),
+        firstName: data.dec(_f$firstName),
+        lastName: data.dec(_f$lastName),
         phone: data.dec(_f$phone),
         metadata: data.dec(_f$metadata),
         riskAction: data.dec(_f$riskAction));
@@ -119,10 +119,10 @@ abstract class CustomerCopyWith<$R, $In extends Customer, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call(
       {int? id,
-      String? firstName,
-      String? lastName,
       String? email,
       String? customerCode,
+      String? firstName,
+      String? lastName,
       String? phone,
       dynamic metadata,
       String? riskAction});
@@ -140,19 +140,19 @@ class _CustomerCopyWithImpl<$R, $Out>
   @override
   $R call(
           {int? id,
-          Object? firstName = $none,
-          Object? lastName = $none,
           String? email,
           String? customerCode,
+          Object? firstName = $none,
+          Object? lastName = $none,
           Object? phone = $none,
           Object? metadata = $none,
           Object? riskAction = $none}) =>
       $apply(FieldCopyWithData({
         if (id != null) #id: id,
-        if (firstName != $none) #firstName: firstName,
-        if (lastName != $none) #lastName: lastName,
         if (email != null) #email: email,
         if (customerCode != null) #customerCode: customerCode,
+        if (firstName != $none) #firstName: firstName,
+        if (lastName != $none) #lastName: lastName,
         if (phone != $none) #phone: phone,
         if (metadata != $none) #metadata: metadata,
         if (riskAction != $none) #riskAction: riskAction
@@ -160,10 +160,10 @@ class _CustomerCopyWithImpl<$R, $Out>
   @override
   Customer $make(CopyWithData data) => Customer(
       id: data.get(#id, or: $value.id),
-      firstName: data.get(#firstName, or: $value.firstName),
-      lastName: data.get(#lastName, or: $value.lastName),
       email: data.get(#email, or: $value.email),
       customerCode: data.get(#customerCode, or: $value.customerCode),
+      firstName: data.get(#firstName, or: $value.firstName),
+      lastName: data.get(#lastName, or: $value.lastName),
       phone: data.get(#phone, or: $value.phone),
       metadata: data.get(#metadata, or: $value.metadata),
       riskAction: data.get(#riskAction, or: $value.riskAction));

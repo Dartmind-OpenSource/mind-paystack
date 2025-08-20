@@ -1,7 +1,14 @@
+<div align="center">
+
+![MindPaystack Logo](/logo.svg)
+
 # MindPaystack
 
-> **The Dart-First Paystack SDK**  
-> Built from the ground up for Dart and Flutter developers, MindPaystack delivers a production-ready payment integration with clean architecture, type safety, and dependency injection out of the box.
+**The Dart-First Paystack SDK**
+
+Built from the ground up for Dart and Flutter developers, MindPaystack delivers a production-ready payment integration with clean architecture, type safety, and dependency injection out of the box.
+
+</div>
 
 ---
 
@@ -9,11 +16,11 @@
 
 MindPaystack isn't just another API wrapper—it's architected specifically for the **Dart ecosystem** and its principles:
 
-- **🎯 Pure Dart Core** → Framework-agnostic foundation that works everywhere Dart runs
-- **🛠️ Flutter-Native** → Dedicated Flutter layer with UI components and platform integrations  
-- **📦 Pub.dev Ready** → Follows Dart package conventions and best practices
-- **🔒 Null Safety** → Built with sound null safety from day one
-- **⚡ Async/Await Native** → Leverages Dart's async model for clean, readable code
+- **Pure Dart Core** → Framework-agnostic foundation that works everywhere Dart runs
+- **Flutter-Native** → Dedicated Flutter layer with UI components and platform integrations  
+- **Pub.dev Ready** → Follows Dart package conventions and best practices
+- **Null Safety** → Built with sound null safety from day one
+- **Async/Await Native** → Leverages Dart's async model for clean, readable code
 
 ---
 
@@ -21,12 +28,12 @@ MindPaystack isn't just another API wrapper—it's architected specifically for 
 
 MindPaystack embraces the **Dart way** of building scalable applications:
 
-### 🧩 **Modular Package Design**
+### **Modular Package Design**
 - **`mind_paystack`** → Pure Dart core for universal compatibility
-- **`mind_paystack_flutter`** → Flutter-specific widgets and integrations
+- **`mind_paystack_flutter`** → Flutter-specific widgets and integrations (Coming Soon)
 - **Future packages** → Planned Web, Server, and CLI variants
 
-### 🏗️ **Clean Architecture Pattern**
+### **Clean Architecture Pattern**
 ```dart
 // Singleton pattern with dependency injection
 await MindPaystack.initialize(PaystackConfig(
@@ -40,7 +47,7 @@ final transaction = await sdk.transaction.initialize(request);
 final verification = await sdk.transaction.verify(reference);
 ```
 
-### 🔧 **Injectable & GetIt Integration**
+### **Injectable & GetIt Integration**
 Built with [`injectable`](https://pub.dev/packages/injectable) for seamless dependency injection:
 ```dart
 @injectable
@@ -53,7 +60,7 @@ class TransactionService implements ITransactionService {
 
 ## Dart-Centric Developer Experience
 
-### **🎨 Strongly Typed Everything**
+### **Strongly Typed Everything**
 ```dart
 // No dynamic types - full IDE support
 final TransactionInitialization result = await sdk.transaction.initialize(
@@ -64,7 +71,7 @@ final TransactionInitialization result = await sdk.transaction.initialize(
 );
 ```
 
-### **🧪 Test-First Design**
+### **Test-First Design**
 Built with Dart testing patterns in mind:
 ```dart
 // Easy to mock with mocktail/mockito
@@ -72,7 +79,7 @@ final mockService = MockTransactionService();
 when(() => mockService.initialize(any())).thenAnswer((_) async => result);
 ```
 
-### **🔍 Freezed & Code Generation**
+### **Freezed & Code Generation**
 Leverages Dart's powerful code generation:
 - **Freezed** for immutable data classes
 - **Json Serialization** for API models
@@ -84,21 +91,21 @@ Leverages Dart's powerful code generation:
 
 | Platform | Support | Package |
 |----------|---------|---------|
-| **Flutter Mobile** | ✅ Full | `mind_paystack_flutter` |
-| **Flutter Web** | ✅ Core SDK | `mind_paystack` |
-| **Dart VM** | ✅ Server/CLI | `mind_paystack` |
-| **Flutter Desktop** | ✅ Core SDK | `mind_paystack` |
+| **Flutter Mobile** | Coming Soon | `mind_paystack_flutter` |
+| **Flutter Web** | Available | `mind_paystack` |
+| **Dart VM** | Available | `mind_paystack` |
+| **Flutter Desktop** | Available | `mind_paystack` |
 
 ---
 
 ## Built for Dart Developers, By Dart Developers
 
 **Enterprise-Ready Features:**
-- **🔄 Dio HTTP Client** → Interceptors, retries, and request/response logging
-- **📝 Logger Integration** → Structured logging with configurable levels
-- **🛡️ Exception Hierarchy** → `MindException` with detailed error categorization
-- **⚙️ Environment Config** → Support for `.env` files and environment variables
-- **🏷️ Value Objects** → `Money`, `Currency` types for financial safety
+- **Dio HTTP Client** → Interceptors, retries, and request/response logging
+- **Logger Integration** → Structured logging with configurable levels
+- **Exception Hierarchy** → `MindException` with detailed error categorization
+- **Environment Config** → Support for `.env` files and environment variables
+- **Value Objects** → `Money`, `Currency` types for financial safety
 
 **Dart Ecosystem Integration:**
 - **Very Good Analysis** → Strict linting rules for code quality
@@ -119,3 +126,27 @@ Leverages Dart's powerful code generation:
 Unlike generic HTTP clients or thin API wrappers, MindPaystack is built specifically for how **Dart and Flutter developers work**. It follows Dart conventions, embraces the type system, and integrates seamlessly with the broader Dart ecosystem.
 
 Whether you're building a **Flutter fintech app**, a **Dart microservice**, or a **full-stack Dart application**, MindPaystack provides the foundation you need to handle payments reliably and maintainably.
+
+---
+
+## Current Status & Roadmap
+
+### **Available Now**
+- **Transaction Management** → Initialize, verify, list transactions
+- **Type-Safe Money Handling** → Money and Currency value objects  
+- **Error Handling** → Comprehensive MindException system
+- **Dependency Injection** → Injectable support for testing
+- **Pure Dart Support** → CLI tools, server apps, Dart web
+
+### **Coming Soon**
+- **Charge Operations** → Direct card charging and tokenization
+- **Payment Channels** → Available payment methods management
+- **Payment Methods** → Customer payment method storage
+- **Flutter Package** → UI widgets and platform integration
+- **Webhooks** → Event handling and verification
+
+### **Future Releases**
+- **Subscriptions** → Recurring billing management
+- **Advanced Analytics** → Transaction insights and reporting
+- **Multi-tenant Support** → Organization-level configurations
+- **Enhanced Security** → Additional fraud prevention tools

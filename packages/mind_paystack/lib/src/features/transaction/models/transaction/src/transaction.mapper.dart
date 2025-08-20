@@ -32,19 +32,8 @@ class TransactionMapper extends ClassMapperBase<Transaction> {
   static String _$reference(Transaction v) => v.reference;
   static const Field<Transaction, String> _f$reference =
       Field('reference', _$reference);
-  static String? _$receiptNumber(Transaction v) => v.receiptNumber;
-  static const Field<Transaction, String> _f$receiptNumber = Field(
-      'receiptNumber', _$receiptNumber,
-      key: r'receipt_number', opt: true);
   static int _$amount(Transaction v) => v.amount;
   static const Field<Transaction, int> _f$amount = Field('amount', _$amount);
-  static String? _$gatewayResponse(Transaction v) => v.gatewayResponse;
-  static const Field<Transaction, String> _f$gatewayResponse = Field(
-      'gatewayResponse', _$gatewayResponse,
-      key: r'gateway_response', opt: true);
-  static DateTime? _$paidAt(Transaction v) => v.paidAt;
-  static const Field<Transaction, DateTime> _f$paidAt =
-      Field('paidAt', _$paidAt, key: r'paid_at', opt: true);
   static DateTime _$createdAt(Transaction v) => v.createdAt;
   static const Field<Transaction, DateTime> _f$createdAt =
       Field('createdAt', _$createdAt, key: r'created_at');
@@ -54,6 +43,17 @@ class TransactionMapper extends ClassMapperBase<Transaction> {
   static String _$currency(Transaction v) => v.currency;
   static const Field<Transaction, String> _f$currency =
       Field('currency', _$currency);
+  static String? _$receiptNumber(Transaction v) => v.receiptNumber;
+  static const Field<Transaction, String> _f$receiptNumber = Field(
+      'receiptNumber', _$receiptNumber,
+      key: r'receipt_number', opt: true);
+  static String? _$gatewayResponse(Transaction v) => v.gatewayResponse;
+  static const Field<Transaction, String> _f$gatewayResponse = Field(
+      'gatewayResponse', _$gatewayResponse,
+      key: r'gateway_response', opt: true);
+  static DateTime? _$paidAt(Transaction v) => v.paidAt;
+  static const Field<Transaction, DateTime> _f$paidAt =
+      Field('paidAt', _$paidAt, key: r'paid_at', opt: true);
   static String? _$ipAddress(Transaction v) => v.ipAddress;
   static const Field<Transaction, String> _f$ipAddress =
       Field('ipAddress', _$ipAddress, key: r'ip_address', opt: true);
@@ -120,13 +120,13 @@ class TransactionMapper extends ClassMapperBase<Transaction> {
     #domain: _f$domain,
     #status: _f$status,
     #reference: _f$reference,
-    #receiptNumber: _f$receiptNumber,
     #amount: _f$amount,
-    #gatewayResponse: _f$gatewayResponse,
-    #paidAt: _f$paidAt,
     #createdAt: _f$createdAt,
     #channel: _f$channel,
     #currency: _f$currency,
+    #receiptNumber: _f$receiptNumber,
+    #gatewayResponse: _f$gatewayResponse,
+    #paidAt: _f$paidAt,
     #ipAddress: _f$ipAddress,
     #metadata: _f$metadata,
     #log: _f$log,
@@ -153,13 +153,13 @@ class TransactionMapper extends ClassMapperBase<Transaction> {
         domain: data.dec(_f$domain),
         status: data.dec(_f$status),
         reference: data.dec(_f$reference),
-        receiptNumber: data.dec(_f$receiptNumber),
         amount: data.dec(_f$amount),
-        gatewayResponse: data.dec(_f$gatewayResponse),
-        paidAt: data.dec(_f$paidAt),
         createdAt: data.dec(_f$createdAt),
         channel: data.dec(_f$channel),
         currency: data.dec(_f$currency),
+        receiptNumber: data.dec(_f$receiptNumber),
+        gatewayResponse: data.dec(_f$gatewayResponse),
+        paidAt: data.dec(_f$paidAt),
         ipAddress: data.dec(_f$ipAddress),
         metadata: data.dec(_f$metadata),
         log: data.dec(_f$log),
@@ -251,13 +251,13 @@ abstract class TransactionCopyWith<$R, $In extends Transaction, $Out>
       String? domain,
       String? status,
       String? reference,
-      String? receiptNumber,
       int? amount,
-      String? gatewayResponse,
-      DateTime? paidAt,
       DateTime? createdAt,
       String? channel,
       String? currency,
+      String? receiptNumber,
+      String? gatewayResponse,
+      DateTime? paidAt,
       String? ipAddress,
       dynamic metadata,
       TimelineLog? log,
@@ -341,13 +341,13 @@ class _TransactionCopyWithImpl<$R, $Out>
           String? domain,
           String? status,
           String? reference,
-          Object? receiptNumber = $none,
           int? amount,
-          Object? gatewayResponse = $none,
-          Object? paidAt = $none,
           DateTime? createdAt,
           String? channel,
           String? currency,
+          Object? receiptNumber = $none,
+          Object? gatewayResponse = $none,
+          Object? paidAt = $none,
           Object? ipAddress = $none,
           Object? metadata = $none,
           Object? log = $none,
@@ -371,13 +371,13 @@ class _TransactionCopyWithImpl<$R, $Out>
         if (domain != null) #domain: domain,
         if (status != null) #status: status,
         if (reference != null) #reference: reference,
-        if (receiptNumber != $none) #receiptNumber: receiptNumber,
         if (amount != null) #amount: amount,
-        if (gatewayResponse != $none) #gatewayResponse: gatewayResponse,
-        if (paidAt != $none) #paidAt: paidAt,
         if (createdAt != null) #createdAt: createdAt,
         if (channel != null) #channel: channel,
         if (currency != null) #currency: currency,
+        if (receiptNumber != $none) #receiptNumber: receiptNumber,
+        if (gatewayResponse != $none) #gatewayResponse: gatewayResponse,
+        if (paidAt != $none) #paidAt: paidAt,
         if (ipAddress != $none) #ipAddress: ipAddress,
         if (metadata != $none) #metadata: metadata,
         if (log != $none) #log: log,
@@ -404,13 +404,13 @@ class _TransactionCopyWithImpl<$R, $Out>
       domain: data.get(#domain, or: $value.domain),
       status: data.get(#status, or: $value.status),
       reference: data.get(#reference, or: $value.reference),
-      receiptNumber: data.get(#receiptNumber, or: $value.receiptNumber),
       amount: data.get(#amount, or: $value.amount),
-      gatewayResponse: data.get(#gatewayResponse, or: $value.gatewayResponse),
-      paidAt: data.get(#paidAt, or: $value.paidAt),
       createdAt: data.get(#createdAt, or: $value.createdAt),
       channel: data.get(#channel, or: $value.channel),
       currency: data.get(#currency, or: $value.currency),
+      receiptNumber: data.get(#receiptNumber, or: $value.receiptNumber),
+      gatewayResponse: data.get(#gatewayResponse, or: $value.gatewayResponse),
+      paidAt: data.get(#paidAt, or: $value.paidAt),
       ipAddress: data.get(#ipAddress, or: $value.ipAddress),
       metadata: data.get(#metadata, or: $value.metadata),
       log: data.get(#log, or: $value.log),

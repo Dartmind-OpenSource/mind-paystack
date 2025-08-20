@@ -2,52 +2,64 @@
 
 End‑to‑end flows for collecting payments with Paystack using the SDK.
 
-#### Card payments (Charge API)
+#### Transaction Flow (Available)
 
-Use the channel‑agnostic Transaction flow for hosted checkout, or use Charge when you manage the steps yourself.
-
-Initialize via hosted checkout:
+Use the hosted checkout flow for secure payment collection:
 
 ```dart
-final tx = await MindPaystack.instance.transaction.initializeTransaction(
-  amount: 150000,
-  email: 'user@example.com',
-  currency: 'NGN',
+final transaction = await MindPaystack.instance.transaction.initialize(
+  InitializeTransactionOptions(
+    amount: Money.fromCents(150000, Currency.ngn), // ₦1,500.00
+    email: 'user@example.com',
+  ),
 );
-// Open tx.authorizationUrl
+// Open transaction.data.authorizationUrl in browser/webview
 ```
 
-Charge directly (advanced):
+#### Direct Card Charging (Coming Soon)
+
+Direct card charging APIs will be available in a future release:
 
 ```dart
-final charge = await MindPaystack.instance.paymentChannel.chargeCard(
-  amount: 150000,
-  email: 'user@example.com',
-  cardNumber: '4084084084084081',
-  cvv: '408',
-  expiryMonth: '12',
-  expiryYear: '30',
-  pin: '1234',
+// Coming Soon - Direct card charging
+final charge = await MindPaystack.instance.charge.chargeCard(
+  ChargeCardOptions(
+    amount: Money.fromCents(150000, Currency.ngn),
+    email: 'user@example.com',
+    cardNumber: '4084084084084081',
+    cvv: '408',
+    expiryMonth: '12',
+    expiryYear: '30',
+  ),
+);
+```
+
+#### Verify Payments (Available)
+
+```dart
+final verification = await MindPaystack.instance.transaction.verify(
+  VerifyTransactionOptions(reference: transaction.data.reference),
 );
 
-// For OTP/PIN/address validation flows, follow up with:
-// submitChannelCharge(reference: charge.reference, type: 'otp'|'phone'|'birthday', value: '...')
-// validateChannelCharge(reference: charge.reference, validation: {...})
+if (verification.data.status == 'success') {
+  // Payment successful - fulfill the order
+  print('Payment confirmed: ₦${verification.data.amount / 100}');
+}
 ```
 
-#### Verify payments
+#### Partial Debit (Coming Soon)
+
+Partial debit functionality will be available in a future release:
 
 ```dart
-final result = await MindPaystack.instance.transaction.verifyTransaction(tx.reference);
-```
-
-#### Partial debit
-
-```dart
-final res = await MindPaystack.instance.charge.createPartialDebit(
-  amount: 50000,
-  email: 'user@example.com',
-  authorizationCode: 'AUTH_XXXX',
+// Coming Soon - Partial debit
+final result = await MindPaystack.instance.charge.createPartialDebit(
+  PartialDebitOptions(
+    amount: Money.fromCents(50000, Currency.ngn),
+    email: 'user@example.com',
+    authorizationCode: 'AUTH_XXXX',
+  ),
+);
   currency: 'NGN',
 );
 ```

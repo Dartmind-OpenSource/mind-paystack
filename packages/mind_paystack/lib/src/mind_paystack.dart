@@ -1,8 +1,6 @@
 import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/di/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
-import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
-import 'package:mind_paystack/src/features/payment_channels/services/payment_channel_service.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 // import 'package:mind_paystack/src/.trash/transaction_service_.dart';
 
@@ -192,12 +190,12 @@ class MindPaystack {
   /// ```dart
   /// final chargeResult = await MindPaystack.instance.charge.submit(request);
   /// ```
-  ChargeService get charge {
-    _checkInitialized();
-    return resolveWithParameter<ChargeService, PaystackConfig>(
-      parameter: config,
-    );
-  }
+  // ChargeService get charge {
+  //   _checkInitialized();
+  //   return resolveWithParameter<ChargeService, PaystackConfig>(
+  //     parameter: config,
+  //   );
+  // }
 
   /// Provides access to transaction-related operations
   ///
@@ -225,12 +223,12 @@ class MindPaystack {
   /// ```dart
   /// final channels = await MindPaystack.instance.paymentChannel.getChannels();
   /// ```
-  PaymentChannelService get paymentChannel {
-    _checkInitialized();
-    return resolveWithParameter<PaymentChannelService, PaystackConfig>(
-      parameter: config,
-    );
-  }
+  // PaymentChannelService get paymentChannel {
+  //   _checkInitialized();
+  //   return resolveWithParameter<PaymentChannelService, PaystackConfig>(
+  //     parameter: config,
+  //   );
+  // }
 
   /// Validates that the SDK has been properly initialized
   ///

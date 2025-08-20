@@ -1,75 +1,97 @@
 ### Transactions
 
-Work with the full Transaction lifecycle: initialize, list, get, verify, refund, analytics, timeline, sessions, export.
+Work with the Transaction lifecycle using available APIs.
 
-#### Initialize
+#### Initialize (Available)
 
 ```dart
-final tx = await MindPaystack.instance.transaction.initializeTransaction(
-  amount: 250000,
-  email: 'buyer@example.com',
-  currency: 'NGN',
-  reference: 'order_123',
-  metadata: {'orderId': '123'},
-  channels: ['card','bank','ussd'],
+final transaction = await MindPaystack.instance.transaction.initialize(
+  InitializeTransactionOptions(
+    amount: Money.fromCents(250000, Currency.ngn), // ₦2,500.00
+    email: 'buyer@example.com',
+    reference: 'order_123',
+    metadata: {'orderId': '123'},
+    channels: [TransactionChannel.card, TransactionChannel.bank],
+  ),
 );
 ```
 
-#### Verify
+#### Verify (Available)
 
 ```dart
-await MindPaystack.instance.transaction.verifyTransaction(tx.reference);
-```
-
-#### List
-
-```dart
-final items = await MindPaystack.instance.transaction.listTransactions(
-  status: 'success',
-  page: 1,
-  perPage: 20,
+final verification = await MindPaystack.instance.transaction.verify(
+  VerifyTransactionOptions(reference: transaction.data.reference),
 );
 ```
 
-#### Get
+#### List Transactions (Available)
 
 ```dart
-final one = await MindPaystack.instance.transaction.getTransaction('ref_or_id');
-```
-
-#### Refund
-
-```dart
-final refund = await MindPaystack.instance.transaction.initiateRefund(
-  reference: tx.reference,
-  amount: 250000,
-  customerNote: 'Customer requested refund',
+final list = await MindPaystack.instance.transaction.list(
+  ListTransactionsOptions(
+    status: TransactionStatus.success,
+    page: 1,
+    perPage: 20,
+  ),
 );
 ```
 
-#### Totals/Analytics
+#### Fetch Single Transaction (Available)
 
 ```dart
-final totals = await MindPaystack.instance.transaction.getTransactionTotals();
+final transaction = await MindPaystack.instance.transaction.fetch(
+  FetchTransactionOptions(idOrReference: 'ref_or_id'),
+);
 ```
 
-#### Timeline
+#### Transaction Totals (Available)
 
 ```dart
-final events = await MindPaystack.instance.transaction.getTransactionTimeline(tx.reference);
+final totals = await MindPaystack.instance.transaction.totals(
+  TransactionTotalsOptions(),
+);
 ```
 
-#### Sessions
+#### Transaction Timeline (Available)
 
 ```dart
-final sessions = await MindPaystack.instance.transaction.getTransactionSessions(tx.reference);
+final timeline = await MindPaystack.instance.transaction.viewTimeline(
+  ViewTransactionTimelineOptions(idOrReference: transaction.data.reference),
+);
 ```
 
-#### Export
+#### Export Transactions (Available)
 
 ```dart
-final downloadUrl = await MindPaystack.instance.transaction.exportTransactions(
-  status: 'success',
-  format: 'csv',
+final export = await MindPaystack.instance.transaction.export(
+  ExportTransactionsOptions(
+    status: TransactionStatus.success,
+    format: ExportFormat.csv,
+  ),
+);
+```
+
+#### Charge Authorization (Available)
+
+```dart
+final charge = await MindPaystack.instance.transaction.chargeAuthorization(
+  ChargeAuthorizationOptions(
+    authorizationCode: 'AUTH_XXXX',
+    email: 'customer@example.com',
+    amount: Money.fromCents(50000, Currency.ngn),
+  ),
+);
+```
+
+#### Partial Debit (Available)
+
+```dart
+final debit = await MindPaystack.instance.transaction.partialDebit(
+  PartialDebitOptions(
+    authorizationCode: 'AUTH_XXXX',
+    email: 'customer@example.com',
+    amount: Money.fromCents(25000, Currency.ngn),
+    currency: Currency.ngn,
+  ),
 );
 ```
