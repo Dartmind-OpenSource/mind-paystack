@@ -2,14 +2,13 @@
 
 Thank you for your interest in contributing to MindPaystack! This guide will help you get started and ensure your contributions align with our project standards.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 Before contributing, ensure you have:
 
-- **Dart SDK**: Version 3.8.1 or higher
-- **Flutter SDK**: Latest stable version (for Flutter examples)
+- **Dart SDK**: Version 3.5.0 or higher
 - **Git**: For version control
 - **Melos**: For monorepo management
 - **IDE/Editor**: VS Code, IntelliJ, or your preferred Dart IDE
@@ -32,7 +31,7 @@ melos run test
 melos run analyze
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 mind-paystack/
@@ -40,13 +39,13 @@ mind-paystack/
 │   └── mind_paystack/          # Core SDK package
 ├── apps/
 │   ├── ex00_checkout_basic/    # Dart CLI example
-│   └── ex01_checkout_flutter/  # Flutter app example
-├── docs/                       # Documentation site (Nextra)
+│   └── ex01_checkout_flutter/  # Flutter app example  
+├── docs/                       # Documentation site
 ├── melos.yaml                  # Monorepo configuration
 └── README.md                   # Project overview
 ```
 
-## 🛠 Development Workflow
+## Development Workflow
 
 ### 1. Create a Feature Branch
 
@@ -87,7 +86,7 @@ git commit -m "feat: add your feature description"
 git push origin feature/your-feature-name
 ```
 
-## 📝 Code Standards
+## Code Standards
 
 ### Dart Style Guidelines
 
@@ -203,7 +202,7 @@ class PaymentButton extends StatefulWidget {
 - Use appropriate state management solution for complex state
 - Always dispose of resources in `dispose()`
 
-## 🧪 Testing
+## Testing
 
 ### Testing Philosophy
 
@@ -320,7 +319,7 @@ dart test --name "initializeTransaction"
 - **Integration tests** for end-to-end scenarios
 - **Widget tests** for Flutter components
 
-## 📦 Package Development
+## Package Development
 
 ### Core SDK Package (`packages/mind_paystack`)
 
@@ -345,7 +344,7 @@ This is the main SDK package. When contributing:
 - Handle platform-specific considerations
 - Include proper state management
 
-## 🔄 Pull Request Process
+## Pull Request Process
 
 ### Before Submitting
 
@@ -363,12 +362,12 @@ This is the main SDK package. When contributing:
 Brief description of the changes and their purpose.
 
 ## Type of Change
-- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
-- [ ] ✨ New feature (non-breaking change that adds functionality)
-- [ ] 💥 Breaking change (fix or feature that causes existing functionality to not work as expected)
-- [ ] 📚 Documentation update
-- [ ] 🔧 Refactoring (no functional changes)
-- [ ] ✅ Test improvements
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that causes existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Refactoring (no functional changes)
+- [ ] Test improvements
 
 ## Testing
 - [ ] Unit tests added/updated
@@ -402,7 +401,7 @@ References #456
 4. **Documentation**: Ensure docs are comprehensive
 5. **Performance**: Check for any performance regressions
 
-## 🚀 Release Process
+## Release Process
 
 ### Version Numbering
 
@@ -433,7 +432,7 @@ git push origin main --tags
 melos publish
 ```
 
-## 🛡 Security Guidelines
+## Security Guidelines
 
 ### API Key Security
 
@@ -476,7 +475,7 @@ throw Exception('Database connection failed: password=secret123');
 throw PaystackException('Unable to process payment. Please try again.');
 ```
 
-## 📖 Documentation Guidelines
+## Documentation Guidelines
 
 ### API Documentation
 
@@ -518,7 +517,7 @@ When adding new features, update:
 - Quick start guide
 - Example applications
 
-## 🔧 Development Tools
+## Development Tools
 
 ### Recommended VS Code Settings
 
@@ -568,21 +567,21 @@ Create `.git/hooks/pre-commit`:
 
 ```bash
 #!/bin/bash
-echo "🔍 Running pre-commit checks..."
+echo "Running pre-commit checks..."
 
 # Format code
-echo "📝 Formatting code..."
+echo "Formatting code..."
 melos run format
 
 # Analyze code
-echo "🔍 Analyzing code..."
+echo "Analyzing code..."
 melos run analyze --no-fatal-infos
 
 # Run tests
-echo "🧪 Running tests..."
+echo "Running tests..."
 melos run test
 
-echo "✅ Pre-commit checks passed!"
+echo "Pre-commit checks passed!"
 ```
 
 Make it executable:
@@ -590,7 +589,7 @@ Make it executable:
 chmod +x .git/hooks/pre-commit
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -628,7 +627,7 @@ melos bootstrap
    - Environment details (Dart/Flutter versions, OS)
    - Minimal code example
 
-## 👥 Community
+## Community
 
 ### Communication Channels
 
@@ -653,7 +652,7 @@ Contributors are recognized through:
 - Release notes and changelogs
 - Special mentions for significant contributions
 
-## 📊 Performance Considerations
+## Performance Considerations
 
 ### API Efficiency
 
@@ -704,10 +703,10 @@ Future<T> withRetry<T>(Future<T> Function() operation, {
 
 ---
 
-## 🎉 Thank You!
+## Thank You!
 
 Thank you for contributing to MindPaystack! Your efforts help make payment processing easier and more reliable for developers across Africa and beyond.
 
 Every contribution, whether it's a bug fix, new feature, documentation improvement, or even a typo correction, makes a difference. We appreciate your time and effort in helping make this project better.
 
-Happy coding! 🚀
+Happy coding!
