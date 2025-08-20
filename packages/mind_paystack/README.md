@@ -4,7 +4,15 @@
 [![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
 [![License: MIT][license_badge]][license_link]
 
-My new Dart package
+A Dart-first Paystack SDK focused on transaction management with type-safe operations.
+
+## Features ✨
+
+- **Transaction Management**: Initialize, verify, and list Paystack transactions
+- **Type-Safe Money Handling**: Built-in Money and Currency value objects
+- **Structured Error Handling**: Comprehensive MindException system
+- **Dependency Injection**: Injectable support for testing and modularity
+- **Pure Dart**: Works with CLI tools, servers, and Dart web applications
 
 ## Installation 💻
 
@@ -16,13 +24,43 @@ Install via `dart pub add`:
 dart pub add mind_paystack
 ```
 
----
+## Quick Start 🚀
 
-## Continuous Integration 🤖
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
 
-Mind Paystack comes with a built-in [GitHub Actions workflow][github_actions_link] powered by [Very Good Workflows][very_good_workflows_link] but you can also add your preferred CI/CD solution.
+Future<void> main() async {
+  // Initialize the SDK
+  await MindPaystack.initialize(
+    PaystackConfig(
+      publicKey: 'pk_test_your_public_key',
+      secretKey: 'sk_test_your_secret_key',
+      environment: Environment.test,
+    ),
+  );
 
-Out of the box, on each pull request and push, the CI `formats`, `lints`, and `tests` the code. This ensures the code remains consistent and behaves correctly as you add functionality or make changes. The project uses [Very Good Analysis][very_good_analysis_link] for a strict set of analysis options used by our team. Code coverage is enforced using the [Very Good Workflows][very_good_coverage_link].
+  // Create a transaction
+  final sdk = MindPaystack.instance;
+  final transaction = await sdk.transaction.initialize(
+    InitializeTransactionOptions(
+      email: 'customer@example.com',
+      amount: Money.fromCents(50000, Currency.ngn), // ₦500.00
+    ),
+  );
+
+  print('Payment URL: ${transaction.data.authorizationUrl}');
+}
+```
+
+## Coming Soon 🚧
+
+- **Charge Operations**: Direct card charging and authorization
+- **Payment Channels**: Available payment methods
+- **Flutter Integration**: UI widgets and platform-specific features
+
+## Documentation 📚
+
+For complete documentation and examples, visit the [main repository](https://github.com/Dartmind-OpenSource/mind-paystack).
 
 ---
 
@@ -34,16 +72,6 @@ To run all unit tests:
 dart pub global activate coverage 1.2.0
 dart test --coverage=coverage
 dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info
-```
-
-To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov).
-
-```sh
-# Generate Coverage Report
-genhtml coverage/lcov.info -o coverage/
-
-# Open Coverage Report
-open coverage/index.html
 ```
 
 [dart_install_link]: https://dart.dev/get-dart

@@ -2,7 +2,7 @@
 
 Get up and running with MindPaystack in **3 simple steps**. This Dart-first SDK works seamlessly across pure Dart projects, Flutter apps, and server-side applications.
 
-> **🎯 Choose Your Setup:** Pure Dart backend, Flutter mobile app, or full-stack Dart application
+> **Choose Your Setup:** Pure Dart backend, Flutter mobile app, or full-stack Dart application
 
 ---
 
@@ -19,19 +19,20 @@ dart pub add mind_paystack
 
 ### For Flutter Applications
 
-Get the full **mobile-ready** experience with UI components:
+Get the **core SDK** for Flutter apps (UI components coming soon):
 
 ```bash
-# Add both core SDK and Flutter integration
-dart pub add mind_paystack mind_paystack_flutter
+# Core SDK for Flutter
+dart pub add mind_paystack
+# Note: mind_paystack_flutter coming soon!
 ```
 
 ### Package Overview
 
-| Package | Use Case | Features |
-|---------|----------|----------|
-| `mind_paystack` | Core SDK for any Dart project | API clients, models, services |
-| `mind_paystack_flutter` | Flutter-specific features | UI widgets, platform integration |
+| Package | Use Case | Status | Features |
+|---------|----------|--------|----------|
+| `mind_paystack` | Core SDK for any Dart project | **Available** | Transaction APIs, type-safe models |
+| `mind_paystack_flutter` | Flutter-specific features | **Coming Soon** | UI widgets, platform integration |
 
 ---
 
@@ -61,7 +62,7 @@ Future<void> main() async {
 **Flutter Setup:**
 ```dart
 import 'package:flutter/material.dart';
-import 'package:mind_paystack_flutter/mind_paystack_flutter.dart';
+import 'package:mind_paystack/mind_paystack.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,7 +145,7 @@ Future<bool> verifyPayment(String reference) async {
       VerifyTransactionOptions(reference: reference),
     );
     
-    if (verification.data.status == TransactionStatus.success) {
+    if (verification.data.status == 'success') {
       print('Payment successful! ₦${verification.data.amount / 100}');
       print('Gateway response: ${verification.data.gatewayResponse}');
       return true;
@@ -211,7 +212,7 @@ class PaymentService {
         VerifyTransactionOptions(reference: reference),
       );
       
-      return result.data.status == TransactionStatus.success;
+      return result.data.status == 'success';
     } on MindException catch (e) {
       print('Verification failed: ${e.message}');
       return false;

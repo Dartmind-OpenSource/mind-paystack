@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mind Paystack SDK icon">
+  <defs>
+    <linearGradient id="mp-grad" x1="16" y1="18" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <radialGradient id="mp-bggrad" cx="50%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#0e1729"/>
+      <stop offset="100%" stop-color="#0b1320"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer rounded tile -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#mp-bggrad)"/>
+
+  <!-- Decorative stacked bars -->
+  <g opacity="0.10">
+    <rect x="14" y="16" width="36" height="6" rx="3" fill="#c7d2fe"/>
+    <rect x="14" y="26" width="36" height="6" rx="3" fill="#c7d2fe"/>
+    <rect x="14" y="36" width="36" height="6" rx="3" fill="#c7d2fe"/>
+  </g>
+
+  <!-- Core mark (Y shaped lines + nodes) -->
+  <path
+    d="M18 26 L32 40 L46 26 M18 26 L24 20 M46 26 L40 20"
+    fill="none"
+    stroke="url(#mp-grad)"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M32 40 L32 50"
+    fill="none"
+    stroke="url(#mp-grad)"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+
+  <!-- Nodes -->
+  <circle cx="18" cy="26" r="3" fill="#0ea5e9"/>
+  <circle cx="32" cy="40" r="3" fill="#22c55e"/>
+  <circle cx="46" cy="26" r="3" fill="#0ea5e9"/>
+  <circle cx="24" cy="20" r="2" fill="#0ea5e9"/>
+  <circle cx="40" cy="20" r="2" fill="#0ea5e9"/>
+  <circle cx="32" cy="53" r="2.5" fill="#22c55e"/>
+
+  <!-- Border -->
+  <rect x="2.5" y="2.5" width="59" height="59" rx="13.5"
+        fill="none" stroke="rgba(255,255,255,0.08)"/>
+</svg>

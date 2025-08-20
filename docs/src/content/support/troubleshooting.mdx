@@ -1,7 +1,34 @@
 ### Troubleshooting
 
-- SDK not initialized: Ensure `await MindPaystack.init(PaystackConfig(...))` before usage.
-- Invalid keys in production: Use live keys with `Environment.production`.
-- Network timeouts: Increase `timeout`, tune `RetryPolicy`.
-- 401/403 errors: Recheck API keys and environment.
-- Validation errors: Inspect `MindException.validationErrors`.
+#### Common Issues
+
+**SDK not initialized**
+- Ensure `await MindPaystack.initialize(PaystackConfig(...))` before usage
+- Check that initialization is called in main() before runApp() for Flutter
+
+**Invalid keys in production**
+- Use live keys with `Environment.live` for production
+- Verify your API keys are correct and active
+
+**Network timeouts**
+- Increase `timeout` in PaystackConfig
+- Check your internet connection
+- Verify Paystack service status
+
+**401/403 authentication errors**
+- Recheck API keys and environment settings
+- Ensure secret key is used for server-side operations only
+
+**Validation errors**
+- Inspect `MindException.validationErrors` for detailed field errors
+- Verify email format and amount values
+- Check required parameters are provided
+
+**Transaction verification fails**
+- Always verify transactions on your backend
+- Use the correct transaction reference
+- Handle network retries for verification calls
+
+**Type errors with Money/Currency**
+- Use `Money.fromCents(amount, Currency.ngn)` for amounts
+- Don't pass raw integers directly to API methods

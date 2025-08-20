@@ -1,10 +1,269 @@
-### FAQ
+# Frequently Asked Questions
 
-#### Do I need both public and secret keys in Flutter?
-Prefer using only the public key on the client and delegate secret‑key operations to your backend.
+## Getting Started
 
-#### Are amounts in Naira?
-Use the lowest denomination (kobo for NGN). 100000 = ₦1,000.00
+#### How do I initialize the SDK?
+```dart
+await MindPaystack.initialize(PaystackConfig(
+  publicKey: 'pk_test_your_key',
+  secretKey: 'sk_test_your_secret_key',
+  environment: Environment.test,
+));
+```
 
-#### How do I verify payments?
-Always verify via `verifyTransaction(reference)` on your backend.
+#### Can I initialize from environment variables?
+Yes, for better security:
+```dart
+final sdk = await MindPaystack.fromEnvironment();
+```
+This looks for `PAYSTACK_PUBLIC_KEY`, `PAYSTACK_SECRET_KEY`, and `PAYSTACK_ENVIRONMENT` environment variables.
+
+#### What's the difference between test and live environments?
+- **Test environment**: Use `pk_test_` and `sk_test_` keys with `Environment.test`. No real money is charged.
+- **Live environment**: Use `pk_live_` and `sk_live_` keys with `Environment.live` for production.
+
+## Security & API Keys
+
+#### Do I need both public and secret keys in Flutter apps?
+**No.** For client-side Flutter apps, use only the public key. Delegate secret-key operations (like verification) to your backend server for security.
+
+#### How should I store API keys securely?
+- **Flutter**: Use flutter_dotenv or similar packages for environment variables
+- **Backend**: Use environment variables, never hardcode in source code
+- **Production**: Use secure key management services (AWS Secrets Manager, etc.)
+
+#### Can I use the same keys for multiple apps?
+Yes, but consider creating separate Paystack accounts or subaccounts for different applications for better organization and tracking.
+
+## Payments & Transactions
+
+#### How do I handle amounts and currencies?
+Always use the `Money` class:
+```dart
+// ₦500.00 = 50000 kobo
+final amount = Money.fromCents(50000, Currency.ngn);
+
+// Or use the convenience constructor
+final amount = Money.fromNaira(500.00);
+```
+
+#### What currencies are supported?
+Currently, the SDK primarily supports Nigerian Naira (NGN). Additional currencies depend on your Paystack account settings.
+
+#### How do I create a transaction?
+```dart
+final transaction = await MindPaystack.instance.transaction.initialize(
+  InitializeTransactionOptions(
+    email: 'customer@example.com',
+    amount: Money.fromCents(50000, Currency.ngn),
+    reference: 'unique-transaction-ref', // Optional, auto-generated if not provided
+  ),
+);
+```
+
+#### How do I verify a payment?
+**Always verify on your backend** for security:
+```dart
+final verification = await MindPaystack.instance.transaction.verify(
+  VerifyTransactionOptions(reference: transactionReference),
+);
+
+if (verification.data.status == 'success') {
+  // Payment successful - fulfill order
+}
+```
+
+#### How can I list transactions?
+```dart
+final transactions = await MindPaystack.instance.transaction.list(
+  ListTransactionsOptions(
+    status: TransactionStatus.success,
+    page: 1,
+    perPage: 50,
+  ),
+);
+```
+
+#### How do I get transaction analytics?
+```dart
+final totals = await MindPaystack.instance.transaction.totals(
+  TransactionTotalsOptions(),
+);
+```
+
+## Error Handling
+
+#### How should I handle errors?
+Use the structured `MindException` for better error handling:
+```dart
+try {
+  final transaction = await sdk.transaction.initialize(options);
+} on MindException catch (e) {
+  switch (e.category) {
+    case ErrorCategory.network:
+      // Handle network issues
+      break;
+    case ErrorCategory.validation:
+      // Handle validation errors - check e.validationErrors
+      break;
+    case ErrorCategory.paystack:
+      // Handle Paystack API errors
+      break;
+  }
+}
+```
+
+#### What validation errors might occur?
+- Invalid email format
+- Negative or zero amounts  
+- Missing required fields
+- Invalid currency codes
+- Transaction reference conflicts
+
+#### How do I handle network timeouts?
+Configure timeout and retry settings:
+```dart
+PaystackConfig(
+  // ... other settings
+  timeout: Duration(seconds: 30),
+  retryPolicy: RetryPolicy(maxAttempts: 3),
+)
+```
+
+## Platform Support
+
+#### Does MindPaystack work with Flutter?
+Yes, the core package works with Flutter. Dedicated Flutter UI components are coming soon.
+
+#### Can I use this in a Dart server application?
+Absolutely! MindPaystack is built as a pure Dart package and works great for backend services.
+
+#### Does it work on Flutter Web?
+Yes, the core functionality works on Flutter Web for client-side operations.
+
+#### What about Flutter Desktop?
+Yes, Flutter Desktop is supported for the core SDK functionality.
+
+## Features & Roadmap
+
+#### What features are currently available?
+**Available now:**
+- Transaction initialization and verification
+- Transaction listing and fetching
+- Transaction totals and analytics  
+- Transaction timeline viewing
+- Transaction export
+- Charge authorization (for saved payment methods)
+- Partial debits
+- Type-safe money handling
+- Comprehensive error handling
+
+#### What's coming soon?
+- Direct card charging APIs
+- Payment channel management
+- Payment method storage
+- Webhook verification utilities
+- Flutter UI components
+- Subscription management
+
+#### How can I request a feature?
+Create an issue on our [GitHub repository](https://github.com/Dartmind-OpenSource/mind-paystack/issues) with the feature request template.
+
+## Development & Testing
+
+#### How do I test payments without real money?
+Use test API keys (`pk_test_` and `sk_test_`) with `Environment.test`. Paystack provides test card numbers for different scenarios.
+
+#### Can I mock the SDK for unit testing?
+Yes! All services implement interfaces that can be easily mocked:
+```dart
+class MockTransactionService extends Mock implements ITransactionService {}
+
+// Use with GetIt or your DI container
+GetIt.instance.registerSingleton<ITransactionService>(MockTransactionService());
+```
+
+#### How do I run the SDK in CI/CD?
+Set environment variables for your API keys and use `MindPaystack.fromEnvironment()` for initialization.
+
+## Performance & Optimization
+
+#### Is the SDK optimized for production use?
+Yes, it includes:
+- Connection pooling and HTTP/2 support via Dio
+- Automatic retries with exponential backoff
+- Request/response logging (configurable)
+- Structured error handling
+- Type-safe operations to prevent runtime errors
+
+#### How do I enable logging for debugging?
+```dart
+PaystackConfig(
+  // ... other settings
+  logLevel: LogLevel.debug, // For development
+  logLevel: LogLevel.warning, // For production
+)
+```
+
+#### Does the SDK cache responses?
+The SDK uses Dio's built-in caching capabilities. You can configure cache settings through the HTTP client configuration.
+
+## Integration Patterns
+
+#### How do I integrate with GetIt for dependency injection?
+The SDK uses Injectable and integrates seamlessly with GetIt:
+```dart
+// Services are automatically registered when you initialize MindPaystack
+await MindPaystack.initialize(config);
+
+// Access services through the singleton
+final transactionService = MindPaystack.instance.transaction;
+```
+
+#### Can I use this with state management solutions?
+Yes, works great with:
+- **Bloc/Cubit**: Call SDK methods in your business logic layer
+- **Provider**: Use in services that Provider manages
+- **Riverpod**: Create providers that use MindPaystack services
+- **GetX**: Use in GetX controllers
+
+#### How do I handle webhooks from Paystack?
+Webhook utilities are coming soon. Currently, implement webhook verification manually on your backend using Paystack's documentation.
+
+## Migration & Updates
+
+#### How do I migrate from other Paystack SDKs?
+Check our migration guide in the documentation. Key differences:
+- Type-safe Money objects instead of raw integers
+- Structured error handling with MindException
+- Injectable dependency injection
+- Modern Dart patterns (async/await, null safety)
+
+#### How do I update to newer versions?
+Follow semantic versioning:
+- **Patch updates** (1.0.x): Safe to update, bug fixes only
+- **Minor updates** (1.x.0): New features, backward compatible
+- **Major updates** (x.0.0): Breaking changes, check migration guide
+
+#### Are there breaking changes planned?
+We follow semantic versioning strictly. Breaking changes will only occur in major version updates with proper migration guides.
+
+## Troubleshooting
+
+#### The SDK throws "not initialized" errors
+Ensure you call `await MindPaystack.initialize()` before using any services, preferably in your main() function.
+
+#### I'm getting authentication errors in production
+- Verify you're using live API keys with `Environment.live`
+- Check that your Paystack account is activated for live transactions
+- Ensure API keys haven't expired or been regenerated
+
+#### Transactions are not showing up in my Paystack dashboard
+- Check you're looking in the correct environment (test vs live)
+- Verify the transaction actually completed successfully
+- Check if you're using the correct Paystack account
+
+#### Need more help?
+- Check our [troubleshooting guide](/docs/support/troubleshooting)
+- Search [existing GitHub issues](https://github.com/Dartmind-OpenSource/mind-paystack/issues)
+- Create a new issue with detailed information about your problem
