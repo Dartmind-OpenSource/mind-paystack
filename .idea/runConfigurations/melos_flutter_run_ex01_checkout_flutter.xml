@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Flutter Run -&gt; 'ex01_checkout_flutter'" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="filePath" value="$PROJECT_DIR$/apps/ex01_checkout_flutter/lib/main.dart" />
-    <method v="2" />
-  </configuration>
-</component>
