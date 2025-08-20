@@ -22,29 +22,21 @@ class ResourceMapper extends ClassMapperBase<Resource> {
   @override
   Function get typeFactory => <T>(f) => f<Resource<T>>();
 
-  static const Field<Resource, Map<String, dynamic>> _f$json =
-      Field('json', null, mode: FieldMode.param);
-  static dynamic _arg$mapper<T>(f) => f<T Function(Map<String, dynamic>)>();
-  static const Field<Resource, Function> _f$mapper =
-      Field('mapper', null, mode: FieldMode.param, arg: _arg$mapper);
   static bool _$status(Resource v) => v.status;
-  static const Field<Resource, bool> _f$status =
-      Field('status', _$status, mode: FieldMode.member);
+  static const Field<Resource, bool> _f$status = Field('status', _$status);
   static String? _$message(Resource v) => v.message;
   static const Field<Resource, String> _f$message =
-      Field('message', _$message, mode: FieldMode.member);
+      Field('message', _$message, opt: true);
   static dynamic _$data(Resource v) => v.data;
   static dynamic _arg$data<T>(f) => f<T>();
   static const Field<Resource, dynamic> _f$data =
-      Field('data', _$data, mode: FieldMode.member, arg: _arg$data);
+      Field('data', _$data, opt: true, arg: _arg$data);
   static dynamic _$meta(Resource v) => v.meta;
   static const Field<Resource, dynamic> _f$meta =
-      Field('meta', _$meta, mode: FieldMode.member);
+      Field('meta', _$meta, opt: true);
 
   @override
   final MappableFields<Resource> fields = const {
-    #json: _f$json,
-    #mapper: _f$mapper,
     #status: _f$status,
     #message: _f$message,
     #data: _f$data,
@@ -52,7 +44,11 @@ class ResourceMapper extends ClassMapperBase<Resource> {
   };
 
   static Resource<T> _instantiate<T>(DecodingData data) {
-    return Resource.fromMap(data.dec(_f$json), data.dec(_f$mapper));
+    return Resource(
+        status: data.dec(_f$status),
+        message: data.dec(_f$message),
+        data: data.dec(_f$data),
+        meta: data.dec(_f$meta));
   }
 
   @override
@@ -107,9 +103,7 @@ extension ResourceValueCopy<$R, $Out, T>
 
 abstract class ResourceCopyWith<$R, $In extends Resource<T>, $Out, T>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call(
-      {required Map<String, dynamic> json,
-      required T Function(Map<String, dynamic>) mapper});
+  $R call({bool? status, String? message, T? data, dynamic meta});
   ResourceCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -123,12 +117,22 @@ class _ResourceCopyWithImpl<$R, $Out, T>
       ResourceMapper.ensureInitialized();
   @override
   $R call(
-          {required Map<String, dynamic> json,
-          required T Function(Map<String, dynamic>) mapper}) =>
-      $apply(FieldCopyWithData({#json: json, #mapper: mapper}));
+          {bool? status,
+          Object? message = $none,
+          Object? data = $none,
+          Object? meta = $none}) =>
+      $apply(FieldCopyWithData({
+        if (status != null) #status: status,
+        if (message != $none) #message: message,
+        if (data != $none) #data: data,
+        if (meta != $none) #meta: meta
+      }));
   @override
-  Resource<T> $make(CopyWithData data) =>
-      Resource.fromMap(data.get(#json), data.get(#mapper));
+  Resource<T> $make(CopyWithData data) => Resource(
+      status: data.get(#status, or: $value.status),
+      message: data.get(#message, or: $value.message),
+      data: data.get(#data, or: $value.data),
+      meta: data.get(#meta, or: $value.meta));
 
   @override
   ResourceCopyWith<$R2, Resource<T>, $Out2, T> $chain<$R2, $Out2>(
