@@ -1,6 +1,6 @@
 name: ex00_checkout_basic
 description: A sample command-line application.
-version: 1.1.0
+version: 1.1.1
 homepage: https://github.com/Dartmind-OpenSource/mind-paystack
 # repository: https://github.com/my_org/my_repo
 
@@ -10,7 +10,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   dotenv: ^4.2.0
-  mind_paystack: ^0.1.0+1
+  mind_paystack: ^0.1.1
   mocktail: ^1.0.4
   # path: ^1.8.0
 

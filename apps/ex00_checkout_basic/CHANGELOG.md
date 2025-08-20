@@ -1,3 +1,7 @@
+## 1.1.1
+
+ - Update a dependency to the latest release.
+
 ## 1.1.0
 
  - **FEAT**: enhance ex00_checkout_basic CLI with improved transaction handling and user prompts. ([3c1b377d](https://github.com/Dartmind-OpenSource/mind-paystack/commit/3c1b377dd6595bac72fb40c2676343121d6e28f5))
