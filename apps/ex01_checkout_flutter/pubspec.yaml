@@ -1,5 +1,6 @@
 name: ex01_checkout_flutter
 description: "A new Flutter project."
+homepage: https://github.com/Dartmind-OpenSource/mind-paystack
 publish_to: 'none'
 version: 0.1.0
 
@@ -11,8 +12,7 @@ dependencies:
     sdk: flutter
   flutter_dotenv: ^5.2.1
   json_annotation: ^4.9.0
-  mind_paystack:
-    path: ../../packages/mind_paystack
+  mind_paystack: ^0.1.0+1
   url_launcher: ^6.3.2
   webview_flutter: ^4.13.0
 

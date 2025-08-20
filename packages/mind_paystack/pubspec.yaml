@@ -1,6 +1,7 @@
 name: mind_paystack
 description: My new Dart package
 version: 0.1.0+1
+homepage: https://github.com/Dartmind-OpenSource/mind-paystack
 publish_to: none
 
 environment:
