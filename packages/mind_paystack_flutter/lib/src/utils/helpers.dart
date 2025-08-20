@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../models/custom_card_type_icon.dart';
-import 'constants.dart';
-import 'enumerations.dart';
+import 'package:mind_paystack_flutter/src/models/custom_card_type_icon.dart';
+import 'package:mind_paystack_flutter/src/utils/constants.dart';
+import 'package:mind_paystack_flutter/src/utils/enumerations.dart';
 
 /// Uses the predefined prefixes from [AppConstants.cardNumPatterns] to match
 /// with the prefix of the [cardNumber] in order to detect the [CardType].
@@ -16,7 +16,7 @@ CardType detectCCType(String cardNumber) {
   // Remove any spaces
   cardNumber = cardNumber.replaceAll(RegExp(r'\s+\b|\b\s'), '');
 
-  final int firstDigit = int.parse(
+  final firstDigit = int.parse(
     cardNumber.length <= 1 ? cardNumber : cardNumber.substring(0, 1),
   );
 
@@ -24,23 +24,23 @@ CardType detectCCType(String cardNumber) {
     return CardType.otherBrand;
   }
 
-  final Map<List<int?>, CardType> cardNumPatternSubMap =
+  final cardNumPatternSubMap =
       AppConstants.cardNumPatterns[firstDigit]!;
 
-  final int ccPatternNum = int.parse(cardNumber);
+  final ccPatternNum = int.parse(cardNumber);
 
-  for (final List<int?> range in cardNumPatternSubMap.keys) {
-    int subPatternNum = ccPatternNum;
+  for (final range in cardNumPatternSubMap.keys) {
+    var subPatternNum = ccPatternNum;
 
     if (range.length != 2 || range.first == null) {
       continue;
     }
 
-    final int start = range.first!;
-    final int? end = range.last;
+    final start = range.first!;
+    final end = range.last;
 
     // Adjust the cardNumber prefix as per the length of start prefix range.
-    final int startLen = start.toString().length;
+    final startLen = start.toString().length;
     if (startLen < cardNumber.length) {
       subPatternNum = int.parse(cardNumber.substring(0, startLen));
     }
@@ -71,7 +71,7 @@ Widget getCardTypeImage({
   return customIcons.firstWhere(
     (CustomCardTypeIcon element) => element.cardType == cardType,
     orElse: () {
-      final bool isKnownCardType =
+      final isKnownCardType =
           AppConstants.cardTypeIconAsset.containsKey(cardType);
 
       return CustomCardTypeIcon(
@@ -92,7 +92,7 @@ Widget getCardTypeImage({
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+      TextEditingValue oldValue, TextEditingValue newValue,) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,

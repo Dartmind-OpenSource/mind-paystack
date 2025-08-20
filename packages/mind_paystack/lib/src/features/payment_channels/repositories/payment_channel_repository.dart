@@ -225,7 +225,7 @@ class PaymentChannelRepository {
   }) async {
     try {
       final response = await _httpClient.post<Map<String, dynamic>>(
-        '$_baseEndpoint',
+        _baseEndpoint,
         data: {
           'amount': amount,
           'email': email,
@@ -241,7 +241,7 @@ class PaymentChannelRepository {
       return ChargeResponse.fromJson(
         response.data ?? {},
       );
-    } catch (e, s) {
+    } catch (e) {
       throw _handleError(e, 'Failed to charge card');
     }
   }

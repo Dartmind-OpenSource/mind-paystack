@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../models/credit_card_brand.dart';
-import '../models/credit_card_model.dart';
+import 'package:mind_paystack_flutter/src/models/credit_card_brand.dart';
+import 'package:mind_paystack_flutter/src/models/credit_card_model.dart';
 
 typedef CCModelChangeCallback = void Function(CreditCardModel);
 

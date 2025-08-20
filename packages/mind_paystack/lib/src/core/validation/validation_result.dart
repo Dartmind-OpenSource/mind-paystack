@@ -80,7 +80,7 @@ class ValidationResult with _$ValidationResult {
   ValidationResult combine(ValidationResult other) {
     return when(
       success: () => other,
-      failure: (message) => ValidationResult.failure(message),
+      failure: ValidationResult.failure,
     );
   }
 }

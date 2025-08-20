@@ -19,7 +19,9 @@ class PaymentMethod with _$PaymentMethod {
     /// Email of the customer associated with this payment method
     required String email,
 
-    /// Currency of the payment method
+    /// Creation timestamp
+    required DateTime createdAt, /// Last update timestamp
+    required DateTime updatedAt, /// Currency of the payment method
     @Default('NGN') String currency,
 
     /// Bank code (if applicable)
@@ -57,12 +59,6 @@ class PaymentMethod with _$PaymentMethod {
 
     /// Signature hash for the payment method
     String? signature,
-
-    /// Creation timestamp
-    required DateTime createdAt,
-
-    /// Last update timestamp
-    required DateTime updatedAt,
   }) = _PaymentMethod;
 
   factory PaymentMethod.fromJson(Map<String, dynamic> json) =>

@@ -13,7 +13,7 @@ class TransactionRepository {
   ) async {
     final res = await _httpClient.post<Map<String, dynamic>>(
         '/transaction/initialize',
-        data: options.toMap());
+        data: options.toMap(),);
     return Resource.fromMap(
       res.data!,
       TransactionInitializationMapper.fromMap,
@@ -35,7 +35,7 @@ class TransactionRepository {
     ListTransactionsOptions? options,
   }) async {
     final res = await _httpClient.get<Map<String, dynamic>>('/transaction',
-        queryParameters: options?.toMap());
+        queryParameters: options?.toMap(),);
     return Resource.fromMap(
       res.data!,
       TransactionListMapper.fromMap,
@@ -105,7 +105,7 @@ class TransactionRepository {
   ) async {
     final res = await _httpClient.post<Map<String, dynamic>>(
         '/transaction/partial_debit',
-        data: options.toMap());
+        data: options.toMap(),);
     return Resource.fromMap(
       res.data!,
       PartialDebitMapper.fromMap,

@@ -181,7 +181,7 @@ class AmountValidator implements Validator<String> {
       case 'NGN':
         return '₦';
       case 'USD':
-        return '\$';
+        return r'$';
       case 'GHS':
         return 'GH₵';
       case 'ZAR':

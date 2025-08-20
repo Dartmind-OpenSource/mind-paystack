@@ -11,14 +11,10 @@ class CardBinInfo with _$CardBinInfo {
     /// Card brand
     required String brand,
 
-    /// Sub brand
-    String? subBrand,
-
     /// Country code
-    required String countryCode,
-
-    /// Card type (debit, credit)
-    required String cardType,
+    required String countryCode, /// Card type (debit, credit)
+    required String cardType, /// Sub brand
+    String? subBrand,
 
     /// Bank name
     String? bankName,

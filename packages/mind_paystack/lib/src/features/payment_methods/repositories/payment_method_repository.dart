@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/error_metadata.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
 
@@ -44,7 +43,7 @@ class PaymentMethodRepository {
       return data
           .map((json) => PaymentMethod.fromJson(
                 json?['data'] as Map<String, dynamic>? ?? {},
-              ))
+              ),)
           .toList();
     } catch (e) {
       throw _handleError(e, 'Failed to list payment methods');

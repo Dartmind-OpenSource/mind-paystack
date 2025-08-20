@@ -4,16 +4,6 @@ part 'timeline_log.mapper.dart';
 
 @MappableClass()
 class TimelineLog with TimelineLogMappable {
-  @MappableField(key: 'time_spent')
-  final int? timeSpent;
-  final int? attempts;
-  final dynamic authentication; // e.g. "pin", may be string or structured
-  final int? errors;
-  final bool? success;
-  final bool? mobile;
-  final List<dynamic>? input; // free-form
-  final String? channel; // e.g. card
-  final List<TimelineEvent>? history;
 
   const TimelineLog({
     this.timeSpent,
@@ -26,4 +16,14 @@ class TimelineLog with TimelineLogMappable {
     this.channel,
     this.history,
   });
+  @MappableField(key: 'time_spent')
+  final int? timeSpent;
+  final int? attempts;
+  final dynamic authentication; // e.g. "pin", may be string or structured
+  final int? errors;
+  final bool? success;
+  final bool? mobile;
+  final List<dynamic>? input; // free-form
+  final String? channel; // e.g. card
+  final List<TimelineEvent>? history;
 }

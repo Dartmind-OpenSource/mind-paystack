@@ -3,10 +3,6 @@ part 'partial_debit.mapper.dart';
 
 @MappableClass()
 class PartialDebit with PartialDebitMappable {
-  final String reference;
-  final String status;
-  final int amount; // subunits
-  final String currency;
 
   const PartialDebit({
     required this.reference,
@@ -14,4 +10,8 @@ class PartialDebit with PartialDebitMappable {
     required this.amount,
     required this.currency,
   });
+  final String reference;
+  final String status;
+  final int amount; // subunits
+  final String currency;
 }

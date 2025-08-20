@@ -14,7 +14,8 @@ class ChannelFees with _$ChannelFees {
     /// Fee percentage
     required double percentage,
 
-    /// Cap on fees
+    /// Currency
+    required String currency, /// Cap on fees
     int? cap,
 
     /// Additional fees
@@ -22,9 +23,6 @@ class ChannelFees with _$ChannelFees {
 
     /// Fee breakdown
     Map<String, dynamic>? breakdown,
-
-    /// Currency
-    required String currency,
   }) = _ChannelFees;
 
   factory ChannelFees.fromJson(Map<String, dynamic> json) =>

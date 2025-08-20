@@ -4,11 +4,11 @@ part 'transaction_timeline.mapper.dart';
 
 @MappableClass()
 class TransactionTimeline with TransactionTimelineMappable {
-  final String idOrReference;
-  final TimelineLog log;
 
   const TransactionTimeline({
     required this.idOrReference,
     required this.log,
   });
+  final String idOrReference;
+  final TimelineLog log;
 }

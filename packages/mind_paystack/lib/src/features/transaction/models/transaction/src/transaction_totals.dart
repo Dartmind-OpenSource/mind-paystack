@@ -4,6 +4,16 @@ part 'transaction_totals.mapper.dart';
 
 @MappableClass()
 class TransactionTotals with TransactionTotalsMappable {
+
+  const TransactionTotals({
+    this.totalTransactions,
+    this.uniqueCustomers,
+    this.totalVolume,
+    this.totalVolumeByCurrency,
+    this.pendingTransfers,
+    this.pendingTransactions,
+    this.disabledTransactions,
+  });
   @MappableField(key: 'total_transactions')
   final int? totalTransactions;
   @MappableField(key: 'unique_customers')
@@ -18,14 +28,4 @@ class TransactionTotals with TransactionTotalsMappable {
   final int? pendingTransactions;
   @MappableField(key: 'disabled_transactions')
   final int? disabledTransactions;
-
-  const TransactionTotals({
-    this.totalTransactions,
-    this.uniqueCustomers,
-    this.totalVolume,
-    this.totalVolumeByCurrency,
-    this.pendingTransfers,
-    this.pendingTransactions,
-    this.disabledTransactions,
-  });
 }

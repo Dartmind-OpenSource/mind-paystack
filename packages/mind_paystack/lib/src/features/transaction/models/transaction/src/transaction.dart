@@ -6,6 +6,34 @@ part 'transaction.mapper.dart';
 
 @MappableClass()
 class Transaction with TransactionMappable {
+
+  const Transaction({
+    required this.id,
+    required this.domain,
+    required this.status,
+    required this.reference,
+    required this.amount, required this.createdAt, required this.channel, required this.currency, this.receiptNumber,
+    this.gatewayResponse,
+    this.paidAt,
+    this.ipAddress,
+    this.metadata,
+    this.log,
+    this.fees,
+    this.feesSplit,
+    this.authorization,
+    this.customer,
+    this.plan,
+    this.split,
+    this.orderId,
+    this.requestedAmount,
+    this.posTransactionData,
+    this.source,
+    this.feesBreakdown,
+    this.connect,
+    this.transactionDate,
+    this.planObject,
+    this.subaccount,
+  });
   final int id;
   final String domain; // e.g. test/live
   final String status; // e.g. success, failed, abandoned, reversed
@@ -47,36 +75,4 @@ class Transaction with TransactionMappable {
   @MappableField(key: 'plan_object')
   final Map<String, dynamic>? planObject;
   final Map<String, dynamic>? subaccount;
-
-  const Transaction({
-    required this.id,
-    required this.domain,
-    required this.status,
-    required this.reference,
-    this.receiptNumber,
-    required this.amount,
-    this.gatewayResponse,
-    this.paidAt,
-    required this.createdAt,
-    required this.channel,
-    required this.currency,
-    this.ipAddress,
-    this.metadata,
-    this.log,
-    this.fees,
-    this.feesSplit,
-    this.authorization,
-    this.customer,
-    this.plan,
-    this.split,
-    this.orderId,
-    this.requestedAmount,
-    this.posTransactionData,
-    this.source,
-    this.feesBreakdown,
-    this.connect,
-    this.transactionDate,
-    this.planObject,
-    this.subaccount,
-  });
 }

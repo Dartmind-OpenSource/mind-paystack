@@ -47,6 +47,9 @@ class Money with _$Money {
     required Currency currency,
   }) = _Money;
 
+  /// JSON serialization
+  factory Money.fromJson(Map<String, dynamic> json) => _$MoneyFromJson(json);
+
   const Money._();
 
   /// Creates Money from major currency units (e.g., Naira, Dollars).
@@ -115,14 +118,14 @@ class Money with _$Money {
     
     // Add thousand separators
     final buffer = StringBuffer();
-    for (int i = 0; i < integerPart.length; i++) {
+    for (var i = 0; i < integerPart.length; i++) {
       if (i > 0 && (integerPart.length - i) % 3 == 0) {
         buffer.write(',');
       }
       buffer.write(integerPart[i]);
     }
     
-    return '${currency.symbol}${buffer.toString()}.$decimalPart';
+    return '${currency.symbol}$buffer.$decimalPart';
   }
 
   /// Formats the amount for Paystack API (subunits as string).
@@ -278,7 +281,4 @@ class Money with _$Money {
       );
     }
   }
-
-  /// JSON serialization
-  factory Money.fromJson(Map<String, dynamic> json) => _$MoneyFromJson(json);
 }

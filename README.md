@@ -339,39 +339,48 @@ try {
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome and appreciate contributions from developers of all skill levels! 
 
-### 🐛 Found a Bug?
-[**Open an Issue**](https://github.com/Dartmind-OpenSource/mind-paystack/issues/new?template=bug_report.md) with:
-- Clear reproduction steps
-- Expected vs actual behavior
-- Dart/Flutter version info
+### 📖 **[Read our Comprehensive Contributing Guide →](https://mind-paystack-docs.vercel.app/docs/support/contributing)**
 
-### 💡 Have an Idea?
-[**Request a Feature**](https://github.com/Dartmind-OpenSource/mind-paystack/issues/new?template=feature_request.md) or start a [**Discussion**](https://github.com/Dartmind-OpenSource/mind-paystack/discussions)
+Our detailed contribution guide covers:
 
-### 🔧 Want to Contribute Code?
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Make** your changes with tests
-4. **Run** checks: `dart analyze && dart test`
-5. **Submit** a Pull Request
+- **🚀 Quick Start** - Get up and running in minutes
+- **📁 Project Structure** - Understanding the monorepo architecture  
+- **🛠️ Development Workflow** - Step-by-step contribution process
+- **📝 Code Standards** - Dart/Flutter style guidelines with examples
+- **🧪 Testing Guidelines** - TDD approach, mocking, and coverage requirements
+- **🔄 Pull Request Process** - Templates, checklists, and review process
+- **🛡️ Security Guidelines** - Best practices for handling sensitive data
+- **🔧 Development Tools** - VS Code settings, Melos commands, Git hooks
 
-### 📊 Development Setup
+### Quick Links
+
+| I Want To... | Action |
+|--------------|--------|
+| **🐛 Report a Bug** | [Open an Issue](https://github.com/Dartmind-OpenSource/mind-paystack/issues/new?template=bug_report.md) |
+| **💡 Request a Feature** | [Request Feature](https://github.com/Dartmind-OpenSource/mind-paystack/issues/new?template=feature_request.md) |
+| **💬 Ask Questions** | [Start a Discussion](https://github.com/Dartmind-OpenSource/mind-paystack/discussions) |
+| **🔧 Contribute Code** | [See Contributing Guide](https://mind-paystack-docs.vercel.app/docs/support/contributing) |
+
+### Quick Development Setup
+
 ```bash
-# Clone the repository
-git clone https://github.com/Dartmind-OpenSource/mind-paystack.git
+# 1. Fork and clone the repository
+git clone https://github.com/your-username/mind-paystack.git
 cd mind-paystack
 
-# Install dependencies
+# 2. Install Melos and bootstrap packages
+dart pub global activate melos
 melos bootstrap
 
-# Run tests
-melos run test
+# 3. Verify setup
+melos run test && melos run analyze
 
-# Run analysis
-melos run analyze
+# 🎉 You're ready to contribute!
 ```
+
+**New to open source?** We're here to help! Check out issues labeled [`good first issue`](https://github.com/Dartmind-OpenSource/mind-paystack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) for beginner-friendly contributions.
 
 ---
 

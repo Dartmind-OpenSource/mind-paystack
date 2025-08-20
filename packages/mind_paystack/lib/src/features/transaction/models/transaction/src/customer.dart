@@ -4,6 +4,15 @@ part 'customer.mapper.dart';
 
 @MappableClass()
 class Customer with CustomerMappable {
+
+  const Customer({
+    required this.id,
+    required this.email, required this.customerCode, this.firstName,
+    this.lastName,
+    this.phone,
+    this.metadata,
+    this.riskAction,
+  });
   final int id;
   final String? firstName;
   final String? lastName;
@@ -14,15 +23,4 @@ class Customer with CustomerMappable {
   final dynamic metadata; // Paystack allows arbitrary metadata shape
   @MappableField(key: 'risk_action')
   final String? riskAction;
-
-  const Customer({
-    required this.id,
-    this.firstName,
-    this.lastName,
-    required this.email,
-    required this.customerCode,
-    this.phone,
-    this.metadata,
-    this.riskAction,
-  });
 }

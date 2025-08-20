@@ -14,7 +14,9 @@ class Bank with _$Bank {
     /// Bank slug
     required String slug,
 
-    /// Bank USSD code
+    /// Country where bank operates
+    required String country, /// Creation timestamp
+    required DateTime createdAt, /// Bank USSD code
     String? ussdCode,
 
     /// Bank logo URL
@@ -26,17 +28,11 @@ class Bank with _$Bank {
     /// Whether bank is active
     @Default(true) bool isActive,
 
-    /// Country where bank operates
-    required String country,
-
     /// Bank type (commercial, microfinance, etc)
     String? type,
 
     /// Gateway identifier
     String? gateway,
-
-    /// Creation timestamp
-    required DateTime createdAt,
   }) = _Bank;
 
   factory Bank.fromJson(Map<String, dynamic> json) => _$BankFromJson(json);

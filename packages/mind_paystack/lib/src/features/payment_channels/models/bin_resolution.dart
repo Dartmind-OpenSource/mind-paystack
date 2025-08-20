@@ -14,11 +14,9 @@ class BinResolution with _$BinResolution {
     /// Card type
     required String cardType,
 
-    /// Bank name
-    String? bankName,
-
     /// Country code
-    required String countryCode,
+    required String countryCode, /// Bank name
+    String? bankName,
 
     /// Card category
     String? category,

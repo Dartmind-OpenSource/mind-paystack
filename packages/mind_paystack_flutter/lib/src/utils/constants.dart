@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/rendering.dart';
 
-import 'asset_paths.dart';
-import 'enumerations.dart';
+import 'package:mind_paystack_flutter/src/utils/asset_paths.dart';
+import 'package:mind_paystack_flutter/src/utils/enumerations.dart';
 
 class AppConstants {
   const AppConstants._();

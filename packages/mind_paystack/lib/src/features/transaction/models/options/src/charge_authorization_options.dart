@@ -3,17 +3,6 @@ part 'charge_authorization_options.mapper.dart';
 
 @MappableClass()
 class ChargeAuthorizationOptions with ChargeAuthorizationOptionsMappable {
-  final String email;
-  final String amount;
-  final String authorizationCode;
-  final String? reference;
-  final String? currency;
-  final Map<String, dynamic>? metadata;
-  final List<String>? channels;
-  final String? subaccount;
-  final int? transactionCharge;
-  final String? bearer;
-  final bool? queue;
 
   const ChargeAuthorizationOptions({
     required this.email,
@@ -28,4 +17,15 @@ class ChargeAuthorizationOptions with ChargeAuthorizationOptionsMappable {
     this.bearer,
     this.queue,
   });
+  final String email;
+  final String amount;
+  final String authorizationCode;
+  final String? reference;
+  final String? currency;
+  final Map<String, dynamic>? metadata;
+  final List<String>? channels;
+  final String? subaccount;
+  final int? transactionCharge;
+  final String? bearer;
+  final bool? queue;
 }

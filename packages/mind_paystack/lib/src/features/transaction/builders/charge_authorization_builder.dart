@@ -1,5 +1,4 @@
 import 'package:mind_paystack/mind_paystack.dart';
-import 'package:mind_paystack/src/features/transaction/models/options/options.dart';
 
 /// Builder for creating ChargeAuthorizationOptions with a fluent API
 class ChargeAuthorizationBuilder {

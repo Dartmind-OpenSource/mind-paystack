@@ -9,7 +9,7 @@ class MaskedTextController extends TextEditingController {
     this.translator = translator ?? MaskedTextController.getDefaultTranslator();
 
     addListener(() {
-      final String previous = _lastUpdatedText;
+      final previous = _lastUpdatedText;
       if (beforeChange(previous, text)) {
         updateText(text);
         afterChange(previous, text);
@@ -53,7 +53,7 @@ class MaskedTextController extends TextEditingController {
   }
 
   void moveCursorToEnd() {
-    final String text = _lastUpdatedText;
+    final text = _lastUpdatedText;
     selection = TextSelection.fromPosition(TextPosition(offset: text.length));
   }
 
@@ -67,18 +67,18 @@ class MaskedTextController extends TextEditingController {
 
   static Map<String, RegExp> getDefaultTranslator() {
     return <String, RegExp>{
-      'A': RegExp(r'[A-Za-z]'),
-      '0': RegExp(r'[0-9]'),
-      '@': RegExp(r'[A-Za-z0-9]'),
-      '*': RegExp(r'.*')
+      'A': RegExp('[A-Za-z]'),
+      '0': RegExp('[0-9]'),
+      '@': RegExp('[A-Za-z0-9]'),
+      '*': RegExp('.*'),
     };
   }
 
   String _applyMask(String? mask, String value) {
-    String result = '';
+    var result = '';
 
-    int maskCharIndex = 0;
-    int valueCharIndex = 0;
+    var maskCharIndex = 0;
+    var valueCharIndex = 0;
 
     while (true) {
       // if mask is ended, break.
@@ -91,8 +91,8 @@ class MaskedTextController extends TextEditingController {
         break;
       }
 
-      final String maskChar = mask[maskCharIndex];
-      final String valueChar = value[valueCharIndex];
+      final maskChar = mask[maskCharIndex];
+      final valueChar = value[valueCharIndex];
 
       // value equals mask, just set
       if (maskChar == valueChar) {

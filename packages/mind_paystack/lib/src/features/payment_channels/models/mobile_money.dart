@@ -11,23 +11,19 @@ class MobileMoney with _$MobileMoney {
     /// Provider name
     required String name,
 
-    /// Provider logo URL
+    /// Country of operation
+    required String country, /// Creation timestamp
+    required DateTime createdAt, /// Provider logo URL
     String? logoUrl,
 
     /// Supported currencies
     List<String>? currencies,
-
-    /// Country of operation
-    required String country,
 
     /// Whether provider is active
     @Default(true) bool isActive,
 
     /// Payment type
     @Default('mobile_money') String type,
-
-    /// Creation timestamp
-    required DateTime createdAt,
   }) = _MobileMoney;
 
   factory MobileMoney.fromJson(Map<String, dynamic> json) =>

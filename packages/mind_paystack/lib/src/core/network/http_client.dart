@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:injectable/injectable.dart';
 import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/errors/extensions/x_mind_exception.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';

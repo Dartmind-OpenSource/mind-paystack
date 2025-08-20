@@ -48,6 +48,10 @@ class Currency with _$Currency {
     required String name,
   }) = _Currency;
 
+  /// JSON serialization
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
+
   /// Nigerian Naira currency constant
   static const ngn = Currency(
     code: 'NGN',
@@ -59,7 +63,7 @@ class Currency with _$Currency {
   /// US Dollar currency constant
   static const usd = Currency(
     code: 'USD',
-    symbol: '\$',
+    symbol: r'$',
     subunitFactor: 100,
     name: 'US Dollar',
   );
@@ -109,8 +113,4 @@ class Currency with _$Currency {
       return null;
     }
   }
-
-  /// JSON serialization
-  factory Currency.fromJson(Map<String, dynamic> json) =>
-      _$CurrencyFromJson(json);
 }

@@ -13,17 +13,17 @@ class Validators {
       return errorMsg;
     }
 
-    final DateTime now = DateTime.now();
-    final List<String> date = value!.split(RegExp(r'/'));
+    final now = DateTime.now();
+    final date = value!.split(RegExp('/'));
 
-    final int month = int.parse(date.first);
-    final int year = int.parse('20${date.last}');
+    final month = int.parse(date.first);
+    final year = int.parse('20${date.last}');
 
-    final int lastDayOfMonth = month < 12
+    final lastDayOfMonth = month < 12
         ? DateTime(year, month + 1, 0).day
         : DateTime(year + 1, 1, 0).day;
 
-    final DateTime cardDate =
+    final cardDate =
         DateTime(year, month, lastDayOfMonth, 23, 59, 59, 999);
 
     if (cardDate.isBefore(now) || month > 12 || month == 0) {

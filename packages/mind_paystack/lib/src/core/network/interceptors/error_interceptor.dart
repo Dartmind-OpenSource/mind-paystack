@@ -57,7 +57,7 @@ class ErrorInterceptor extends Interceptor {
     }
   }
 
-  MindException _handleResponseError(DioError error) {
+  MindException _handleResponseError(DioException error) {
     final response = error.response;
     final statusCode = response?.statusCode;
     final data = response?.data;

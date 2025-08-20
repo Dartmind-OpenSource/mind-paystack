@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mind_paystack_flutter/mind_paystack_flutter.dart' show CreditCardForm;
+import 'package:mind_paystack_flutter/src/credit_card_form.dart' show CreditCardForm;
 import 'package:mind_paystack_flutter/src/utils/constants.dart';
 
 class InputConfiguration {

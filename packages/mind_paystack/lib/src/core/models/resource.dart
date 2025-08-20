@@ -4,6 +4,14 @@ part 'resource.mapper.dart';
 
 @MappableClass()
 class Resource<T> with ResourceMappable<T> {
+  // optional pagination or extra metadata
+
+  const Resource({
+    required this.status,
+    this.message,
+    this.data,
+    this.meta,
+  });
   factory Resource.fromMap(
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) mapper,
@@ -17,14 +25,6 @@ class Resource<T> with ResourceMappable<T> {
       meta: json['meta'],
     );
   }
-  // optional pagination or extra metadata
-
-  const Resource({
-    required this.status,
-    this.message,
-    this.data,
-    this.meta,
-  });
   final bool status;
   final String? message;
   final T? data;

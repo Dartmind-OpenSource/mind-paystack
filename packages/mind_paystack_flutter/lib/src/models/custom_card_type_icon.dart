@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../utils/enumerations.dart';
+import 'package:mind_paystack_flutter/src/utils/enumerations.dart';
 
 class CustomCardTypeIcon {
   /// A model class to update card image with user defined widget for the

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/services/text_formatter.dart';
+import 'package:mind_paystack_flutter/src/masked_text_controller.dart';
 import 'package:mind_paystack_flutter/src/models/credit_card_model.dart';
 import 'package:mind_paystack_flutter/src/models/input_configuration.dart';
-
-import 'package:mind_paystack_flutter/src/masked_text_controller.dart';
 import 'package:mind_paystack_flutter/src/utils/constants.dart';
 import 'package:mind_paystack_flutter/src/utils/helpers.dart';
 import 'package:mind_paystack_flutter/src/utils/typedefs.dart';
@@ -196,7 +195,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
           Visibility(
             visible: widget.isCardNumberVisible,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
               child: TextFormField(
                 key: widget.cardNumberKey,
@@ -227,7 +226,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
                 visible: widget.isExpiryDateVisible,
                 child: Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
                     child: TextFormField(
                       key: widget.expiryDateKey,
@@ -243,7 +242,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       autofillHints: const <String>[
-                        AutofillHints.creditCardExpirationDate
+                        AutofillHints.creditCardExpirationDate,
                       ],
                       validator: widget.expiryDateValidator ??
                           (String? value) => Validators.expiryDateValidator(
@@ -258,7 +257,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
                 child: Visibility(
                   visible: widget.enableCvv,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
                     child: TextFormField(
                       key: widget.cvvCodeKey,
@@ -274,7 +273,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
                           ? TextInputAction.next
                           : TextInputAction.done,
                       autofillHints: const <String>[
-                        AutofillHints.creditCardSecurityCode
+                        AutofillHints.creditCardSecurityCode,
                       ],
                       onChanged: _onCvvChange,
                       validator: widget.cvvValidator ??
@@ -291,7 +290,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
           Visibility(
             visible: widget.isHolderNameVisible,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
               child: TextFormField(
                 key: widget.cardHolderKey,
@@ -358,7 +357,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
   }
 
   void _onExpiryDateChange(String value) {
-    final String expiry = _expiryDateController.text;
+    final expiry = _expiryDateController.text;
     _expiryDateController.text =
         expiry.startsWith(RegExp('[2-9]')) ? '0$expiry' : expiry;
     setState(() {

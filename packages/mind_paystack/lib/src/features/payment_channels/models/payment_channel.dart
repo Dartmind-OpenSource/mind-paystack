@@ -20,7 +20,10 @@ class PaymentChannel with _$PaymentChannel {
     /// Currency supported by the channel
     required String currency,
 
-    /// Minimum amount allowed
+    /// Country where channel is available
+    required String country, /// Creation timestamp
+    required DateTime createdAt, /// Last update timestamp
+    required DateTime updatedAt, /// Minimum amount allowed
     int? minimumAmount,
 
     /// Maximum amount allowed
@@ -34,15 +37,6 @@ class PaymentChannel with _$PaymentChannel {
 
     /// Whether channel supports recurring payments
     @Default(false) bool supportsRecurring,
-
-    /// Country where channel is available
-    required String country,
-
-    /// Creation timestamp
-    required DateTime createdAt,
-
-    /// Last update timestamp
-    required DateTime updatedAt,
   }) = _PaymentChannel;
 
   factory PaymentChannel.fromJson(Map<String, dynamic> json) =>

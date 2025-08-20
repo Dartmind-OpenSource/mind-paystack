@@ -3,17 +3,6 @@ part 'export_transactions_options.mapper.dart';
 
 @MappableClass()
 class ExportTransactionsOptions with ExportTransactionsOptionsMappable {
-  final int? perPage;
-  final int? page;
-  final DateTime? from;
-  final DateTime? to;
-  final int? customer;
-  final String? status;
-  final String? currency;
-  final int? amount;
-  final bool? settled;
-  final int? settlement;
-  final int? paymentPage;
 
   const ExportTransactionsOptions({
     this.perPage,
@@ -28,4 +17,15 @@ class ExportTransactionsOptions with ExportTransactionsOptionsMappable {
     this.settlement,
     this.paymentPage,
   });
+  final int? perPage;
+  final int? page;
+  final DateTime? from;
+  final DateTime? to;
+  final int? customer;
+  final String? status;
+  final String? currency;
+  final int? amount;
+  final bool? settled;
+  final int? settlement;
+  final int? paymentPage;
 }

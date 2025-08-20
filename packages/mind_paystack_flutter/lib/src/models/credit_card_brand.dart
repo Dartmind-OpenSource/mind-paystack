@@ -1,4 +1,4 @@
-import '../utils/enumerations.dart';
+import 'package:mind_paystack_flutter/src/utils/enumerations.dart';
 
 class CreditCardBrand {
   CreditCardBrand(this.brandName);

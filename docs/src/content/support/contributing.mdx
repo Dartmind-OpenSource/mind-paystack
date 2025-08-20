@@ -1,10 +1,713 @@
-### Contributing
+# Contributing to MindPaystack
 
-Contributions are welcome! To get started:
+Thank you for your interest in contributing to MindPaystack! This guide will help you get started and ensure your contributions align with our project standards.
 
-1) Fork and clone the repo
-2) Enable Melos if needed and bootstrap packages
-3) Run format, analyze, and tests
-4) Open a PR describing your changes and rationale
+## 🚀 Quick Start
 
-Please follow the existing code style and add tests for new features.
+### Prerequisites
+
+Before contributing, ensure you have:
+
+- **Dart SDK**: Version 3.8.1 or higher
+- **Flutter SDK**: Latest stable version (for Flutter examples)
+- **Git**: For version control
+- **Melos**: For monorepo management
+- **IDE/Editor**: VS Code, IntelliJ, or your preferred Dart IDE
+
+### First-Time Setup
+
+```bash
+# 1. Fork and clone the repository
+git clone https://github.com/your-username/mind-paystack.git
+cd mind-paystack
+
+# 2. Install Melos globally (if not already installed)
+dart pub global activate melos
+
+# 3. Bootstrap the project
+melos bootstrap
+
+# 4. Verify setup
+melos run test
+melos run analyze
+```
+
+## 📁 Project Structure
+
+```
+mind-paystack/
+├── packages/
+│   └── mind_paystack/          # Core SDK package
+├── apps/
+│   ├── ex00_checkout_basic/    # Dart CLI example
+│   └── ex01_checkout_flutter/  # Flutter app example
+├── docs/                       # Documentation site (Nextra)
+├── melos.yaml                  # Monorepo configuration
+└── README.md                   # Project overview
+```
+
+## 🛠 Development Workflow
+
+### 1. Create a Feature Branch
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/issue-description
+```
+
+### 2. Make Your Changes
+
+- Follow our [code standards](#code-standards)
+- Write tests for new functionality
+- Update documentation as needed
+- Test across all relevant packages
+
+### 3. Test Your Changes
+
+```bash
+# Run all tests across the monorepo
+melos run test
+
+# Run tests for specific package
+melos run test --scope=mind_paystack
+
+# Analyze code
+melos run analyze
+
+# Format code
+melos run format
+```
+
+### 4. Commit and Push
+
+```bash
+git add .
+git commit -m "feat: add your feature description"
+git push origin feature/your-feature-name
+```
+
+## 📝 Code Standards
+
+### Dart Style Guidelines
+
+We follow the official [Dart Style Guide](https://dart.dev/guides/language/effective-dart) and [Effective Dart](https://dart.dev/guides/language/effective-dart).
+
+#### Formatting
+- Use `dart format` to format your code
+- Line length: 80 characters maximum
+- Use 2 spaces for indentation
+- Trailing commas for better diffs
+
+#### Naming Conventions
+```dart
+// Classes: PascalCase
+class PaystackTransaction {}
+
+// Functions and variables: camelCase
+void initializePayment() {}
+final String transactionReference = 'txn_123';
+
+// Constants: lowerCamelCase with const
+const String defaultCurrency = 'NGN';
+const int maxRetryAttempts = 3;
+
+// Private members: leading underscore
+String _buildAuthHeader() {}
+```
+
+#### Documentation Standards
+```dart
+/// Initializes a payment transaction with Paystack.
+///
+/// This method creates a new transaction and returns the authorization URL
+/// that customers can use to complete their payment. The transaction will
+/// be created with the specified [amount] and [email].
+///
+/// Example:
+/// ```dart
+/// final transaction = await PaystackAPI.initializeTransaction(
+///   amount: 50000, // ₦500.00 in kobo
+///   email: 'customer@example.com',
+/// );
+/// print('Payment URL: ${transaction.authorizationUrl}');
+/// ```
+///
+/// [amount] The payment amount in kobo (required, must be positive)
+/// [email] The customer's email address (required, must be valid)
+/// [currency] The payment currency (optional, defaults to 'NGN')
+/// [reference] Custom transaction reference (optional, auto-generated if null)
+/// [metadata] Additional transaction metadata (optional)
+/// 
+/// Returns a [PaystackTransaction] containing the authorization URL and details.
+/// 
+/// Throws [PaystackException] if the API request fails.
+/// Throws [ValidationException] if the input parameters are invalid.
+Future<PaystackTransaction> initializeTransaction({
+  required int amount,
+  required String email,
+  String currency = 'NGN',
+  String? reference,
+  Map<String, dynamic>? metadata,
+}) async {
+  // Implementation
+}
+```
+
+#### Error Handling
+```dart
+try {
+  final result = await paystackApi.call();
+  return result;
+} on PaystackException catch (e) {
+  // Handle Paystack-specific errors
+  _logger.error('Paystack API error: ${e.message}', e);
+  rethrow;
+} on HttpException catch (e) {
+  // Handle network errors
+  _logger.error('Network error: ${e.message}', e);
+  throw PaystackException('Network request failed: ${e.message}');
+} catch (e) {
+  // Handle unexpected errors
+  _logger.error('Unexpected error: $e', e);
+  throw PaystackException('An unexpected error occurred');
+}
+```
+
+### Flutter Specific Guidelines
+
+#### Widget Structure
+```dart
+class PaymentButton extends StatefulWidget {
+  /// Creates a payment button widget.
+  const PaymentButton({
+    super.key,
+    required this.amount,
+    required this.onPaymentSuccess,
+    this.onPaymentError,
+    this.currency = 'NGN',
+  });
+
+  final int amount;
+  final VoidCallback onPaymentSuccess;
+  final void Function(String error)? onPaymentError;
+  final String currency;
+
+  @override
+  State<PaymentButton> createState() => _PaymentButtonState();
+}
+```
+
+#### State Management
+- Use `StatefulWidget` for local state
+- Use appropriate state management solution for complex state
+- Always dispose of resources in `dispose()`
+
+## 🧪 Testing
+
+### Testing Philosophy
+
+- **Write tests first** (TDD approach preferred)
+- **Test behavior, not implementation**
+- **Cover happy path, edge cases, and error scenarios**
+- **Mock external dependencies** (HTTP requests, file system, etc.)
+
+### Test Structure
+
+```dart
+void main() {
+  group('PaystackAPI', () {
+    late PaystackAPI api;
+    late MockHttpClient mockClient;
+    
+    setUp(() {
+      mockClient = MockHttpClient();
+      api = PaystackAPI(httpClient: mockClient);
+    });
+    
+    group('initializeTransaction', () {
+      test('should return transaction when API call succeeds', () async {
+        // Arrange
+        when(() => mockClient.post(any(), body: any(named: 'body')))
+            .thenAnswer((_) async => Response(
+                  '{"status": true, "data": {"authorization_url": "https://checkout.paystack.com/xyz"}}',
+                  200,
+                ));
+        
+        // Act
+        final result = await api.initializeTransaction(
+          amount: 50000,
+          email: 'test@example.com',
+        );
+        
+        // Assert
+        expect(result.authorizationUrl, equals('https://checkout.paystack.com/xyz'));
+        verify(() => mockClient.post(
+              Uri.parse('https://api.paystack.co/transaction/initialize'),
+              body: any(named: 'body'),
+            )).called(1);
+      });
+      
+      test('should throw PaystackException when API returns error', () async {
+        // Arrange
+        when(() => mockClient.post(any(), body: any(named: 'body')))
+            .thenAnswer((_) async => Response(
+                  '{"status": false, "message": "Invalid email"}',
+                  400,
+                ));
+        
+        // Act & Assert
+        expect(
+          () => api.initializeTransaction(
+            amount: 50000,
+            email: 'invalid-email',
+          ),
+          throwsA(isA<PaystackException>()
+              .having((e) => e.message, 'message', contains('Invalid email'))),
+        );
+      });
+      
+      group('input validation', () {
+        test('should throw ValidationException for negative amount', () {
+          expect(
+            () => api.initializeTransaction(
+              amount: -100,
+              email: 'test@example.com',
+            ),
+            throwsA(isA<ValidationException>()),
+          );
+        });
+        
+        test('should throw ValidationException for invalid email', () {
+          expect(
+            () => api.initializeTransaction(
+              amount: 50000,
+              email: 'not-an-email',
+            ),
+            throwsA(isA<ValidationException>()),
+          );
+        });
+      });
+    });
+  });
+}
+```
+
+### Running Tests
+
+```bash
+# Run all tests in the monorepo
+melos run test
+
+# Run tests with coverage
+melos run test:coverage
+
+# Run tests for specific package
+melos run test --scope=mind_paystack
+
+# Run specific test file
+cd packages/mind_paystack
+dart test test/api/paystack_api_test.dart
+
+# Run tests with specific name pattern
+dart test --name "initializeTransaction"
+```
+
+### Test Coverage Requirements
+
+- **Minimum 80% code coverage** for new code
+- **100% coverage** for critical payment flows
+- **Integration tests** for end-to-end scenarios
+- **Widget tests** for Flutter components
+
+## 📦 Package Development
+
+### Core SDK Package (`packages/mind_paystack`)
+
+This is the main SDK package. When contributing:
+
+1. **API Changes**: Follow semantic versioning
+2. **Breaking Changes**: Document in CHANGELOG.md
+3. **Dependencies**: Keep minimal and well-justified
+4. **Platform Support**: Ensure cross-platform compatibility
+
+### Example Applications
+
+#### Dart CLI Example (`apps/ex00_checkout_basic`)
+- Demonstrates basic SDK usage
+- Should work with latest SDK version
+- Include comprehensive error handling
+- Provide clear console output
+
+#### Flutter Example (`apps/ex01_checkout_flutter`)
+- Showcase UI integration patterns
+- Demonstrate best practices
+- Handle platform-specific considerations
+- Include proper state management
+
+## 🔄 Pull Request Process
+
+### Before Submitting
+
+- [ ] **Tests pass**: `melos run test`
+- [ ] **Code analysis passes**: `melos run analyze`
+- [ ] **Code is formatted**: `melos run format`
+- [ ] **Documentation updated**: Relevant docs and README files
+- [ ] **Examples work**: Test example applications
+- [ ] **CHANGELOG updated**: For significant changes
+
+### PR Checklist Template
+
+```markdown
+## Summary
+Brief description of the changes and their purpose.
+
+## Type of Change
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (fix or feature that causes existing functionality to not work as expected)
+- [ ] 📚 Documentation update
+- [ ] 🔧 Refactoring (no functional changes)
+- [ ] ✅ Test improvements
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Manual testing performed
+- [ ] Example applications tested
+
+## Documentation
+- [ ] Code comments added/updated
+- [ ] API documentation updated
+- [ ] README updated (if applicable)
+- [ ] CHANGELOG.md updated
+
+## Screenshots (if applicable)
+<!-- Add screenshots for UI changes -->
+
+## Related Issues
+<!-- Link to related issues -->
+Closes #123
+References #456
+
+## Additional Notes
+<!-- Any additional information for reviewers -->
+```
+
+### Review Process
+
+1. **Automated Checks**: GitHub Actions must pass
+2. **Code Review**: At least one maintainer approval
+3. **Testing**: Verify functionality in examples
+4. **Documentation**: Ensure docs are comprehensive
+5. **Performance**: Check for any performance regressions
+
+## 🚀 Release Process
+
+### Version Numbering
+
+We follow [Semantic Versioning](https://semver.org/):
+
+- **PATCH** (1.0.1): Bug fixes, documentation updates
+- **MINOR** (1.1.0): New features, non-breaking changes
+- **MAJOR** (2.0.0): Breaking changes
+
+### Release Steps
+
+```bash
+# 1. Update version numbers
+melos version
+
+# 2. Update CHANGELOG.md
+# Add entry for new version
+
+# 3. Create release commit
+git add .
+git commit -m "chore: release v1.2.0"
+
+# 4. Create and push tag
+git tag v1.2.0
+git push origin main --tags
+
+# 5. Publish to pub.dev (maintainers only)
+melos publish
+```
+
+## 🛡 Security Guidelines
+
+### API Key Security
+
+```dart
+// ❌ Never hardcode API keys
+const String secretKey = 'sk_test_your_key_here';
+
+// ✅ Always use environment variables or secure storage
+final String secretKey = Platform.environment['PAYSTACK_SECRET_KEY'] ?? 
+    throw Exception('PAYSTACK_SECRET_KEY not found');
+```
+
+### Input Validation
+
+```dart
+// Always validate user inputs
+void validateEmail(String email) {
+  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
+    throw ValidationException('Invalid email format');
+  }
+}
+
+void validateAmount(int amount) {
+  if (amount <= 0) {
+    throw ValidationException('Amount must be positive');
+  }
+  if (amount > 100000000) { // 1 million naira in kobo
+    throw ValidationException('Amount exceeds maximum limit');
+  }
+}
+```
+
+### Error Information
+
+```dart
+// ❌ Don't expose sensitive information in errors
+throw Exception('Database connection failed: password=secret123');
+
+// ✅ Provide helpful but secure error messages
+throw PaystackException('Unable to process payment. Please try again.');
+```
+
+## 📖 Documentation Guidelines
+
+### API Documentation
+
+- **Every public method** must have comprehensive documentation
+- **Include examples** that actually work
+- **Document exceptions** that can be thrown
+- **Explain parameters** and return values clearly
+
+### Code Examples
+
+```dart
+/// Example of good code documentation:
+/// 
+/// ```dart
+/// // Initialize the SDK
+/// await MindPaystack.initialize(PaystackConfig(
+///   publicKey: 'pk_test_your_key',
+///   secretKey: 'sk_test_your_key',
+///   environment: Environment.test,
+/// ));
+/// 
+/// // Create a transaction
+/// final transaction = await MindPaystack.instance.transaction.initialize(
+///   InitializeTransactionOptions(
+///     amount: '50000', // ₦500.00 in kobo
+///     email: 'customer@example.com',
+///   ),
+/// );
+/// 
+/// print('Payment URL: ${transaction.data?.authorizationUrl}');
+/// ```
+```
+
+### README Updates
+
+When adding new features, update:
+- Feature list in main README
+- Installation instructions (if needed)
+- Quick start guide
+- Example applications
+
+## 🔧 Development Tools
+
+### Recommended VS Code Settings
+
+Create `.vscode/settings.json`:
+
+```json
+{
+  "dart.flutterSdkPath": "/path/to/flutter",
+  "dart.lineLength": 80,
+  "editor.rulers": [80],
+  "editor.formatOnSave": true,
+  "dart.runPubGetOnPubspecChanges": true,
+  "files.associations": {
+    "melos.yaml": "yaml"
+  }
+}
+```
+
+### Useful Melos Commands
+
+```bash
+# Bootstrap all packages
+melos bootstrap
+
+# Run tests across all packages
+melos run test
+
+# Run analysis across all packages
+melos run analyze
+
+# Format code across all packages
+melos run format
+
+# Clean all packages
+melos clean
+
+# List all packages
+melos list
+
+# Run command in specific package
+melos exec --scope=mind_paystack -- dart test
+```
+
+### Git Hooks (Optional)
+
+Create `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/bash
+echo "🔍 Running pre-commit checks..."
+
+# Format code
+echo "📝 Formatting code..."
+melos run format
+
+# Analyze code
+echo "🔍 Analyzing code..."
+melos run analyze --no-fatal-infos
+
+# Run tests
+echo "🧪 Running tests..."
+melos run test
+
+echo "✅ Pre-commit checks passed!"
+```
+
+Make it executable:
+```bash
+chmod +x .git/hooks/pre-commit
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### Melos Bootstrap Fails
+```bash
+# Clear pub cache and retry
+dart pub cache clean
+melos clean
+melos bootstrap
+```
+
+#### Tests Fail in CI but Pass Locally
+- Check Dart SDK version consistency
+- Verify all dependencies are committed
+- Check for platform-specific test failures
+
+#### Import Errors
+- Run `melos bootstrap` after adding new dependencies
+- Check relative import paths
+- Verify package names in pubspec.yaml
+
+#### Flutter Example Issues
+- Ensure Flutter SDK is up to date
+- Check platform-specific configurations
+- Verify plugin dependencies
+
+### Getting Help
+
+1. **Search existing issues** for similar problems
+2. **Check documentation** and examples
+3. **Create a new issue** with:
+   - Clear problem description
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Environment details (Dart/Flutter versions, OS)
+   - Minimal code example
+
+## 👥 Community
+
+### Communication Channels
+
+- **GitHub Issues**: Bug reports and feature requests
+- **GitHub Discussions**: Questions and community chat
+- **Pull Requests**: Code contributions and reviews
+
+### Code of Conduct
+
+We're committed to fostering an inclusive and welcoming community:
+
+- **Be respectful** and considerate in all interactions
+- **Be collaborative** and help others learn and grow
+- **Be patient** with newcomers and different perspectives
+- **Give constructive feedback** and accept it gracefully
+- **Focus on what's best** for the community and project
+
+### Recognition
+
+Contributors are recognized through:
+- GitHub contributor graphs
+- Release notes and changelogs
+- Special mentions for significant contributions
+
+## 📊 Performance Considerations
+
+### API Efficiency
+
+```dart
+// ❌ Don't make unnecessary API calls
+for (final transaction in transactions) {
+  await api.verifyTransaction(transaction.reference);
+}
+
+// ✅ Batch operations when possible
+final verifications = await Future.wait(
+  transactions.map((t) => api.verifyTransaction(t.reference)),
+);
+```
+
+### Memory Management
+
+```dart
+// ✅ Dispose of streams and subscriptions
+class PaymentService {
+  StreamSubscription? _subscription;
+  
+  void dispose() {
+    _subscription?.cancel();
+  }
+}
+```
+
+### Error Recovery
+
+```dart
+// ✅ Implement retry logic for transient failures
+Future<T> withRetry<T>(Future<T> Function() operation, {
+  int maxAttempts = 3,
+  Duration delay = const Duration(seconds: 1),
+}) async {
+  for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await operation();
+    } catch (e) {
+      if (attempt == maxAttempts || !_isRetryableError(e)) rethrow;
+      await Future.delayed(delay * attempt);
+    }
+  }
+  throw StateError('This should never be reached');
+}
+```
+
+---
+
+## 🎉 Thank You!
+
+Thank you for contributing to MindPaystack! Your efforts help make payment processing easier and more reliable for developers across Africa and beyond.
+
+Every contribution, whether it's a bug fix, new feature, documentation improvement, or even a typo correction, makes a difference. We appreciate your time and effort in helping make this project better.
+
+Happy coding! 🚀

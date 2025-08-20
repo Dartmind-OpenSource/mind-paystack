@@ -3,10 +3,6 @@ part 'transaction_totals_options.mapper.dart';
 
 @MappableClass()
 class TransactionTotalsOptions with TransactionTotalsOptionsMappable {
-  final int? perPage;
-  final int? page;
-  final DateTime? from;
-  final DateTime? to;
 
   const TransactionTotalsOptions({
     this.perPage,
@@ -14,4 +10,8 @@ class TransactionTotalsOptions with TransactionTotalsOptionsMappable {
     this.from,
     this.to,
   });
+  final int? perPage;
+  final int? page;
+  final DateTime? from;
+  final DateTime? to;
 }

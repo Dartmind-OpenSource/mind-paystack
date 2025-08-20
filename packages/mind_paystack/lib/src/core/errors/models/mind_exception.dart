@@ -61,7 +61,7 @@ class MindException with _$MindException implements Exception {
       _$MindExceptionFromJson(json);
 
   /// Creates an exception from a DioError
-  factory MindException.fromDioError(DioError error) {
+  factory MindException.fromDioError(DioException error) {
     final response = error.response;
     final data = response?.data;
 
@@ -81,7 +81,7 @@ class MindException with _$MindException implements Exception {
           url: error.requestOptions.path,
           headers: response?.headers.map,
           originalError: error.toString(),
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         ),
         isRetriable: _isRetriableHttpStatus(response?.statusCode),
         suggestedRetryDelaySeconds: _getSuggestedRetryDelay(response),
@@ -103,7 +103,7 @@ class MindException with _$MindException implements Exception {
         metadata: ErrorMetadata(
           timestamp: DateTime.now(),
           originalError: error.toString(),
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         ),
       );
     }
@@ -118,7 +118,7 @@ class MindException with _$MindException implements Exception {
       metadata: ErrorMetadata(
         timestamp: DateTime.now(),
         originalError: error.toString(),
-        stackTrace: error.stackTrace?.toString(),
+        stackTrace: error.stackTrace.toString(),
       ),
     );
   }
