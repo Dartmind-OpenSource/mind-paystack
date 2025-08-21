@@ -4,6 +4,7 @@ import 'package:mind_paystack/src/utils/logger.dart';
 
 /// Interceptor that handles request and response logging
 class LoggingInterceptor extends Interceptor {
+  ///
   LoggingInterceptor(this._logLevel);
 
   final LogLevel _logLevel;

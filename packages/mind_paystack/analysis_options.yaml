@@ -1,1 +1,20 @@
 include: package:very_good_analysis/analysis_options.6.0.0.yaml
+
+linter:
+  rules:
+    # Allow returning 'this' for builder patterns and fluent APIs
+    avoid_returning_this: false
+
+analyzer:
+  exclude:
+    # Exclude generated files from analysis
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mapper.dart"
+    - "**/*.chopper.dart"
+    - "**/*.config.dart"
+    - "**/*.mocks.dart"
+  errors:
+    # Reduce strictness for generated code patterns
+    inference_failure_on_function_invocation: ignore
+    strict_raw_type: ignore

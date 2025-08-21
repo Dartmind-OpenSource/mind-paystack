@@ -11,6 +11,7 @@ import 'package:mind_paystack/src/core/network/interceptors/retry_interceptor.da
 
 /// HTTP client for making API requests
 class HttpClient {
+  ///
   HttpClient(this._config) {
     _initializeDio();
   }

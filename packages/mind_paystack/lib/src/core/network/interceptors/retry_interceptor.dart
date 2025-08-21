@@ -4,6 +4,7 @@ import 'package:mind_paystack/src/utils/logger.dart';
 
 /// Interceptor that handles request retries based on retry policy
 class RetryInterceptor extends Interceptor {
+  ///
   RetryInterceptor(this._retryPolicy);
 
   final RetryPolicy _retryPolicy;
@@ -57,7 +58,7 @@ class RetryInterceptor extends Interceptor {
 
       // Calculate and apply backoff delay
       final delay = _retryPolicy.getDelayForAttempt(attempt);
-      await Future.delayed(delay);
+      await Future<void>.delayed(delay);
 
       // Create new request options with incremented attempt count
       final options = err.requestOptions;

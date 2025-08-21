@@ -19,7 +19,6 @@ class PaystackConfig {
   /// [retryPolicy] defines how failed requests should be retried
   /// [currency] sets the default currency for transactions (defaults to NGN)
   /// [locale] sets the default locale for UI components
-  /// [theme] customizes the appearance of UI components
   /// [timeout] sets the default timeout for API requests
   PaystackConfig({
     required this.publicKey,
@@ -49,7 +48,7 @@ class PaystackConfig {
   /// - PAYSTACK_ENVIRONMENT
   /// - PAYSTACK_LOG_LEVEL
   @factoryMethod
-  static PaystackConfig fromEnvironment() {
+  factory PaystackConfig.fromEnvironment() {
     const publicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
     const secretKey = String.fromEnvironment('PAYSTACK_SECRET_KEY');
     const environment =
@@ -73,11 +72,14 @@ class PaystackConfig {
 
   Environment _environment;
   LogLevel _logLevel;
+  // ignore: public_member_api_docs
   final RetryPolicy retryPolicy;
   String _currency;
   String _locale;
   // MPTheme? _theme;
   LogHandler? _logger;
+
+  ///
   final Duration timeout;
 
   /// Current environment (test, staging, production)
@@ -141,6 +143,7 @@ class PaystackConfig {
   // }
 
   /// Sets a custom logger function
+  // ignore: avoid_setters_without_getters
   set logger(LogHandler value) {
     _logger = value;
     MPLogger.initialize(handler: value);

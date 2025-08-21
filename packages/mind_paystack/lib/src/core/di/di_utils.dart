@@ -11,6 +11,7 @@ extension GetItExtension on GetIt {
   T getRequired<T extends Object>({String? instanceName}) {
     if (!isRegistered<T>(instanceName: instanceName)) {
       throw Exception(
+        // ignore: lines_longer_than_80_chars
         'Required dependency $T ${instanceName != null ? '($instanceName)' : ''} '
         'is not registered. Ensure configureDependencies() was called.',
       );

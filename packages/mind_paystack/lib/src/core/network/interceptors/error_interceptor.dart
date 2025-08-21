@@ -42,7 +42,10 @@ class ErrorInterceptor extends Interceptor {
       case DioExceptionType.badResponse:
         return _handleResponseError(error);
 
-      default:
+      case DioExceptionType.badCertificate:
+      case DioExceptionType.cancel:
+      case DioExceptionType.connectionError:
+      case DioExceptionType.unknown:
         return MindException(
           message: 'Network request failed',
           code: 'network_error',

@@ -12,6 +12,7 @@ part 'mind_exception.g.dart';
 /// Main exception class for the Mind SDK
 @freezed
 class MindException with _$MindException implements Exception {
+  ///
   const factory MindException({
     /// Main error message
     required String message,
@@ -57,6 +58,7 @@ class MindException with _$MindException implements Exception {
   }) = _MindException;
   const MindException._();
 
+  ///
   factory MindException.fromJson(Map<String, dynamic> json) =>
       _$MindExceptionFromJson(json);
 

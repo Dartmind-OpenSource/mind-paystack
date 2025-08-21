@@ -95,7 +95,9 @@ class ChargeAuthorizationBuilder {
   }
 
   /// Sets whether to queue the transaction
-  ChargeAuthorizationBuilder queue(bool queue) {
+  ChargeAuthorizationBuilder queue({
+    bool queue = false,
+  }) {
     _queue = queue;
     return this;
   }

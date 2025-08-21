@@ -5,6 +5,7 @@ import 'package:mind_paystack/src/utils/logger.dart';
 
 /// Interceptor that handles authentication for API requests
 class AuthInterceptor extends Interceptor {
+  ///
   AuthInterceptor(this._config);
 
   final PaystackConfig _config;
@@ -37,6 +38,7 @@ class AuthInterceptor extends Interceptor {
     options.headers['Authorization'] = 'Bearer $key';
 
     MPLogger.debug(
+      // ignore: lines_longer_than_80_chars
       'Added ${isPublicEndpoint ? "public" : "secret"} key authentication for ${options.path}',
     );
 

@@ -3,13 +3,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'validation_result.freezed.dart';
 
 /// Represents the result of a validation operation.
-/// 
+///
 /// This sealed class provides a type-safe way to handle validation results,
 /// ensuring that validation failures are explicitly handled and cannot be
 /// ignored.
-/// 
+///
 /// ## Usage
-/// 
+///
 /// ```dart
 /// ValidationResult validateEmail(String email) {
 ///   if (email.isEmpty) {
@@ -20,7 +20,7 @@ part 'validation_result.freezed.dart';
 ///   }
 ///   return ValidationResult.success();
 /// }
-/// 
+///
 /// // Using the result
 /// final result = validateEmail(userInput);
 /// if (result.isFailure) {
@@ -33,7 +33,7 @@ class ValidationResult with _$ValidationResult {
   const factory ValidationResult.success() = _ValidationSuccess;
 
   /// Represents a failed validation with an error message.
-  /// 
+  ///
   /// [message] Describes what validation rule was violated
   const factory ValidationResult.failure(String message) = _ValidationFailure;
 
@@ -55,7 +55,7 @@ class ValidationResult with _$ValidationResult {
       );
 
   /// Executes an action if this validation failed.
-  /// 
+  ///
   /// [action] Function to execute with the error message
   void onFailure(void Function(String message) action) {
     when(
@@ -65,12 +65,12 @@ class ValidationResult with _$ValidationResult {
   }
 
   /// Combines this validation result with another.
-  /// 
+  ///
   /// Returns success only if both validations are successful.
   /// If either fails, returns the first failure encountered.
-  /// 
+  ///
   /// [other] Another validation result to combine with this one
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final emailResult = validateEmail(email);
@@ -88,10 +88,10 @@ class ValidationResult with _$ValidationResult {
 /// Extension methods for combining multiple validation results.
 extension ValidationResultList on List<ValidationResult> {
   /// Combines all validation results in the list.
-  /// 
+  ///
   /// Returns success only if all validations are successful.
   /// Returns the first failure if any validation failed.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final results = [
@@ -111,7 +111,7 @@ extension ValidationResultList on List<ValidationResult> {
   }
 
   /// Gets all error messages from failed validations.
-  /// 
+  ///
   /// Returns an empty list if all validations passed.
   List<String> get errorMessages {
     return where((result) => result.isFailure)

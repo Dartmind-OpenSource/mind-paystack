@@ -285,8 +285,8 @@ class _CheckoutPageState extends State<CheckoutPage>
         // Show detailed information based on payment status
         if (isSuccess) {
           final amount = data.amount;
-          final currency = data.currency ?? 'NGN';
-          final amountDisplay = amount != null
+          final currency = data.currency;
+          final amountDisplay = amount != 0
               ? '${currency == 'NGN' ? '₦' : currency}${(amount / 100).toStringAsFixed(2)}'
               : '';
 

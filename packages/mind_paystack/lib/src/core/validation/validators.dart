@@ -1,40 +1,41 @@
 import 'package:mind_paystack/src/core/validation/validation_result.dart';
 
 /// Abstract base class for all validators.
-/// 
+///
 /// Validators implement a single method that takes a value of type T
 /// and returns a ValidationResult indicating success or failure.
-/// 
+///
 /// ## Creating Custom Validators
-/// 
+///
 /// ```dart
 /// class PasswordValidator implements Validator<String> {
 ///   @override
 ///   ValidationResult validate(String password) {
 ///     if (password.length < 8) {
+// ignore: lines_longer_than_80_chars
 ///       return ValidationResult.failure('Password must be at least 8 characters');
 ///     }
 ///     return ValidationResult.success();
 ///   }
 /// }
 /// ```
-abstract class Validator<T> {
+sealed class Validator<T> {
   /// Validates the given value and returns a validation result.
-  /// 
+  ///
   /// [value] The value to validate
-  /// 
+  ///
   /// Returns [ValidationResult.success] if validation passes,
   /// [ValidationResult.failure] with an error message if it fails.
   ValidationResult validate(T value);
 }
 
 /// Validates email addresses according to a basic email format.
-/// 
+///
 /// This validator checks for:
 /// - Non-empty email
 /// - Basic email format (contains @ and domain)
 /// - Reasonable length limits
-/// 
+///
 /// Example:
 /// ```dart
 /// final validator = EmailValidator();
@@ -42,7 +43,7 @@ abstract class Validator<T> {
 /// ```
 class EmailValidator implements Validator<String> {
   /// Creates an email validator with optional custom requirements.
-  /// 
+  ///
   /// [maxLength] Maximum allowed length for email (default: 254)
   /// [allowEmpty] Whether to allow empty emails (default: false)
   const EmailValidator({
@@ -52,7 +53,7 @@ class EmailValidator implements Validator<String> {
 
   /// Maximum allowed email length
   final int maxLength;
-  
+
   /// Whether empty emails are allowed
   final bool allowEmpty;
 
@@ -79,7 +80,9 @@ class EmailValidator implements Validator<String> {
 
     // Check format
     if (!_emailRegex.hasMatch(email)) {
-      return const ValidationResult.failure('Please enter a valid email address');
+      return const ValidationResult.failure(
+        'Please enter a valid email address',
+      );
     }
 
     return const ValidationResult.success();
@@ -87,12 +90,12 @@ class EmailValidator implements Validator<String> {
 }
 
 /// Validates monetary amounts with configurable constraints.
-/// 
+///
 /// This validator can check for:
 /// - Minimum and maximum amounts
 /// - Currency-specific rules
 /// - Positive amounts only
-/// 
+///
 /// Example:
 /// ```dart
 /// final validator = AmountValidator(
@@ -102,7 +105,7 @@ class EmailValidator implements Validator<String> {
 /// ```
 class AmountValidator implements Validator<String> {
   /// Creates an amount validator with optional constraints.
-  /// 
+  ///
   /// [minAmountKobo] Minimum amount in kobo/cents (default: 100)
   /// [maxAmountKobo] Maximum amount in kobo/cents (optional)
   /// [currency] Expected currency code (optional)
@@ -116,13 +119,13 @@ class AmountValidator implements Validator<String> {
 
   /// Minimum amount in subunits (kobo/cents)
   final int minAmountKobo;
-  
+
   /// Maximum amount in subunits (kobo/cents)
   final int? maxAmountKobo;
-  
+
   /// Expected currency code
   final String? currency;
-  
+
   /// Whether zero amounts are allowed
   final bool allowZero;
 
@@ -195,13 +198,13 @@ class AmountValidator implements Validator<String> {
 }
 
 /// Validates transaction references for uniqueness and format.
-/// 
+///
 /// This validator ensures that transaction references:
 /// - Are not empty (unless optional)
 /// - Follow the expected format
 /// - Are within length limits
 /// - Contain only allowed characters
-/// 
+///
 /// Example:
 /// ```dart
 /// final validator = ReferenceValidator();
@@ -209,7 +212,7 @@ class AmountValidator implements Validator<String> {
 /// ```
 class ReferenceValidator implements Validator<String?> {
   /// Creates a reference validator with optional custom rules.
-  /// 
+  ///
   /// [isRequired] Whether a reference is required (default: false)
   /// [minLength] Minimum reference length (default: 3)
   /// [maxLength] Maximum reference length (default: 100)
@@ -223,13 +226,13 @@ class ReferenceValidator implements Validator<String?> {
 
   /// Whether a reference is required
   final bool isRequired;
-  
+
   /// Minimum reference length
   final int minLength;
-  
+
   /// Maximum reference length
   final int maxLength;
-  
+
   /// Pattern for allowed characters
   final RegExp? allowedPattern;
 
@@ -271,13 +274,13 @@ class ReferenceValidator implements Validator<String?> {
 }
 
 /// Validates callback URLs for proper format and security.
-/// 
+///
 /// This validator ensures that callback URLs:
 /// - Are valid URLs when provided
 /// - Use HTTPS for security (configurable)
 /// - Are not too long
 /// - Point to allowed domains (if specified)
-/// 
+///
 /// Example:
 /// ```dart
 /// final validator = CallbackUrlValidator(requireHttps: true);
@@ -285,7 +288,7 @@ class ReferenceValidator implements Validator<String?> {
 /// ```
 class CallbackUrlValidator implements Validator<String?> {
   /// Creates a callback URL validator with security options.
-  /// 
+  ///
   /// [isRequired] Whether a callback URL is required (default: false)
   /// [requireHttps] Whether HTTPS is required (default: true)
   /// [maxLength] Maximum URL length (default: 2048)
@@ -299,13 +302,13 @@ class CallbackUrlValidator implements Validator<String?> {
 
   /// Whether a callback URL is required
   final bool isRequired;
-  
+
   /// Whether HTTPS is required
   final bool requireHttps;
-  
+
   /// Maximum URL length
   final int maxLength;
-  
+
   /// List of allowed domains
   final List<String>? allowedDomains;
 
@@ -335,15 +338,21 @@ class CallbackUrlValidator implements Validator<String?> {
 
     // Check scheme
     if (uri.scheme.isEmpty) {
-      return const ValidationResult.failure('URL must include a protocol (http/https)');
+      return const ValidationResult.failure(
+        'URL must include a protocol (http/https)',
+      );
     }
 
     if (requireHttps && uri.scheme.toLowerCase() != 'https') {
-      return const ValidationResult.failure('Callback URL must use HTTPS for security');
+      return const ValidationResult.failure(
+        'Callback URL must use HTTPS for security',
+      );
     }
 
     if (!['http', 'https'].contains(uri.scheme.toLowerCase())) {
-      return const ValidationResult.failure('URL must use HTTP or HTTPS protocol');
+      return const ValidationResult.failure(
+        'URL must use HTTP or HTTPS protocol',
+      );
     }
 
     // Check host
@@ -363,10 +372,10 @@ class CallbackUrlValidator implements Validator<String?> {
 }
 
 /// Validator for combining multiple validators into a single validation chain.
-/// 
+///
 /// This allows you to run multiple validation rules on the same value
 /// and collect all validation errors.
-/// 
+///
 /// Example:
 /// ```dart
 /// final validator = CompositeValidator([
@@ -376,9 +385,10 @@ class CallbackUrlValidator implements Validator<String?> {
 /// ```
 class CompositeValidator<T> implements Validator<T> {
   /// Creates a composite validator from a list of validators.
-  /// 
+  ///
   /// [validators] List of validators to run
-  /// [stopOnFirstFailure] Whether to stop after the first failure (default: false)
+  /// [stopOnFirstFailure] Whether to stop after the
+  /// first failure (default: false)
   const CompositeValidator(
     this.validators, {
     this.stopOnFirstFailure = false,
@@ -386,7 +396,7 @@ class CompositeValidator<T> implements Validator<T> {
 
   /// List of validators to run
   final List<Validator<T>> validators;
-  
+
   /// Whether to stop after the first failure
   final bool stopOnFirstFailure;
 

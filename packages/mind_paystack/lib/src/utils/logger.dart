@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:mind_paystack/src/config/log_level.dart';
 
 /// Signature for custom log handler function
@@ -125,7 +127,7 @@ class MPLogger {
     if (_handler != null) {
       _handler!(level, logMessage, error: error, stackTrace: stackTrace);
     } else {
-      print(logMessage);
+      log(logMessage);
     }
   }
 

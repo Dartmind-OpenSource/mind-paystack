@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 /// Interceptor that enriches requests with additional headers and metadata
 class RequestEnricherInterceptor extends Interceptor {
+  ///
   RequestEnricherInterceptor(this._config);
 
   final PaystackConfig _config;

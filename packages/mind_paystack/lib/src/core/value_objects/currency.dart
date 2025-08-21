@@ -4,27 +4,27 @@ part 'currency.freezed.dart';
 part 'currency.g.dart';
 
 /// Represents a currency with its properties and formatting rules.
-/// 
+///
 /// This value object encapsulates currency information including the currency
 /// code, symbol, subunit factor (for converting to smallest denomination),
 /// and display name.
-/// 
+///
 /// ## Supported Currencies
-/// 
+///
 /// The SDK provides predefined constants for commonly used currencies:
 /// - Nigerian Naira (NGN)
 /// - US Dollar (USD)
 /// - Ghanaian Cedi (GHS)
 /// - South African Rand (ZAR)
 /// - Kenyan Shilling (KES)
-/// 
+///
 /// ## Usage
-/// 
+///
 /// ```dart
 /// // Use predefined currencies
 /// final naira = Currency.ngn;
 /// final dollar = Currency.usd;
-/// 
+///
 /// // Create custom currency
 /// final customCurrency = Currency(
 ///   code: 'GBP',
@@ -36,7 +36,7 @@ part 'currency.g.dart';
 @freezed
 class Currency with _$Currency {
   /// Creates a new Currency instance.
-  /// 
+  ///
   /// [code] ISO 4217 currency code (e.g., 'NGN', 'USD')
   /// [symbol] Currency symbol for display (e.g., '₦', '$')
   /// [subunitFactor] Factor to convert to smallest unit (typically 100)
@@ -96,9 +96,9 @@ class Currency with _$Currency {
   static const List<Currency> supported = [ngn, usd, ghs, zar, kes];
 
   /// Creates a Currency from its ISO code.
-  /// 
+  ///
   /// Returns null if the currency code is not supported.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final currency = Currency.fromCode('NGN'); // Returns Currency.ngn
