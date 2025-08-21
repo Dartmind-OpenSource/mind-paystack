@@ -1,77 +1,41 @@
 # Mind Paystack
 
+[![Pub Version](https://img.shields.io/pub/v/mind_paystack.svg)](https://pub.dev/packages/mind_paystack)
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
 [![License: MIT][license_badge]][license_link]
 
-A Dart-first Paystack SDK focused on transaction management with type-safe operations.
+The Dart-first Paystack SDK focused on transaction management with type-safe operations.
 
-## Features ✨
+## Documentation 📚
 
-- **Transaction Management**: Initialize, verify, and list Paystack transactions
-- **Type-Safe Money Handling**: Built-in Money and Currency value objects
-- **Structured Error Handling**: Comprehensive MindException system
-- **Dependency Injection**: Injectable support for testing and modularity
-- **Pure Dart**: Works with CLI tools, servers, and Dart web applications
+For complete documentation, installation guide, examples, and API reference, visit:
 
-## Installation 💻
+- **[Full Documentation](https://mind-paystack-docs.vercel.app/docs)**
+- **[Main Repository](https://github.com/Dartmind-OpenSource/mind-paystack)**
 
-**❗ In order to start using Mind Paystack you must have the [Dart SDK][dart_install_link] installed on your machine.**
+## Quick Installation
 
-Install via `dart pub add`:
-
-```sh
+```bash
 dart pub add mind_paystack
 ```
 
-## Quick Start 🚀
+## Quick Example
 
 ```dart
 import 'package:mind_paystack/mind_paystack.dart';
 
-Future<void> main() async {
-  // Initialize the SDK
-  await MindPaystack.initialize(
-    PaystackConfig(
-      publicKey: 'pk_test_your_public_key',
-      secretKey: 'sk_test_your_secret_key',
-      environment: Environment.test,
-    ),
-  );
+await MindPaystack.initialize(PaystackConfig(
+  publicKey: 'pk_test_your_key',
+  secretKey: 'sk_test_your_key',
+  environment: Environment.test,
+));
 
-  // Create a transaction
-  final sdk = MindPaystack.instance;
-  final transaction = await sdk.transaction.initialize(
-    InitializeTransactionOptions(
-      email: 'customer@example.com',
-      amount: Money.fromCents(50000, Currency.ngn), // ₦500.00
-    ),
-  );
-
-  print('Payment URL: ${transaction.data.authorizationUrl}');
-}
-```
-
-## Coming Soon 🚧
-
-- **Charge Operations**: Direct card charging and authorization
-- **Payment Channels**: Available payment methods
-- **Flutter Integration**: UI widgets and platform-specific features
-
-## Documentation 📚
-
-For complete documentation and examples, visit the [main repository](https://github.com/Dartmind-OpenSource/mind-paystack).
-
----
-
-## Running Tests 🧪
-
-To run all unit tests:
-
-```sh
-dart pub global activate coverage 1.2.0
-dart test --coverage=coverage
-dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info
+final transaction = await MindPaystack.instance.transaction.initialize(
+  InitializeTransactionOptions(
+    email: 'customer@example.com',
+    amount: Money.fromCents(50000, Currency.ngn),
+  ),
+);
 ```
 
 [dart_install_link]: https://dart.dev/get-dart
