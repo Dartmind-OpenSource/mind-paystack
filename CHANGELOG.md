@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2025-08-21
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`mind_paystack` - `v0.1.1+1`](#mind_paystack---v0111)
+ - [`ex00_checkout_basic` - `v1.1.2`](#ex00_checkout_basic---v112)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `ex00_checkout_basic` - `v1.1.2`
+
+---
+
+#### `mind_paystack` - `v0.1.1+1`
+
+ - **REFACTOR**: comment out unused service accessors in MindPaystack. ([fba04776](https://github.com/Dartmind-OpenSource/mind-paystack/commit/fba04776054f17646e840bba5866bee90e9f168d))
+ - **REFACTOR**: streamline dependency registrations in injectable.config.dart. ([5ec1eb4c](https://github.com/Dartmind-OpenSource/mind-paystack/commit/5ec1eb4cbd8a7eecd3f6837e90307c7468998ba2))
+ - **REFACTOR**: clean up dependency registrations in RegisterModule. ([2494ec9c](https://github.com/Dartmind-OpenSource/mind-paystack/commit/2494ec9c5dcaf590bdc063a000ec51d8db13b415))
+ - **REFACTOR**: update ResourceMapper to streamline field definitions. ([bfc457a5](https://github.com/Dartmind-OpenSource/mind-paystack/commit/bfc457a5348d9d7c53d10ae37c31ac45631b4a1b))
+ - **REFACTOR**: reorganize customer fields in CustomerMapper. ([55c9efff](https://github.com/Dartmind-OpenSource/mind-paystack/commit/55c9efffd49ac6431e9b847deb54782b8303d5bd))
+ - **REFACTOR**: reorganize transaction fields in TransactionMapper. ([36a6b8db](https://github.com/Dartmind-OpenSource/mind-paystack/commit/36a6b8db5b72cd604baaac3c4365a977ea22e969))
+ - **DOCS**: enhance README for MindPaystack SDK with features and quick start guide. ([9f8d2fa2](https://github.com/Dartmind-OpenSource/mind-paystack/commit/9f8d2fa2929a06a6f1910e3ca302d11c87194449))
+
+
 ## 2025-08-20
 
 ### Changes
