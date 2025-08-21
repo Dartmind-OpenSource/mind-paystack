@@ -238,7 +238,7 @@ packages:
       path: "../../packages/mind_paystack"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.1+1"
   path:
     dependency: transitive
     description:
