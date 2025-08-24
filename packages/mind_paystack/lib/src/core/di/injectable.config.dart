@@ -15,6 +15,7 @@ import 'package:injectable/injectable.dart' as _i526;
 import '../../../mind_paystack.dart' as _i10;
 import '../../features/transaction/repositories/transaction_repository.dart'
     as _i954;
+import '../../features/transaction/services/transaction_service.dart' as _i894;
 import '../network/http_client.dart' as _i1069;
 import 'register_module.dart' as _i291;
 
@@ -40,6 +41,11 @@ _i174.GetIt init(
     _,
   ) =>
       registerModule.transactionRepository(config));
+  gh.factoryParam<_i894.TransactionService, _i10.PaystackConfig, dynamic>((
+    config,
+    _,
+  ) =>
+      registerModule.transactionService(config));
   return getIt;
 }
 

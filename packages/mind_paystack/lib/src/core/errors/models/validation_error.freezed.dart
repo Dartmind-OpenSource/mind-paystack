@@ -20,19 +20,40 @@ ValidationError _$ValidationErrorFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ValidationError {
-  /// Field that failed validation
+  /// Name of the field or parameter that failed validation.
+  ///
+  /// This corresponds to the API parameter name or form field identifier
+  /// that caused the validation error. Used for targeting specific
+  /// form fields or parameters for error display.
+  /// Examples: 'email', 'amount', 'currency', 'reference'
   String get field => throw _privateConstructorUsedError;
 
-  /// Validation error message
+  /// Human-readable description of the validation error.
+  ///
+  /// This message can be displayed directly to users or used as a basis
+  /// for creating user-friendly error messages. Should clearly explain
+  /// what went wrong and potentially how to fix it.
   String get message => throw _privateConstructorUsedError;
 
-  /// Type of validation that failed
+  /// Category or type of validation that failed.
+  ///
+  /// Provides programmatic identification of the validation rule that
+  /// was violated, enabling specific error handling logic.
+  /// Examples: 'required', 'format', 'range', 'length', 'pattern'
   String get type => throw _privateConstructorUsedError;
 
-  /// Actual value that failed validation
+  /// The actual value that was provided and failed validation.
+  ///
+  /// Contains the original input that caused the validation error.
+  /// Useful for debugging and providing context in error messages.
+  /// Can be any type depending on the field being validated.
   dynamic get actualValue => throw _privateConstructorUsedError;
 
-  /// Expected value or pattern
+  /// Expected value, format, or pattern for the field.
+  ///
+  /// Describes what the field should contain or match to pass validation.
+  /// May be a specific value, a format example, a range, or a pattern.
+  /// Examples: 'user@example.com', '1000-50000', '/^[A-Z]{3}$/'
   dynamic get expectedValue => throw _privateConstructorUsedError;
 
   /// Serializes this ValidationError to a JSON map.
@@ -178,23 +199,44 @@ class _$ValidationErrorImpl implements _ValidationError {
   factory _$ValidationErrorImpl.fromJson(Map<String, dynamic> json) =>
       _$$ValidationErrorImplFromJson(json);
 
-  /// Field that failed validation
+  /// Name of the field or parameter that failed validation.
+  ///
+  /// This corresponds to the API parameter name or form field identifier
+  /// that caused the validation error. Used for targeting specific
+  /// form fields or parameters for error display.
+  /// Examples: 'email', 'amount', 'currency', 'reference'
   @override
   final String field;
 
-  /// Validation error message
+  /// Human-readable description of the validation error.
+  ///
+  /// This message can be displayed directly to users or used as a basis
+  /// for creating user-friendly error messages. Should clearly explain
+  /// what went wrong and potentially how to fix it.
   @override
   final String message;
 
-  /// Type of validation that failed
+  /// Category or type of validation that failed.
+  ///
+  /// Provides programmatic identification of the validation rule that
+  /// was violated, enabling specific error handling logic.
+  /// Examples: 'required', 'format', 'range', 'length', 'pattern'
   @override
   final String type;
 
-  /// Actual value that failed validation
+  /// The actual value that was provided and failed validation.
+  ///
+  /// Contains the original input that caused the validation error.
+  /// Useful for debugging and providing context in error messages.
+  /// Can be any type depending on the field being validated.
   @override
   final dynamic actualValue;
 
-  /// Expected value or pattern
+  /// Expected value, format, or pattern for the field.
+  ///
+  /// Describes what the field should contain or match to pass validation.
+  /// May be a specific value, a format example, a range, or a pattern.
+  /// Examples: 'user@example.com', '1000-50000', '/^[A-Z]{3}$/'
   @override
   final dynamic expectedValue;
 
@@ -255,23 +297,44 @@ abstract class _ValidationError implements ValidationError {
   factory _ValidationError.fromJson(Map<String, dynamic> json) =
       _$ValidationErrorImpl.fromJson;
 
-  /// Field that failed validation
+  /// Name of the field or parameter that failed validation.
+  ///
+  /// This corresponds to the API parameter name or form field identifier
+  /// that caused the validation error. Used for targeting specific
+  /// form fields or parameters for error display.
+  /// Examples: 'email', 'amount', 'currency', 'reference'
   @override
   String get field;
 
-  /// Validation error message
+  /// Human-readable description of the validation error.
+  ///
+  /// This message can be displayed directly to users or used as a basis
+  /// for creating user-friendly error messages. Should clearly explain
+  /// what went wrong and potentially how to fix it.
   @override
   String get message;
 
-  /// Type of validation that failed
+  /// Category or type of validation that failed.
+  ///
+  /// Provides programmatic identification of the validation rule that
+  /// was violated, enabling specific error handling logic.
+  /// Examples: 'required', 'format', 'range', 'length', 'pattern'
   @override
   String get type;
 
-  /// Actual value that failed validation
+  /// The actual value that was provided and failed validation.
+  ///
+  /// Contains the original input that caused the validation error.
+  /// Useful for debugging and providing context in error messages.
+  /// Can be any type depending on the field being validated.
   @override
   dynamic get actualValue;
 
-  /// Expected value or pattern
+  /// Expected value, format, or pattern for the field.
+  ///
+  /// Describes what the field should contain or match to pass validation.
+  /// May be a specific value, a format example, a range, or a pattern.
+  /// Examples: 'user@example.com', '1000-50000', '/^[A-Z]{3}$/'
   @override
   dynamic get expectedValue;
 

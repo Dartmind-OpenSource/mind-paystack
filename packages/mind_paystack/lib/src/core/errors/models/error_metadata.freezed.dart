@@ -20,31 +20,66 @@ ErrorMetadata _$ErrorMetadataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ErrorMetadata {
-  /// Timestamp when the error occurred
+  /// Timestamp when the error occurred.
+  ///
+  /// This precise timestamp helps with error correlation, debugging
+  /// time-sensitive issues, and analyzing error patterns over time.
   DateTime get timestamp => throw _privateConstructorUsedError;
 
-  /// Request ID if available
+  /// Unique identifier for the API request that caused the error.
+  ///
+  /// This ID can be used to correlate errors with server logs,
+  /// track requests across distributed systems, and provide
+  /// better support when contacting Paystack.
   String? get requestId => throw _privateConstructorUsedError;
 
-  /// HTTP status code if applicable
+  /// HTTP status code returned by the API (if applicable).
+  ///
+  /// Provides quick identification of error types:
+  /// - 4xx: Client errors (invalid request, authentication, etc.)
+  /// - 5xx: Server errors (internal server error, service unavailable)
   int? get statusCode => throw _privateConstructorUsedError;
 
-  /// HTTP method if applicable
+  /// HTTP method used for the request that failed.
+  ///
+  /// Examples: 'GET', 'POST', 'PUT', 'DELETE'
+  /// Useful for understanding the type of operation that failed.
   String? get httpMethod => throw _privateConstructorUsedError;
 
-  /// URL that caused the error
+  /// Full URL of the API endpoint that caused the error.
+  ///
+  /// Helps identify which specific API endpoint had issues
+  /// and can be used for targeted error handling or monitoring.
   String? get url => throw _privateConstructorUsedError;
 
-  /// Headers associated with the request
+  /// HTTP headers that were sent with the failed request.
+  ///
+  /// May contain authentication headers, content-type,
+  /// user-agent, and other metadata. Useful for debugging
+  /// API communication issues.
   Map<String, List<String>>? get headers => throw _privateConstructorUsedError;
 
-  /// Any additional context about the error
+  /// Additional contextual information about the error.
+  ///
+  /// This flexible field can contain any relevant data such as:
+  /// - User ID or session information
+  /// - Transaction amounts or references
+  /// - Feature flags or configuration state
+  /// - Custom debugging information
   Map<String, dynamic>? get context => throw _privateConstructorUsedError;
 
-  /// Stack trace as string
+  /// Stack trace showing the code path that led to the error.
+  ///
+  /// Provides detailed information about where the error occurred
+  /// in the codebase, useful for debugging and fixing issues.
+  /// Usually only populated in development/debug builds.
   String? get stackTrace => throw _privateConstructorUsedError;
 
-  /// Original error object stringified
+  /// String representation of the original error object.
+  ///
+  /// Contains the raw error data before it was processed into
+  /// a MindException. Useful for preserving all original error
+  /// information for detailed analysis.
   String? get originalError => throw _privateConstructorUsedError;
 
   /// Serializes this ErrorMetadata to a JSON map.
@@ -244,30 +279,55 @@ class _$ErrorMetadataImpl implements _ErrorMetadata {
   factory _$ErrorMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ErrorMetadataImplFromJson(json);
 
-  /// Timestamp when the error occurred
+  /// Timestamp when the error occurred.
+  ///
+  /// This precise timestamp helps with error correlation, debugging
+  /// time-sensitive issues, and analyzing error patterns over time.
   @override
   final DateTime timestamp;
 
-  /// Request ID if available
+  /// Unique identifier for the API request that caused the error.
+  ///
+  /// This ID can be used to correlate errors with server logs,
+  /// track requests across distributed systems, and provide
+  /// better support when contacting Paystack.
   @override
   final String? requestId;
 
-  /// HTTP status code if applicable
+  /// HTTP status code returned by the API (if applicable).
+  ///
+  /// Provides quick identification of error types:
+  /// - 4xx: Client errors (invalid request, authentication, etc.)
+  /// - 5xx: Server errors (internal server error, service unavailable)
   @override
   final int? statusCode;
 
-  /// HTTP method if applicable
+  /// HTTP method used for the request that failed.
+  ///
+  /// Examples: 'GET', 'POST', 'PUT', 'DELETE'
+  /// Useful for understanding the type of operation that failed.
   @override
   final String? httpMethod;
 
-  /// URL that caused the error
+  /// Full URL of the API endpoint that caused the error.
+  ///
+  /// Helps identify which specific API endpoint had issues
+  /// and can be used for targeted error handling or monitoring.
   @override
   final String? url;
 
-  /// Headers associated with the request
+  /// HTTP headers that were sent with the failed request.
+  ///
+  /// May contain authentication headers, content-type,
+  /// user-agent, and other metadata. Useful for debugging
+  /// API communication issues.
   final Map<String, List<String>>? _headers;
 
-  /// Headers associated with the request
+  /// HTTP headers that were sent with the failed request.
+  ///
+  /// May contain authentication headers, content-type,
+  /// user-agent, and other metadata. Useful for debugging
+  /// API communication issues.
   @override
   Map<String, List<String>>? get headers {
     final value = _headers;
@@ -277,10 +337,22 @@ class _$ErrorMetadataImpl implements _ErrorMetadata {
     return EqualUnmodifiableMapView(value);
   }
 
-  /// Any additional context about the error
+  /// Additional contextual information about the error.
+  ///
+  /// This flexible field can contain any relevant data such as:
+  /// - User ID or session information
+  /// - Transaction amounts or references
+  /// - Feature flags or configuration state
+  /// - Custom debugging information
   final Map<String, dynamic>? _context;
 
-  /// Any additional context about the error
+  /// Additional contextual information about the error.
+  ///
+  /// This flexible field can contain any relevant data such as:
+  /// - User ID or session information
+  /// - Transaction amounts or references
+  /// - Feature flags or configuration state
+  /// - Custom debugging information
   @override
   Map<String, dynamic>? get context {
     final value = _context;
@@ -290,11 +362,19 @@ class _$ErrorMetadataImpl implements _ErrorMetadata {
     return EqualUnmodifiableMapView(value);
   }
 
-  /// Stack trace as string
+  /// Stack trace showing the code path that led to the error.
+  ///
+  /// Provides detailed information about where the error occurred
+  /// in the codebase, useful for debugging and fixing issues.
+  /// Usually only populated in development/debug builds.
   @override
   final String? stackTrace;
 
-  /// Original error object stringified
+  /// String representation of the original error object.
+  ///
+  /// Contains the raw error data before it was processed into
+  /// a MindException. Useful for preserving all original error
+  /// information for detailed analysis.
   @override
   final String? originalError;
 
@@ -370,39 +450,74 @@ abstract class _ErrorMetadata implements ErrorMetadata {
   factory _ErrorMetadata.fromJson(Map<String, dynamic> json) =
       _$ErrorMetadataImpl.fromJson;
 
-  /// Timestamp when the error occurred
+  /// Timestamp when the error occurred.
+  ///
+  /// This precise timestamp helps with error correlation, debugging
+  /// time-sensitive issues, and analyzing error patterns over time.
   @override
   DateTime get timestamp;
 
-  /// Request ID if available
+  /// Unique identifier for the API request that caused the error.
+  ///
+  /// This ID can be used to correlate errors with server logs,
+  /// track requests across distributed systems, and provide
+  /// better support when contacting Paystack.
   @override
   String? get requestId;
 
-  /// HTTP status code if applicable
+  /// HTTP status code returned by the API (if applicable).
+  ///
+  /// Provides quick identification of error types:
+  /// - 4xx: Client errors (invalid request, authentication, etc.)
+  /// - 5xx: Server errors (internal server error, service unavailable)
   @override
   int? get statusCode;
 
-  /// HTTP method if applicable
+  /// HTTP method used for the request that failed.
+  ///
+  /// Examples: 'GET', 'POST', 'PUT', 'DELETE'
+  /// Useful for understanding the type of operation that failed.
   @override
   String? get httpMethod;
 
-  /// URL that caused the error
+  /// Full URL of the API endpoint that caused the error.
+  ///
+  /// Helps identify which specific API endpoint had issues
+  /// and can be used for targeted error handling or monitoring.
   @override
   String? get url;
 
-  /// Headers associated with the request
+  /// HTTP headers that were sent with the failed request.
+  ///
+  /// May contain authentication headers, content-type,
+  /// user-agent, and other metadata. Useful for debugging
+  /// API communication issues.
   @override
   Map<String, List<String>>? get headers;
 
-  /// Any additional context about the error
+  /// Additional contextual information about the error.
+  ///
+  /// This flexible field can contain any relevant data such as:
+  /// - User ID or session information
+  /// - Transaction amounts or references
+  /// - Feature flags or configuration state
+  /// - Custom debugging information
   @override
   Map<String, dynamic>? get context;
 
-  /// Stack trace as string
+  /// Stack trace showing the code path that led to the error.
+  ///
+  /// Provides detailed information about where the error occurred
+  /// in the codebase, useful for debugging and fixing issues.
+  /// Usually only populated in development/debug builds.
   @override
   String? get stackTrace;
 
-  /// Original error object stringified
+  /// String representation of the original error object.
+  ///
+  /// Contains the raw error data before it was processed into
+  /// a MindException. Useful for preserving all original error
+  /// information for detailed analysis.
   @override
   String? get originalError;
 
