@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mind_paystack/mind_paystack.dart';
 import 'package:mind_paystack/src/core/network/http_client.dart';
 import 'package:mind_paystack/src/features/transaction/repositories/transaction_repository.dart';
+import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 
 /// Dependency injection module for the MindPaystack SDK.
 ///
@@ -86,4 +87,21 @@ abstract class RegisterModule {
     @factoryParam PaystackConfig config,
   ) =>
       TransactionRepository(provideHttpClient(config));
+
+  /// Provides a TransactionService instance for transaction business logic.
+  ///
+  /// The TransactionService provides high-level transaction operations with
+  /// proper validation, error handling, and business logic. It uses the
+  /// TransactionRepository for data access operations.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A TransactionService instance with injected repository dependency.
+  @factoryMethod
+  TransactionService transactionService(
+    @factoryParam PaystackConfig config,
+  ) =>
+      TransactionService(transactionRepository(config));
 }
