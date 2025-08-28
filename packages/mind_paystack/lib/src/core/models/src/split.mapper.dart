@@ -37,16 +37,16 @@ class SplitMapper extends ClassMapperBase<Split> {
   static String? _$bearerType(Split v) => v.bearerType;
   static const Field<Split, String> _f$bearerType =
       Field('bearerType', _$bearerType, key: r'bearer_type');
-  static String? _$bearerSubaccount(Split v) => v.bearerSubaccount;
-  static const Field<Split, String> _f$bearerSubaccount = Field(
-      'bearerSubaccount', _$bearerSubaccount,
-      key: r'bearer_subaccount', opt: true);
   static List<SplitSubaccount>? _$subaccounts(Split v) => v.subaccounts;
   static const Field<Split, List<SplitSubaccount>> _f$subaccounts =
       Field('subaccounts', _$subaccounts);
   static int? _$totalSubaccounts(Split v) => v.totalSubaccounts;
   static const Field<Split, int> _f$totalSubaccounts =
       Field('totalSubaccounts', _$totalSubaccounts, key: r'total_subaccounts');
+  static String? _$bearerSubaccount(Split v) => v.bearerSubaccount;
+  static const Field<Split, String> _f$bearerSubaccount = Field(
+      'bearerSubaccount', _$bearerSubaccount,
+      key: r'bearer_subaccount', opt: true);
 
   @override
   final MappableFields<Split> fields = const {
@@ -57,9 +57,9 @@ class SplitMapper extends ClassMapperBase<Split> {
     #splitCode: _f$splitCode,
     #active: _f$active,
     #bearerType: _f$bearerType,
-    #bearerSubaccount: _f$bearerSubaccount,
     #subaccounts: _f$subaccounts,
     #totalSubaccounts: _f$totalSubaccounts,
+    #bearerSubaccount: _f$bearerSubaccount,
   };
 
   static Split _instantiate(DecodingData data) {
@@ -71,9 +71,9 @@ class SplitMapper extends ClassMapperBase<Split> {
         splitCode: data.dec(_f$splitCode),
         active: data.dec(_f$active),
         bearerType: data.dec(_f$bearerType),
-        bearerSubaccount: data.dec(_f$bearerSubaccount),
         subaccounts: data.dec(_f$subaccounts),
-        totalSubaccounts: data.dec(_f$totalSubaccounts));
+        totalSubaccounts: data.dec(_f$totalSubaccounts),
+        bearerSubaccount: data.dec(_f$bearerSubaccount));
   }
 
   @override
@@ -133,9 +133,9 @@ abstract class SplitCopyWith<$R, $In extends Split, $Out>
       String? splitCode,
       bool? active,
       String? bearerType,
-      String? bearerSubaccount,
       List<SplitSubaccount>? subaccounts,
-      int? totalSubaccounts});
+      int? totalSubaccounts,
+      String? bearerSubaccount});
   SplitCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -161,9 +161,9 @@ class _SplitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Split, $Out>
           Object? splitCode = $none,
           Object? active = $none,
           Object? bearerType = $none,
-          Object? bearerSubaccount = $none,
           Object? subaccounts = $none,
-          Object? totalSubaccounts = $none}) =>
+          Object? totalSubaccounts = $none,
+          Object? bearerSubaccount = $none}) =>
       $apply(FieldCopyWithData({
         if (id != $none) #id: id,
         if (name != $none) #name: name,
@@ -172,9 +172,9 @@ class _SplitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Split, $Out>
         if (splitCode != $none) #splitCode: splitCode,
         if (active != $none) #active: active,
         if (bearerType != $none) #bearerType: bearerType,
-        if (bearerSubaccount != $none) #bearerSubaccount: bearerSubaccount,
         if (subaccounts != $none) #subaccounts: subaccounts,
-        if (totalSubaccounts != $none) #totalSubaccounts: totalSubaccounts
+        if (totalSubaccounts != $none) #totalSubaccounts: totalSubaccounts,
+        if (bearerSubaccount != $none) #bearerSubaccount: bearerSubaccount
       }));
   @override
   Split $make(CopyWithData data) => Split(
@@ -185,11 +185,11 @@ class _SplitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Split, $Out>
       splitCode: data.get(#splitCode, or: $value.splitCode),
       active: data.get(#active, or: $value.active),
       bearerType: data.get(#bearerType, or: $value.bearerType),
-      bearerSubaccount:
-          data.get(#bearerSubaccount, or: $value.bearerSubaccount),
       subaccounts: data.get(#subaccounts, or: $value.subaccounts),
       totalSubaccounts:
-          data.get(#totalSubaccounts, or: $value.totalSubaccounts));
+          data.get(#totalSubaccounts, or: $value.totalSubaccounts),
+      bearerSubaccount:
+          data.get(#bearerSubaccount, or: $value.bearerSubaccount));
 
   @override
   SplitCopyWith<$R2, Split, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
