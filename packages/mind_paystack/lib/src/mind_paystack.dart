@@ -2,6 +2,8 @@ import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/di/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
 import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
+import 'package:mind_paystack/src/features/plan/services/plan_service.dart';
+import 'package:mind_paystack/src/features/subscription/services/subscription_service.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 
 // Core exports
@@ -16,6 +18,8 @@ export 'package:mind_paystack/src/core/models/src/bank.dart';
 export 'package:mind_paystack/src/core/models/src/bank_transfer.dart';
 export 'package:mind_paystack/src/core/models/src/card.dart';
 export 'package:mind_paystack/src/core/models/src/mobile_money.dart';
+// Plan exports
+export 'package:mind_paystack/src/core/models/src/plan.dart';
 export 'package:mind_paystack/src/core/models/src/qr.dart';
 export 'package:mind_paystack/src/core/models/src/ussd.dart';
 export 'package:mind_paystack/src/features/charge/models/charge/charge.dart';
@@ -23,6 +27,9 @@ export 'package:mind_paystack/src/features/charge/models/options/src/charge_opti
 export 'package:mind_paystack/src/features/charge/models/options/src/check_pending_charge_options.dart';
 export 'package:mind_paystack/src/features/charge/models/options/src/create_charge_options.dart';
 export 'package:mind_paystack/src/features/charge/models/options/src/submit_charge_options.dart';
+export 'package:mind_paystack/src/features/plan/models/models.dart';
+// Subscription exports
+export 'package:mind_paystack/src/features/subscription/models/models.dart';
 // Transaction exports
 export 'package:mind_paystack/src/features/transaction/models/models.dart';
 
@@ -233,6 +240,69 @@ class MindPaystack {
   TransactionService get transaction {
     _checkInitialized();
     return resolveWithParameter<TransactionService, PaystackConfig>(
+      parameter: config,
+    );
+  }
+
+  /// Provides access to plan-related operations
+  ///
+  /// Handles subscription plan creation, listing, fetching, and updating.
+  /// Use this for managing subscription plans in your application.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Create a new plan
+  /// final planResult = await MindPaystack.instance.plan.create(
+  ///   CreatePlanOptions(
+  ///     name: 'Premium Monthly',
+  ///     amount: 500000,
+  ///     interval: 'monthly',
+  ///   ),
+  /// );
+  ///
+  /// // List all plans
+  /// final plansResult = await MindPaystack.instance.plan.list();
+  ///
+  /// // Fetch a specific plan
+  /// final planResult = await MindPaystack.instance.plan.fetch('PLN_xyz123');
+  /// ```
+  PlanService get plan {
+    _checkInitialized();
+    return resolveWithParameter<PlanService, PaystackConfig>(
+      parameter: config,
+    );
+  }
+
+  /// Provides access to subscription-related operations
+  ///
+  /// Handles subscription creation, management, enabling, disabling, and
+  /// update link generation. Use this for managing customer subscriptions.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Create a new subscription
+  /// final subscriptionResult = await MindPaystack.instance.subscription.create(
+  ///   CreateSubscriptionOptions(
+  ///     customer: 'CUS_xyz123',
+  ///     plan: 'PLN_xyz123',
+  ///     authorization: 'AUTH_xyz123',
+  ///   ),
+  /// );
+  ///
+  /// // List all subscriptions
+  /// final subscriptionsResult = await MindPaystack.instance.subscription.list();
+  ///
+  /// // Enable/disable a subscription
+  /// await MindPaystack.instance.subscription.enable('SUB_xyz123');
+  /// await MindPaystack.instance.subscription.disable('SUB_xyz123');
+  ///
+  /// // Generate update link for customer
+  /// final linkResult = await MindPaystack.instance.subscription
+  ///     .generateUpdateLink('SUB_xyz123');
+  /// ```
+  SubscriptionService get subscription {
+    _checkInitialized();
+    return resolveWithParameter<SubscriptionService, PaystackConfig>(
       parameter: config,
     );
   }

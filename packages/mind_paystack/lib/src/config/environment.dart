@@ -60,19 +60,8 @@ enum Environment {
   /// Gets the base URL for the Paystack API based on the environment.
   ///
   /// Returns the appropriate API endpoint URL:
-  /// - Test: https://api.paystack.test (sandbox)
-  /// - Staging: https://api.paystack.staging (if available)
-  /// - Production: https://api.paystack.co (live)
-  String get baseUrl {
-    switch (this) {
-      case Environment.test:
-        return 'https://api.paystack.test';
-      case Environment.staging:
-        return 'https://api.paystack.staging';
-      case Environment.production:
-        return 'https://api.paystack.co';
-    }
-  }
+  /// - Production: https://api.paystack.co
+  String get baseUrl => 'https://api.paystack.co';
 
   /// Creates an Environment from a string representation.
   ///
