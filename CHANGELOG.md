@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`ex02_charge_terminal` - `v1.2.0`](#ex02_charge_terminal---v120)
+
+---
+
+#### `ex02_charge_terminal` - `v1.2.0`
+
+ - **FEAT**: add initial project files for ex02_charge_terminal and ex05_plan_demo. ([91645b16](https://github.com/Dartmind-OpenSource/mind-paystack/commit/91645b16b6ce9b428b246f6491f5d4c9a0485518))
+
+
+## 2025-08-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`ex02_charge_terminal` - `v1.1.0`](#ex02_charge_terminal---v110)
  - [`mind_paystack` - `v0.1.2`](#mind_paystack---v012)
  - [`ex00_checkout_basic` - `v1.1.3`](#ex00_checkout_basic---v113)

@@ -1,6 +1,6 @@
 name: ex02_charge_terminal
 description: Terminal application demonstrating MindPaystack charge flows with card processing.
-version: 1.1.0
+version: 1.2.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
