@@ -91,6 +91,33 @@ class Resource<T> with ResourceMappable<T> {
     );
   }
 
+  /// Creates a Resource instance from a JSON map response with list data.
+  ///
+  /// This factory constructor is used internally by the SDK to parse API
+  /// responses where the 'data' field is a list of objects. It handles the
+  /// standard Paystack response format and maps the data field using the
+  /// provided mapper function.
+  ///
+  /// Parameters:
+  /// - [json]: The raw JSON response from the API
+  /// - [mapper]: Function to convert the 'data' list into type [T]
+  ///
+  /// Returns:
+  /// A properly typed Resource<T> instance with parsed list data.
+  factory Resource.fromMapList(
+    Map<String, dynamic> json,
+    T Function(List<Map<String, dynamic>>) mapper,
+  ) {
+    return Resource<T>(
+      status: json['status'] as bool,
+      message: json['message'] as String?,
+      data: json['data'] != null
+          ? mapper((json['data'] as List).cast<Map<String, dynamic>>())
+          : null,
+      meta: json['meta'],
+    );
+  }
+
   /// Indicates whether the API operation was successful.
   ///
   /// - `true`: Operation completed successfully, [data] may contain results

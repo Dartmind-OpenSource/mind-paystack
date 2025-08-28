@@ -3,6 +3,10 @@ import 'package:mind_paystack/mind_paystack.dart';
 import 'package:mind_paystack/src/core/network/http_client.dart';
 import 'package:mind_paystack/src/features/charge/repositories/charge_repository.dart';
 import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
+import 'package:mind_paystack/src/features/plan/repositories/plan_repository.dart';
+import 'package:mind_paystack/src/features/plan/services/plan_service.dart';
+import 'package:mind_paystack/src/features/subscription/repositories/subscription_repository.dart';
+import 'package:mind_paystack/src/features/subscription/services/subscription_service.dart';
 import 'package:mind_paystack/src/features/transaction/repositories/transaction_repository.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 
@@ -171,4 +175,133 @@ abstract class RegisterModule {
     @factoryParam PaystackConfig config,
   ) =>
       ChargeService(chargeRepository(config));
+
+  /// Provides a PlanRepository instance for plan-related operations.
+  ///
+  /// The PlanRepository handles all plan-related API interactions
+  /// including creating subscription plans, listing plans, fetching
+  /// specific plans, and updating existing plans.
+  ///
+  /// This factory method automatically creates an HttpClient with the provided
+  /// configuration and injects it into the repository, ensuring all network
+  /// requests are properly configured.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A PlanRepository instance configured for the given environment.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  ///   environment: Environment.test,
+  /// );
+  ///
+  /// final planRepo = getIt<PlanRepository>(param1: config);
+  /// final result = await planRepo.create(options);
+  /// ```
+  @factoryMethod
+  PlanRepository planRepository(
+    @factoryParam PaystackConfig config,
+  ) =>
+      PlanRepository(provideHttpClient(config));
+
+  /// Provides a PlanService instance for plan business logic.
+  ///
+  /// The PlanService provides high-level plan operations with proper
+  /// validation, error handling, and business logic. It uses the
+  /// PlanRepository for data access operations.
+  ///
+  /// This service handles subscription plan management including creation,
+  /// listing, fetching, and updating plans in your application.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A PlanService instance with injected repository dependency.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  /// );
+  ///
+  /// final planService = getIt<PlanService>(param1: config);
+  /// final result = await planService.create(options);
+  /// ```
+  @factoryMethod
+  PlanService planService(
+    @factoryParam PaystackConfig config,
+  ) =>
+      PlanService(planRepository(config));
+
+  /// Provides a SubscriptionRepository instance for subscription-related operations.
+  ///
+  /// The SubscriptionRepository handles all subscription-related API interactions
+  /// including creating subscriptions, listing subscriptions, fetching specific
+  /// subscriptions, enabling/disabling subscriptions, and managing update links.
+  ///
+  /// This factory method automatically creates an HttpClient with the provided
+  /// configuration and injects it into the repository, ensuring all network
+  /// requests are properly configured.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A SubscriptionRepository instance configured for the given environment.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  ///   environment: Environment.test,
+  /// );
+  ///
+  /// final subscriptionRepo = getIt<SubscriptionRepository>(param1: config);
+  /// final result = await subscriptionRepo.create(options);
+  /// ```
+  @factoryMethod
+  SubscriptionRepository subscriptionRepository(
+    @factoryParam PaystackConfig config,
+  ) =>
+      SubscriptionRepository(provideHttpClient(config));
+
+  /// Provides a SubscriptionService instance for subscription business logic.
+  ///
+  /// The SubscriptionService provides high-level subscription operations with proper
+  /// validation, error handling, and business logic. It uses the
+  /// SubscriptionRepository for data access operations.
+  ///
+  /// This service handles subscription lifecycle management including creation,
+  /// listing, fetching, status management (enable/disable), and customer
+  /// update link generation.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A SubscriptionService instance with injected repository dependency.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  /// );
+  ///
+  /// final subscriptionService = getIt<SubscriptionService>(param1: config);
+  /// final result = await subscriptionService.create(options);
+  /// ```
+  @factoryMethod
+  SubscriptionService subscriptionService(
+    @factoryParam PaystackConfig config,
+  ) =>
+      SubscriptionService(subscriptionRepository(config));
 }
