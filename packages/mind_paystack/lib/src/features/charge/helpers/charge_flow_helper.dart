@@ -90,16 +90,16 @@ class ChargeFlowConfig {
 class ChargeFlowResult {
   /// Creates a new charge flow result.
   const ChargeFlowResult({
-    required this.charge,
     required this.isSuccess,
     required this.authenticationAttempts,
     required this.totalDuration,
+    this.charge,
     this.error,
     this.cancellationReason,
   });
 
   /// The final charge data.
-  final ChargeData charge;
+  final ChargeData? charge;
 
   /// Whether the charge flow completed successfully.
   final bool isSuccess;
@@ -322,14 +322,7 @@ class ChargeFlowHelper {
       );
     } catch (e) {
       return ChargeFlowResult(
-        charge: previousCharge ??
-            ChargeData(
-              reference: options.reference ?? 'unknown',
-              amount: int.tryParse(options.amount) ?? 0,
-              currency: 'NGN',
-              status: 'failed',
-              gatewayResponse: 'Flow processing failed',
-            ),
+        charge: previousCharge,
         isSuccess: false,
         authenticationAttempts: authenticationAttempts,
         totalDuration: DateTime.now().difference(startTime),

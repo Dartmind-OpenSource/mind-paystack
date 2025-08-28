@@ -49,7 +49,7 @@ class ChargeValidationResult {
 /// Example usage:
 /// ```dart
 /// final validator = ChargeValidators();
-/// 
+///
 /// final result = validator.validateCreateChargeOptions(options);
 /// if (!result.isValid) {
 ///   print('Validation errors:');
@@ -83,7 +83,7 @@ class ChargeValidators {
   ///     authorizationCode: 'AUTH_abc123',
   ///   ),
   /// );
-  /// 
+  ///
   /// if (result.isValid) {
   ///   // Proceed with charge creation
   /// } else {
@@ -91,7 +91,8 @@ class ChargeValidators {
   ///   showValidationErrors(result.errors);
   /// }
   /// ```
-  ChargeValidationResult validateCreateChargeOptions(CreateChargeOptions options) {
+  ChargeValidationResult validateCreateChargeOptions(
+      CreateChargeOptions options) {
     final errors = <String>[];
     final warnings = <String>[];
 
@@ -135,14 +136,14 @@ class ChargeValidators {
 
     // Mobile money validation (if present)
     if (options.mobileMoney != null) {
-      final mobileMoneyResult = _validateMobileMoney(options.mobileMoney!);
+      final mobileMoneyResult = _validateMobileMoney(options.mobileMoney);
       errors.addAll(mobileMoneyResult.errors);
       warnings.addAll(mobileMoneyResult.warnings);
     }
 
     // Bank account validation (if present)
     if (options.bank != null) {
-      final bankResult = _validateBankDetails(options.bank!);
+      final bankResult = _validateBankDetails(options.bank);
       errors.addAll(bankResult.errors);
       warnings.addAll(bankResult.warnings);
     }
@@ -153,13 +154,15 @@ class ChargeValidators {
         errors.add('Transaction reference is too long (max 100 characters)');
       }
       if (!RegExp(r'^[a-zA-Z0-9_-]+$').hasMatch(options.reference!)) {
-        warnings.add('Transaction reference contains special characters that may cause issues');
+        warnings.add(
+            'Transaction reference contains special characters that may cause issues');
       }
     }
 
     // Split payment validation
     if (options.splitCode != null && options.subaccount != null) {
-      warnings.add('Both split code and subaccount specified - split code will take precedence');
+      warnings.add(
+          'Both split code and subaccount specified - split code will take precedence');
     }
 
     return ChargeValidationResult(
@@ -222,9 +225,11 @@ class ChargeValidators {
         expiryMonth,
       );
       final threeMonthsFromNow = DateTime.now().add(const Duration(days: 90));
-      
-      if (expiryDate.isBefore(threeMonthsFromNow) && expiryDate.isAfter(DateTime.now())) {
-        warnings.add('Card expires soon - customer may want to use a different card');
+
+      if (expiryDate.isBefore(threeMonthsFromNow) &&
+          expiryDate.isAfter(DateTime.now())) {
+        warnings.add(
+            'Card expires soon - customer may want to use a different card');
       }
     } catch (e) {
       // Expiry date parsing failed - will be caught by other validations
@@ -264,16 +269,17 @@ class ChargeValidators {
       if (pin.length != 4) {
         errors.add('PIN must be exactly 4 digits');
       }
-      
+
       if (!RegExp(r'^\d+$').hasMatch(pin)) {
         errors.add('PIN must contain only digits');
       }
 
       // Security warnings
       if (RegExp(r'^(\d)\1{3}$').hasMatch(pin)) {
-        warnings.add('PIN contains repeated digits - consider using a different PIN');
+        warnings.add(
+            'PIN contains repeated digits - consider using a different PIN');
       }
-      
+
       if (['1234', '0000', '1111', '2222', '3333'].contains(pin)) {
         warnings.add('PIN is commonly used - consider using a more secure PIN');
       }
@@ -310,7 +316,7 @@ class ChargeValidators {
       if (otp.length < 4 || otp.length > 8) {
         errors.add('OTP must be between 4 and 8 digits');
       }
-      
+
       if (!RegExp(r'^\d+$').hasMatch(otp)) {
         errors.add('OTP must contain only digits');
       }
@@ -345,7 +351,8 @@ class ChargeValidators {
       errors.add('Phone number is required');
     } else {
       if (!phone.startsWith('+')) {
-        errors.add('Phone number must be in international format (start with +)');
+        errors
+            .add('Phone number must be in international format (start with +)');
       } else {
         final digits = phone.substring(1);
         if (!RegExp(r'^\d+$').hasMatch(digits)) {
@@ -390,7 +397,7 @@ class ChargeValidators {
         try {
           final date = DateTime.parse(birthday);
           final now = DateTime.now();
-          
+
           if (date.isAfter(now)) {
             errors.add('Birthday cannot be in the future');
           } else {
@@ -467,7 +474,8 @@ class ChargeValidators {
       errors.add('ZIP/Postal code is required');
     } else {
       // Basic ZIP code format validation
-      if (!RegExp(r'^[A-Z0-9\s-]{3,12}$', caseSensitive: false).hasMatch(zipcode.trim())) {
+      if (!RegExp(r'^[A-Z0-9\s-]{3,12}$', caseSensitive: false)
+          .hasMatch(zipcode.trim())) {
         warnings.add('ZIP/Postal code format may be invalid');
       }
     }
@@ -481,14 +489,16 @@ class ChargeValidators {
 
   /// Validates email address format.
   bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(email);
   }
 
   /// Counts the number of payment methods specified in options.
   int _countPaymentMethods(CreateChargeOptions options) {
     var count = 0;
     if (options.card != null) count++;
-    if (options.authorizationCode != null && options.authorizationCode!.isNotEmpty) count++;
+    if (options.authorizationCode != null &&
+        options.authorizationCode!.isNotEmpty) count++;
     if (options.bank != null) count++;
     if (options.bankTransfer != null) count++;
     if (options.ussd != null) count++;
@@ -504,7 +514,7 @@ class ChargeValidators {
 
     // This is a placeholder - actual implementation would depend on the MobileMoney class structure
     // Add specific validation based on provider, phone number format, etc.
-    
+
     return ChargeValidationResult(
       isValid: errors.isEmpty,
       errors: errors,
@@ -517,9 +527,10 @@ class ChargeValidators {
     final errors = <String>[];
     final warnings = <String>[];
 
-    // This is a placeholder - actual implementation would depend on the BankDetails class structure
+    // This is a placeholder - actual implementation would depend on the
+    // BankDetails class structure
     // Add specific validation for account number format, bank code, etc.
-    
+
     return ChargeValidationResult(
       isValid: errors.isEmpty,
       errors: errors,
