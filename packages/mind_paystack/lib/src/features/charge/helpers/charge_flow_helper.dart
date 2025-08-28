@@ -50,11 +50,16 @@ class ChargeFlowConfig {
   /// Creates a new charge flow configuration.
   ///
   /// Parameters:
-  /// - [maxAuthenticationAttempts]: Maximum number of authentication attempts (default: 3)
-  /// - [authenticationTimeout]: Time to wait for each authentication (default: 5 minutes)
-  /// - [pollInterval]: Interval between status checks for async payments (default: 10 seconds)
-  /// - [maxPollDuration]: Maximum time to poll async payments (default: 10 minutes)
-  /// - [autoRetryTransientErrors]: Whether to retry transient errors (default: true)
+  /// - [maxAuthenticationAttempts]: Maximum number of authentication
+  /// attempts (default: 3)
+  /// - [authenticationTimeout]: Time to wait for each authentication
+  /// (default: 5 minutes)
+  /// - [pollInterval]: Interval between status checks for async payments
+  /// (default: 10 seconds)
+  /// - [maxPollDuration]: Maximum time to poll async payments
+  /// (default: 10 minutes)
+  /// - [autoRetryTransientErrors]: Whether to retry transient errors
+  /// (default: true)
   /// - [maxRetryAttempts]: Maximum number of retry attempts (default: 2)
   const ChargeFlowConfig({
     this.maxAuthenticationAttempts = 3,
@@ -331,7 +336,8 @@ class ChargeFlowHelper {
     }
   }
 
-  /// Processes a simplified charge flow for payment methods that typically don't require authentication.
+  /// Processes a simplified charge flow for payment methods that typically
+  /// don't require authentication.
   ///
   /// This method is optimized for payment methods like saved cards that
   /// usually complete without additional user interaction. It still handles
@@ -360,14 +366,14 @@ class ChargeFlowHelper {
   }) async {
     const config = ChargeFlowConfig(
       maxAuthenticationAttempts: 1,
-      authenticationTimeout: const Duration(minutes: 2),
-      pollInterval: const Duration(seconds: 5),
-      maxPollDuration: const Duration(minutes: 3),
+      authenticationTimeout: Duration(minutes: 2),
+      pollInterval: Duration(seconds: 5),
+      maxPollDuration: Duration(minutes: 3),
     );
 
     final helper = ChargeFlowHelper(_chargeService, config: config);
 
-    return await helper.processCompleteFlow(
+    return helper.processCompleteFlow(
       options: options,
       onAuthentication:
           onAuthentication ?? (type, charge, attempt) async => null,
@@ -394,7 +400,7 @@ class ChargeFlowHelper {
 
         // Wait before retry with exponential backoff
         final delay = Duration(milliseconds: 1000 * (1 << (attempts - 1)));
-        await Future.delayed(delay);
+        await Future<dynamic>.delayed(delay);
       }
     }
 
@@ -457,7 +463,7 @@ class ChargeFlowHelper {
 
         // Wait before retry
         final delay = Duration(milliseconds: 1000 * (1 << (attempts - 1)));
-        await Future.delayed(delay);
+        await Future<dynamic>.delayed(delay);
       }
     }
 
@@ -492,9 +498,9 @@ class ChargeFlowHelper {
   bool _isTransientError(dynamic error) {
     if (error is MindException) {
       // Network errors and some server errors are transient
-      return error.code?.contains('network') == true ||
-          error.code?.contains('timeout') == true ||
-          error.code?.contains('server') == true;
+      return error.code.contains('network') == true ||
+          error.code.contains('timeout') == true ||
+          error.code.contains('server') == true;
     }
 
     // Consider other network-related errors as transient
