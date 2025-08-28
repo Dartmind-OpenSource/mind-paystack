@@ -1,0 +1,17 @@
+name: ex05_plan_demo
+description: A sample application demonstrating plan management with mind-paystack.
+publish_to: none
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  mind_paystack:
+    path: ../../packages/mind_paystack
+  dotenv: ^4.2.0
+
+dev_dependencies:
+  test: ^1.25.8
+  very_good_analysis: ^7.0.0
