@@ -263,7 +263,7 @@ packages:
       path: "../../packages/mind_paystack"
       relative: true
     source: path
-    version: "0.1.1+1"
+    version: "0.1.2"
   mocktail:
     dependency: "direct main"
     description:
