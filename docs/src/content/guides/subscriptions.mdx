@@ -1,0 +1,517 @@
+# Subscriptions
+
+Subscriptions enable automatic recurring billing for your customers. They link customers to subscription plans and handle the entire billing lifecycle, from creation to management and updates.
+
+## Overview
+
+Subscriptions are the active billing relationships between customers and your plans. Once created, they automatically charge customers according to the plan's billing interval, handle failed payments, and provide tools for subscription management.
+
+### Key Concepts
+
+- **Subscription Code**: Unique identifier for each subscription (SUB_xyz123)
+- **Authorization**: Payment method authorization for recurring billing
+- **Status**: Current subscription state (active, cancelled, attention)
+- **Customer**: The subscriber linked to the subscription
+- **Plan**: The billing plan defining amount and frequency
+
+## Getting Started
+
+First, initialize the MindPaystack SDK:
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+// Initialize the SDK
+await MindPaystack.initialize(
+  PaystackConfig(
+    publicKey: 'pk_test_your_public_key',
+    secretKey: 'sk_test_your_secret_key',
+    environment: Environment.test,
+  ),
+);
+
+final sdk = MindPaystack.instance;
+```
+
+## Creating Subscriptions
+
+Create subscriptions to start recurring billing for customers:
+
+```dart
+// Create a subscription with existing customer and plan
+final subscriptionResult = await sdk.subscription.create(
+  CreateSubscriptionOptions(
+    customer: 'CUS_abc123', // Customer code
+    plan: 'PLN_xyz789', // Plan code
+    authorization: 'AUTH_def456', // Authorization from previous transaction
+    startDate: DateTime.now().add(Duration(days: 7)), // Start in 7 days
+    quantity: 1,
+    metadata: {
+      'order_id': '12345',
+      'source': 'website',
+    },
+  ),
+);
+
+if (subscriptionResult.isSuccess) {
+  final subscription = subscriptionResult.data!;
+  print('✅ Subscription created: ${subscription.subscriptionCode}');
+  print('Status: ${subscription.status}');
+  print('Next payment: ${subscription.nextPaymentDate}');
+}
+
+// Create subscription with customer email (auto-creates customer)
+final emailSubscriptionResult = await sdk.subscription.create(
+  CreateSubscriptionOptions(
+    customer: 'customer@example.com', // Email instead of customer code
+    plan: 'PLN_xyz789',
+    authorization: 'AUTH_def456',
+  ),
+);
+```
+
+### Subscription Parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `customer` | Yes | Customer code or email address |
+| `plan` | Yes | Plan code for billing |
+| `authorization` | No | Authorization code for payments |
+| `startDate` | No | When to start billing (default: now) |
+| `quantity` | No | Number of units (default: 1) |
+| `metadata` | No | Custom key-value pairs |
+
+## Listing Subscriptions
+
+Retrieve subscriptions with filtering and pagination:
+
+```dart
+// List all subscriptions
+final allSubscriptions = await sdk.subscription.list();
+
+if (allSubscriptions.isSuccess) {
+  final subscriptions = allSubscriptions.data!;
+  print('📋 Found ${subscriptions.length} subscriptions');
+  
+  for (final sub in subscriptions) {
+    print('${sub.customer?.email}: ${sub.plan?.name} - ${sub.status}');
+  }
+}
+
+// List with filtering
+final filteredResult = await sdk.subscription.list(
+  ListSubscriptionsOptions(
+    perPage: 20,
+    page: 1,
+    customer: 'CUS_abc123', // Specific customer
+    plan: 'PLN_xyz789', // Specific plan
+    status: 'active', // Only active subscriptions
+    from: DateTime(2024, 1, 1), // Date range
+    to: DateTime(2024, 12, 31),
+  ),
+);
+
+// List customer subscriptions
+final customerSubs = await sdk.subscription.list(
+  ListSubscriptionsOptions(
+    customer: 'CUS_abc123',
+    status: 'active',
+  ),
+);
+```
+
+### List Options
+
+| Parameter | Description |
+|-----------|-------------|
+| `perPage` | Number of subscriptions per page (max 100) |
+| `page` | Page number for pagination |
+| `customer` | Filter by customer code |
+| `plan` | Filter by plan code |
+| `status` | Filter by subscription status |
+| `from` | Start date for filtering |
+| `to` | End date for filtering |
+
+## Fetching Specific Subscriptions
+
+Get detailed information about a subscription:
+
+```dart
+// Fetch by subscription code
+final subscriptionResult = await sdk.subscription.fetch('SUB_abc123xyz');
+
+if (subscriptionResult.isSuccess) {
+  final subscription = subscriptionResult.data!;
+  print('📊 Subscription Details:');
+  print('Status: ${subscription.status}');
+  print('Customer: ${subscription.customer?.email}');
+  print('Plan: ${subscription.plan?.name}');
+  print('Amount: ₦${(subscription.amount! / 100).toStringAsFixed(2)}');
+  print('Next payment: ${subscription.nextPaymentDate}');
+  print('Created: ${subscription.createdAt}');
+  
+  // Check payment authorization
+  final auth = subscription.authorization;
+  if (auth != null) {
+    print('Card: **** **** **** ${auth.last4}');
+    print('Bank: ${auth.bank}');
+    print('Expires: ${auth.expMonth}/${auth.expYear}');
+  }
+}
+
+// Fetch by subscription ID
+final subscriptionById = await sdk.subscription.fetch('12345');
+```
+
+## Managing Subscription Status
+
+### Enabling Subscriptions
+
+Reactivate a disabled subscription:
+
+```dart
+// Enable subscription
+final enableResult = await sdk.subscription.enable('SUB_abc123xyz');
+
+if (enableResult.isSuccess) {
+  final subscription = enableResult.data!;
+  print('✅ Subscription enabled: ${subscription.status}');
+}
+
+// Enable with email token (for customer self-service)
+final tokenEnableResult = await sdk.subscription.enable(
+  'SUB_abc123xyz',
+  EnableSubscriptionOptions(
+    token: 'email_token_from_customer_link',
+  ),
+);
+```
+
+### Disabling Subscriptions
+
+Temporarily stop a subscription:
+
+```dart
+// Disable subscription
+final disableResult = await sdk.subscription.disable('SUB_abc123xyz');
+
+if (disableResult.isSuccess) {
+  final subscription = disableResult.data!;
+  print('⏸️ Subscription disabled: ${subscription.status}');
+}
+
+// Disable with email token
+final tokenDisableResult = await sdk.subscription.disable(
+  'SUB_abc123xyz',
+  DisableSubscriptionOptions(
+    token: 'email_token_from_customer_link',
+  ),
+);
+```
+
+### Subscription Status Values
+
+| Status | Description |
+|--------|-------------|
+| `active` | Subscription is active and billing |
+| `cancelled` | Subscription has been cancelled |
+| `attention` | Requires attention (failed payment, etc.) |
+
+## Customer Self-Service Links
+
+### Generate Update Links
+
+Create secure links for customers to update their payment methods:
+
+```dart
+// Generate update link
+final linkResult = await sdk.subscription.generateUpdateLink('SUB_abc123xyz');
+
+if (linkResult.isSuccess) {
+  final link = linkResult.data!;
+  print('🔗 Update link generated: ${link.link}');
+  
+  // Share this link with your customer
+  // They can update card details, billing info, etc.
+  await shareWithCustomer(link.link);
+}
+```
+
+### Send Update Links via Email
+
+Automatically email update links to customers:
+
+```dart
+// Send update link to customer's email
+final emailResult = await sdk.subscription.sendUpdateLink('SUB_abc123xyz');
+
+if (emailResult.isSuccess) {
+  print('📧 Update link sent to customer email');
+} else {
+  print('❌ Failed to send email: ${emailResult.message}');
+}
+```
+
+## Error Handling
+
+Handle common subscription operation errors:
+
+```dart
+try {
+  final result = await sdk.subscription.create(subscriptionOptions);
+  
+  if (result.isSuccess) {
+    // Subscription created successfully
+    final subscription = result.data!;
+    handleSubscriptionCreated(subscription);
+  } else {
+    // Handle API errors
+    switch (result.message) {
+      case 'Customer not found':
+        showError('Customer does not exist. Please create customer first.');
+        break;
+      case 'Plan not found':
+        showError('Selected plan is not available.');
+        break;
+      case 'Invalid authorization':
+        showError('Payment method is invalid or expired.');
+        break;
+      default:
+        showError('Failed to create subscription: ${result.message}');
+    }
+  }
+} on MindException catch (e) {
+  // Handle SDK-specific errors
+  print('MindPaystack Error: ${e.message}');
+  print('Error Code: ${e.code}');
+  
+  if (e.validationErrors?.isNotEmpty == true) {
+    for (final error in e.validationErrors!) {
+      print('Validation Error: ${error.field} - ${error.message}');
+    }
+  }
+} catch (e) {
+  // Handle unexpected errors
+  print('Unexpected error: $e');
+}
+```
+
+## Best Practices
+
+### Customer Communication
+
+Keep customers informed about their subscriptions:
+
+```dart
+// After creating subscription
+final subscription = subscriptionResult.data!;
+await sendWelcomeEmail(
+  subscription.customer!.email!,
+  subscription.plan!.name!,
+  subscription.nextPaymentDate!,
+);
+
+// Before payment attempts
+await sendPaymentReminderEmail(
+  subscription.customer!.email!,
+  subscription.nextPaymentDate!,
+  subscription.amount!,
+);
+```
+
+### Handling Failed Payments
+
+Monitor subscription status and handle failures:
+
+```dart
+// Check subscription status regularly
+final subscription = await sdk.subscription.fetch('SUB_abc123xyz');
+
+if (subscription.isSuccess) {
+  final sub = subscription.data!;
+  
+  if (sub.status == 'attention') {
+    // Handle payment failure
+    await handlePaymentFailure(sub);
+    
+    // Send update link to customer
+    await sdk.subscription.sendUpdateLink(sub.subscriptionCode!);
+  }
+}
+
+async function handlePaymentFailure(Subscription subscription) {
+  // Notify customer
+  await sendPaymentFailedEmail(subscription.customer!.email!);
+  
+  // Optionally pause features
+  await pauseCustomerAccess(subscription.customer!.customerCode!);
+  
+  // Set retry logic
+  await scheduleRetryAttempt(subscription.subscriptionCode!);
+}
+```
+
+### Subscription Lifecycle Management
+
+```dart
+// Monitor subscription health
+final subscriptions = await sdk.subscription.list(
+  ListSubscriptionsOptions(status: 'attention'),
+);
+
+if (subscriptions.isSuccess) {
+  for (final sub in subscriptions.data!) {
+    await handleSubscriptionIssue(sub);
+  }
+}
+
+// Upgrade/downgrade subscriptions
+async function changeSubscriptionPlan(
+  String subscriptionCode,
+  String newPlanCode,
+) {
+  // 1. Disable current subscription
+  await sdk.subscription.disable(subscriptionCode);
+  
+  // 2. Create new subscription with new plan
+  final newSub = await sdk.subscription.create(
+    CreateSubscriptionOptions(
+      customer: currentSubscription.customer!.customerCode!,
+      plan: newPlanCode,
+      authorization: currentSubscription.authorization!.authorizationCode!,
+    ),
+  );
+  
+  return newSub;
+}
+```
+
+## Webhook Integration
+
+Handle subscription webhooks for real-time updates:
+
+```dart
+// Webhook handler example
+async function handleSubscriptionWebhook(Map<String, dynamic> payload) {
+  final event = payload['event'];
+  final data = payload['data'];
+  
+  switch (event) {
+    case 'subscription.create':
+      await onSubscriptionCreated(data);
+      break;
+    case 'subscription.disable':
+      await onSubscriptionDisabled(data);
+      break;
+    case 'invoice.create':
+      await onInvoiceCreated(data);
+      break;
+    case 'invoice.payment_failed':
+      await onPaymentFailed(data);
+      break;
+    case 'subscription.not_renew':
+      await onSubscriptionExpired(data);
+      break;
+  }
+}
+```
+
+## Common Use Cases
+
+### SaaS Subscriptions
+
+```dart
+// Monthly SaaS subscription
+await createSaasSubscription(
+  customerEmail: 'user@company.com',
+  planCode: 'saas_pro_monthly',
+  authorizationCode: 'AUTH_from_signup',
+);
+
+// Annual subscription with discount
+await createAnnualSubscription(
+  customerCode: 'CUS_xyz123',
+  planCode: 'saas_pro_yearly',
+  authorizationCode: 'AUTH_saved_card',
+);
+```
+
+### Content Subscriptions
+
+```dart
+// Magazine subscription
+await sdk.subscription.create(
+  CreateSubscriptionOptions(
+    customer: 'subscriber@email.com',
+    plan: 'magazine_monthly',
+    authorization: authCode,
+    metadata: {
+      'subscription_type': 'digital_magazine',
+      'delivery_format': 'email',
+    },
+  ),
+);
+```
+
+### Membership Subscriptions
+
+```dart
+// Gym membership
+await sdk.subscription.create(
+  CreateSubscriptionOptions(
+    customer: customerCode,
+    plan: 'gym_premium',
+    authorization: authCode,
+    startDate: DateTime.now().add(Duration(days: 1)), // Start tomorrow
+    metadata: {
+      'membership_type': 'premium',
+      'gym_location': 'downtown',
+    },
+  ),
+);
+```
+
+## Integration with Plans
+
+Use subscriptions with the plans you've created:
+
+```dart
+// First, create plans
+final basicPlan = await sdk.plan.create(CreatePlanOptions(
+  name: 'Basic Monthly',
+  amount: 299900, // ₦2,999
+  interval: 'monthly',
+  planCode: 'basic_monthly',
+));
+
+final proPlan = await sdk.plan.create(CreatePlanOptions(
+  name: 'Pro Monthly',
+  amount: 599900, // ₦5,999
+  interval: 'monthly', 
+  planCode: 'pro_monthly',
+));
+
+// Then create subscriptions using these plans
+final subscription = await sdk.subscription.create(
+  CreateSubscriptionOptions(
+    customer: 'customer@example.com',
+    plan: 'basic_monthly', // Use the plan code
+    authorization: authorizationCode,
+  ),
+);
+```
+
+## Next Steps
+
+- Learn about [Plans](/guides/plans) to create subscription billing structures
+- Explore [Transactions](/guides/transactions) for one-time payments
+- Check [Payment Methods](/guides/payments) for customer payment options
+- Review webhook handling for real-time subscription updates
+- Monitor subscription health through the Paystack dashboard
+
+## Resources
+
+- [Subscription API Reference](/api-reference/entities) - Complete subscription model properties
+- [Plan Guide](/guides/plans) - Creating and managing subscription plans
+- [Transaction Guide](/guides/transactions) - Understanding payment flows
+- [Configuration](/configuration) - SDK setup and options

@@ -4,3 +4,4 @@ chargeIssues/dependencies.md
 ISSUES.md
 apps/ex02_charge_terminal/.env
 mind_paystack_server/
+apps/ex05_plan_demo/.env

@@ -1,0 +1,552 @@
+# Subscription Management
+
+A complete guide to managing customer subscriptions with the MindPaystack SDK, including creation, status management, and customer self-service features.
+
+## Overview
+
+This example demonstrates the complete subscription lifecycle:
+
+- ✅ Creating subscriptions for customers
+- ✅ Listing and filtering subscriptions  
+- ✅ Fetching subscription details
+- ✅ Enabling and disabling subscriptions
+- ✅ Generating customer update links
+- ✅ Sending update links via email
+
+## Prerequisites
+
+Before managing subscriptions, you'll need:
+
+1. **Plans**: Create subscription plans first
+2. **Customers**: Have customer records in Paystack
+3. **Authorization**: Payment method authorization for billing
+
+```dart
+// Set up your environment
+export PAYSTACK_PUBLIC_KEY=pk_test_your_public_key
+export PAYSTACK_SECRET_KEY=sk_test_your_secret_key
+```
+
+## Complete Subscription Management Example
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+class SubscriptionManager {
+  static Future<void> initialize() async {
+    await MindPaystack.initialize(
+      PaystackConfig(
+        publicKey: 'pk_test_your_key',
+        secretKey: 'sk_test_your_key',
+        environment: Environment.test,
+      ),
+    );
+  }
+
+  /// Creates a new subscription for a customer
+  static Future<Subscription?> createSubscription({
+    required String customerCode,
+    required String planCode,
+    required String authorizationCode,
+    DateTime? startDate,
+    int quantity = 1,
+    Map<String, dynamic>? metadata,
+  }) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.create(
+        CreateSubscriptionOptions(
+          customer: customerCode,
+          plan: planCode,
+          authorization: authorizationCode,
+          startDate: startDate,
+          quantity: quantity,
+          metadata: metadata,
+        ),
+      );
+
+      if (result.isSuccess) {
+        final subscription = result.data!;
+        print('✅ Subscription created successfully!');
+        print('   Code: ${subscription.subscriptionCode}');
+        print('   Status: ${subscription.status}');
+        print('   Customer: ${subscription.customer?.email}');
+        print('   Plan: ${subscription.plan?.name}');
+        print('   Next Payment: ${subscription.nextPaymentDate}');
+        
+        return subscription;
+      } else {
+        print('❌ Subscription creation failed: ${result.message}');
+        return null;
+      }
+    } on MindException catch (e) {
+      print('❌ Error creating subscription: ${e.message}');
+      return null;
+    }
+  }
+
+  /// Lists subscriptions with filtering options
+  static Future<List<Subscription>> listSubscriptions({
+    String? customerCode,
+    String? planCode,
+    String? status,
+    int perPage = 50,
+    int page = 1,
+  }) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.list(
+        ListSubscriptionsOptions(
+          customer: customerCode,
+          plan: planCode,
+          status: status,
+          perPage: perPage,
+          page: page,
+        ),
+      );
+
+      if (result.isSuccess) {
+        final subscriptions = result.data!;
+        print('📋 Found ${subscriptions.length} subscriptions');
+        
+        for (final sub in subscriptions) {
+          print('   ${sub.subscriptionCode}: ${sub.customer?.email} - ${sub.status}');
+        }
+        
+        return subscriptions;
+      } else {
+        print('❌ Failed to list subscriptions: ${result.message}');
+        return [];
+      }
+    } on MindException catch (e) {
+      print('❌ Error listing subscriptions: ${e.message}');
+      return [];
+    }
+  }
+
+  /// Fetches detailed subscription information
+  static Future<Subscription?> getSubscriptionDetails(String subscriptionCode) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.fetch(subscriptionCode);
+
+      if (result.isSuccess) {
+        final subscription = result.data!;
+        print('📊 Subscription Details:');
+        print('   Code: ${subscription.subscriptionCode}');
+        print('   Status: ${subscription.status}');
+        print('   Customer: ${subscription.customer?.email}');
+        print('   Plan: ${subscription.plan?.name}');
+        print('   Amount: ₦${(subscription.amount! / 100).toStringAsFixed(2)}');
+        print('   Created: ${subscription.createdAt}');
+        print('   Next Payment: ${subscription.nextPaymentDate}');
+        
+        // Payment method details
+        final auth = subscription.authorization;
+        if (auth != null) {
+          print('   Payment Method: **** **** **** ${auth.last4}');
+          print('   Bank: ${auth.bank}');
+          print('   Card Type: ${auth.cardType}');
+        }
+        
+        return subscription;
+      } else {
+        print('❌ Subscription not found: ${result.message}');
+        return null;
+      }
+    } on MindException catch (e) {
+      print('❌ Error fetching subscription: ${e.message}');
+      return null;
+    }
+  }
+
+  /// Enables a disabled subscription
+  static Future<bool> enableSubscription(String subscriptionCode, {String? token}) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.enable(
+        subscriptionCode,
+        token != null ? EnableSubscriptionOptions(token: token) : null,
+      );
+
+      if (result.isSuccess) {
+        final subscription = result.data!;
+        print('✅ Subscription enabled successfully!');
+        print('   Status: ${subscription.status}');
+        return true;
+      } else {
+        print('❌ Failed to enable subscription: ${result.message}');
+        return false;
+      }
+    } on MindException catch (e) {
+      print('❌ Error enabling subscription: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Disables an active subscription
+  static Future<bool> disableSubscription(String subscriptionCode, {String? token}) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.disable(
+        subscriptionCode,
+        token != null ? DisableSubscriptionOptions(token: token) : null,
+      );
+
+      if (result.isSuccess) {
+        final subscription = result.data!;
+        print('⏸️ Subscription disabled successfully!');
+        print('   Status: ${subscription.status}');
+        return true;
+      } else {
+        print('❌ Failed to disable subscription: ${result.message}');
+        return false;
+      }
+    } on MindException catch (e) {
+      print('❌ Error disabling subscription: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Generates a secure update link for customers
+  static Future<String?> generateCustomerUpdateLink(String subscriptionCode) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.generateUpdateLink(subscriptionCode);
+
+      if (result.isSuccess) {
+        final link = result.data!;
+        print('🔗 Update link generated successfully!');
+        print('   Link: ${link.link}');
+        return link.link;
+      } else {
+        print('❌ Failed to generate update link: ${result.message}');
+        return null;
+      }
+    } on MindException catch (e) {
+      print('❌ Error generating update link: ${e.message}');
+      return null;
+    }
+  }
+
+  /// Sends update link to customer's email
+  static Future<bool> sendUpdateLinkToCustomer(String subscriptionCode) async {
+    final sdk = MindPaystack.instance;
+    
+    try {
+      final result = await sdk.subscription.sendUpdateLink(subscriptionCode);
+
+      if (result.isSuccess) {
+        print('📧 Update link sent to customer email successfully!');
+        return true;
+      } else {
+        print('❌ Failed to send update link: ${result.message}');
+        return false;
+      }
+    } on MindException catch (e) {
+      print('❌ Error sending update link: ${e.message}');
+      return false;
+    }
+  }
+}
+
+/// Main function demonstrating complete subscription management workflow
+Future<void> main() async {
+  print('🚀 Starting Subscription Management Demo...\n');
+
+  // Initialize SDK
+  await SubscriptionManager.initialize();
+  print('✅ SDK initialized successfully!\n');
+
+  try {
+    // 1. Create a subscription
+    print('1️⃣ Creating a subscription...');
+    final subscription = await SubscriptionManager.createSubscription(
+      customerCode: 'CUS_example123',
+      planCode: 'PLN_premium_monthly',
+      authorizationCode: 'AUTH_example456',
+      quantity: 1,
+      metadata: {
+        'source': 'web_app',
+        'campaign': 'summer_promo',
+      },
+    );
+
+    if (subscription == null) {
+      print('❌ Could not create subscription. Exiting demo.');
+      return;
+    }
+
+    print('');
+
+    // 2. List subscriptions
+    print('2️⃣ Listing active subscriptions...');
+    final activeSubscriptions = await SubscriptionManager.listSubscriptions(
+      status: 'active',
+      perPage: 10,
+    );
+    print('');
+
+    // 3. Get subscription details
+    print('3️⃣ Fetching subscription details...');
+    final details = await SubscriptionManager.getSubscriptionDetails(
+      subscription.subscriptionCode!,
+    );
+    print('');
+
+    // 4. Generate customer update link
+    print('4️⃣ Generating customer update link...');
+    final updateLink = await SubscriptionManager.generateCustomerUpdateLink(
+      subscription.subscriptionCode!,
+    );
+    print('');
+
+    // 5. Send update link via email
+    print('5️⃣ Sending update link to customer...');
+    final emailSent = await SubscriptionManager.sendUpdateLinkToCustomer(
+      subscription.subscriptionCode!,
+    );
+    print('');
+
+    // 6. Temporarily disable subscription
+    print('6️⃣ Temporarily disabling subscription...');
+    final disabled = await SubscriptionManager.disableSubscription(
+      subscription.subscriptionCode!,
+    );
+    print('');
+
+    // 7. Re-enable subscription
+    if (disabled) {
+      print('7️⃣ Re-enabling subscription...');
+      final enabled = await SubscriptionManager.enableSubscription(
+        subscription.subscriptionCode!,
+      );
+      print('');
+    }
+
+    print('✅ Subscription management demo completed successfully!');
+
+  } catch (e) {
+    print('❌ Demo failed with error: $e');
+  }
+}
+
+/// Helper class for handling subscription webhooks
+class SubscriptionWebhookHandler {
+  /// Processes subscription webhook events
+  static Future<void> handleWebhookEvent(Map<String, dynamic> payload) async {
+    final event = payload['event'] as String;
+    final data = payload['data'] as Map<String, dynamic>;
+    
+    switch (event) {
+      case 'subscription.create':
+        await handleSubscriptionCreated(data);
+        break;
+      case 'subscription.disable':
+        await handleSubscriptionDisabled(data);
+        break;
+      case 'subscription.enable':
+        await handleSubscriptionEnabled(data);
+        break;
+      case 'invoice.create':
+        await handleInvoiceCreated(data);
+        break;
+      case 'invoice.update':
+        await handleInvoiceUpdated(data);
+        break;
+      case 'invoice.payment_failed':
+        await handlePaymentFailed(data);
+        break;
+      case 'subscription.not_renew':
+        await handleSubscriptionExpired(data);
+        break;
+      default:
+        print('🔔 Unhandled webhook event: $event');
+    }
+  }
+
+  static Future<void> handleSubscriptionCreated(Map<String, dynamic> data) async {
+    final subscriptionCode = data['subscription_code'];
+    print('🎉 New subscription created: $subscriptionCode');
+    
+    // Add your business logic here:
+    // - Send welcome email
+    // - Activate customer features
+    // - Update customer status
+  }
+
+  static Future<void> handleSubscriptionDisabled(Map<String, dynamic> data) async {
+    final subscriptionCode = data['subscription_code'];
+    print('⏸️ Subscription disabled: $subscriptionCode');
+    
+    // Add your business logic here:
+    // - Pause customer access
+    // - Send pause notification
+    // - Update customer status
+  }
+
+  static Future<void> handleSubscriptionEnabled(Map<String, dynamic> data) async {
+    final subscriptionCode = data['subscription_code'];
+    print('▶️ Subscription enabled: $subscriptionCode');
+    
+    // Add your business logic here:
+    // - Restore customer access
+    // - Send resume notification
+    // - Update customer status
+  }
+
+  static Future<void> handleInvoiceCreated(Map<String, dynamic> data) async {
+    final invoiceCode = data['invoice_code'];
+    print('📄 New invoice created: $invoiceCode');
+    
+    // Add your business logic here:
+    // - Send invoice notification
+    // - Update billing records
+  }
+
+  static Future<void> handlePaymentFailed(Map<String, dynamic> data) async {
+    final subscriptionCode = data['subscription']['subscription_code'];
+    print('❌ Payment failed for subscription: $subscriptionCode');
+    
+    // Add your business logic here:
+    // - Send payment failure notification
+    // - Generate retry schedule
+    // - Send update link to customer
+    await SubscriptionManager.sendUpdateLinkToCustomer(subscriptionCode);
+  }
+
+  static Future<void> handleInvoiceUpdated(Map<String, dynamic> data) async {
+    final invoiceCode = data['invoice_code'];
+    final status = data['status'];
+    print('📄 Invoice updated: $invoiceCode - Status: $status');
+  }
+
+  static Future<void> handleSubscriptionExpired(Map<String, dynamic> data) async {
+    final subscriptionCode = data['subscription_code'];
+    print('⏰ Subscription expired: $subscriptionCode');
+    
+    // Add your business logic here:
+    // - Send expiration notice
+    // - Offer renewal options
+    // - Archive customer data
+  }
+}
+```
+
+## Key Features Demonstrated
+
+### 1. Subscription Creation
+- Creating subscriptions with existing customers
+- Setting start dates and quantities
+- Adding custom metadata
+
+### 2. Subscription Listing & Filtering
+- Fetching all subscriptions
+- Filtering by customer, plan, and status
+- Pagination support
+
+### 3. Subscription Management
+- Enabling and disabling subscriptions
+- Fetching detailed subscription information
+- Status monitoring
+
+### 4. Customer Self-Service
+- Generating secure update links
+- Sending update links via email
+- Token-based operations
+
+### 5. Error Handling
+- Comprehensive try-catch blocks
+- MindException handling
+- Graceful fallbacks
+
+## Running the Example
+
+1. **Set Environment Variables**:
+   ```bash
+   export PAYSTACK_PUBLIC_KEY=pk_test_your_key
+   export PAYSTACK_SECRET_KEY=sk_test_your_key
+   ```
+
+2. **Update Customer/Plan Codes**:
+   ```dart
+   // Replace with your actual codes
+   customerCode: 'CUS_your_customer_code',
+   planCode: 'PLN_your_plan_code',
+   authorizationCode: 'AUTH_your_auth_code',
+   ```
+
+3. **Run the Demo**:
+   ```bash
+   dart run subscription_management_demo.dart
+   ```
+
+## Production Considerations
+
+### Webhook Handling
+```dart
+// Set up webhook endpoint to handle subscription events
+app.post('/webhook/subscription', (req, res) async {
+  final payload = req.body;
+  await SubscriptionWebhookHandler.handleWebhookEvent(payload);
+  res.status(200).send('OK');
+});
+```
+
+### Error Recovery
+```dart
+// Implement retry logic for failed operations
+Future<bool> retrySubscriptionOperation(
+  Future<bool> Function() operation,
+  {int maxRetries = 3}
+) async {
+  for (int i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (e) {
+      if (i == maxRetries - 1) rethrow;
+      await Future.delayed(Duration(seconds: pow(2, i).toInt()));
+    }
+  }
+  return false;
+}
+```
+
+### Customer Communication
+```dart
+// Send notifications for subscription events
+class SubscriptionNotifier {
+  static Future<void> sendWelcomeEmail(String email, String planName) async {
+    // Implementation
+  }
+  
+  static Future<void> sendPaymentFailedEmail(String email) async {
+    // Implementation
+  }
+  
+  static Future<void> sendUpdateLinkEmail(String email, String link) async {
+    // Implementation
+  }
+}
+```
+
+## Next Steps
+
+1. **Integrate Webhooks**: Set up webhook handling for real-time updates
+2. **Add Customer Portal**: Create a self-service portal using update links
+3. **Monitor Subscription Health**: Track failed payments and churn
+4. **Implement Retry Logic**: Handle payment failures gracefully
+5. **Add Analytics**: Track subscription metrics and revenue
+
+## Resources
+
+- [Subscription Guide](/guides/subscriptions) - Complete subscription documentation
+- [Plan Guide](/guides/plans) - Creating subscription plans
+- [Webhook Documentation](https://paystack.com/docs/payments/webhooks/) - Paystack webhook events
+- [API Reference](/api-reference/entities) - Subscription model properties

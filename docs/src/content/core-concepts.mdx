@@ -11,6 +11,8 @@ This SDK follows a clean, layered architecture with DI and clear error semantics
 final paystack = MindPaystack.instance;
 final txService = paystack.transaction;      // TransactionService
 final chargeService = paystack.charge;       // ChargeService
+final planService = paystack.plan;           // PlanService
+final subscriptionService = paystack.subscription; // SubscriptionService
 final pmService = paystack.paymentMethods;   // PaymentMethodService
 final channelService = paystack.paymentChannel; // PaymentChannelService
 ```
@@ -48,3 +50,19 @@ try {
 #### Models and typing
 
 Responses are strongly typed using `freezed` data models across features.
+
+#### Core Features
+
+The SDK provides comprehensive payment and subscription management capabilities:
+
+**Transactions**
+The primary way to accept one-time payments. Transactions represent a customer's intent to pay and can be in various states (pending, success, failed, abandoned).
+
+**Subscription Plans**  
+Reusable billing structures for recurring payments. Plans define the amount, billing frequency, and other settings for subscriptions.
+
+**Subscriptions**
+Active recurring billing relationships between customers and plans. Handle the entire subscription lifecycle from creation to management.
+
+**Direct Charges**
+For advanced use cases where you need complete control over the payment flow, including handling PIN, OTP, and other authentication methods.

@@ -1,0 +1,286 @@
+# Plan Management Demo
+
+A complete example demonstrating subscription plan management with the MindPaystack SDK.
+
+## Demo Application
+
+The plan management demo is located in `/apps/ex05_plan_demo/` and showcases all plan operations:
+
+- ✅ Creating subscription plans
+- ✅ Listing available plans  
+- ✅ Fetching specific plans
+- ✅ Updating plan details
+
+## Running the Demo
+
+### Prerequisites
+
+Set your environment variables:
+
+```bash
+export PAYSTACK_PUBLIC_KEY=pk_test_your_public_key
+export PAYSTACK_SECRET_KEY=sk_test_your_secret_key
+```
+
+### Interactive Mode
+
+Run with an interactive menu to explore plan operations:
+
+```bash
+cd apps/ex05_plan_demo
+dart run bin/ex05_plan_demo.dart
+```
+
+### Complete Demo
+
+Run an automated demonstration of all features:
+
+```bash
+dart run bin/ex05_plan_demo.dart --complete
+```
+
+## Key Code Examples
+
+### Creating Plans
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+Future<void> createPlans() async {
+  // Initialize SDK
+  await MindPaystack.initialize(
+    PaystackConfig(
+      publicKey: 'pk_test_your_key',
+      secretKey: 'sk_test_your_key',
+      environment: Environment.test,
+    ),
+  );
+
+  final sdk = MindPaystack.instance;
+
+  // Create monthly plan
+  final monthlyResult = await sdk.plan.create(
+    CreatePlanOptions(
+      name: 'Premium Monthly',
+      amount: 500000, // ₦5,000 in kobo
+      interval: 'monthly',
+      planCode: 'premium_monthly',
+      description: 'Premium features with monthly billing',
+      currency: 'NGN',
+      invoiceLimit: 12,
+      sendInvoices: true,
+      sendSms: true,
+    ),
+  );
+
+  if (monthlyResult.isSuccess) {
+    final plan = monthlyResult.data!;
+    print('✅ Monthly plan created: ${plan.planCode}');
+  }
+
+  // Create yearly plan with discount
+  final yearlyResult = await sdk.plan.create(
+    CreatePlanOptions(
+      name: 'Premium Yearly - Save 2 months!',
+      amount: 5000000, // ₦50,000 in kobo (10 months price)
+      interval: 'annually',
+      planCode: 'premium_yearly',
+      description: 'Premium features with yearly billing',
+    ),
+  );
+
+  if (yearlyResult.isSuccess) {
+    final plan = yearlyResult.data!;
+    print('✅ Yearly plan created: ${plan.planCode}');
+  }
+}
+```
+
+### Listing and Managing Plans
+
+```dart
+Future<void> managePlans() async {
+  final sdk = MindPaystack.instance;
+
+  // List all active plans
+  final listResult = await sdk.plan.list(
+    ListPlansOptions(
+      perPage: 20,
+      page: 1,
+      status: 'active',
+    ),
+  );
+
+  if (listResult.isSuccess) {
+    final planList = listResult.data!;
+    print('📋 Found ${planList.data.length} active plans');
+    
+    for (final plan in planList.data) {
+      print('${plan.name}: ₦${(plan.amount! / 100).toStringAsFixed(2)} per ${plan.interval}');
+      
+      // Fetch detailed plan information
+      final detailResult = await sdk.plan.fetch(plan.planCode!);
+      if (detailResult.isSuccess) {
+        final detailedPlan = detailResult.data!;
+        print('  📊 Plan ID: ${detailedPlan.id}');
+        print('  📝 Description: ${detailedPlan.name}');
+      }
+    }
+  }
+
+  // Update a plan
+  final updateResult = await sdk.plan.update(
+    'premium_monthly',
+    UpdatePlanOptions(
+      name: 'Premium Monthly (Updated)',
+      amount: 600000, // ₦6,000 in kobo
+      description: 'Enhanced premium features with monthly billing',
+    ),
+  );
+
+  if (updateResult.isSuccess) {
+    final updatedPlan = updateResult.data!;
+    print('✅ Plan updated: ${updatedPlan.name}');
+    print('💰 New amount: ₦${(updatedPlan.amount! / 100).toStringAsFixed(2)}');
+  }
+}
+```
+
+### Error Handling
+
+```dart
+Future<void> createPlanWithErrorHandling() async {
+  try {
+    final result = await sdk.plan.create(
+      CreatePlanOptions(
+        name: 'Premium Plan',
+        amount: 500000,
+        interval: 'monthly',
+        planCode: 'existing_code', // This might already exist
+      ),
+    );
+
+    if (result.isSuccess) {
+      // Plan created successfully
+      final plan = result.data!;
+      handlePlanCreated(plan);
+    } else {
+      // Handle API errors
+      switch (result.message) {
+        case 'Plan code already exists':
+          showError('This plan already exists. Use a different plan code.');
+          break;
+        case 'Invalid interval':
+          showError('Please select a valid billing interval.');
+          break;
+        default:
+          showError('Failed to create plan: ${result.message}');
+      }
+    }
+  } on MindException catch (e) {
+    // Handle SDK-specific errors
+    print('MindPaystack Error: ${e.message}');
+    print('Error Code: ${e.code}');
+    
+    if (e.validationErrors?.isNotEmpty == true) {
+      for (final error in e.validationErrors!) {
+        print('Validation Error: ${error.field} - ${error.message}');
+      }
+    }
+  } catch (e) {
+    // Handle unexpected errors
+    print('Unexpected error: $e');
+  }
+}
+```
+
+## Demo Features
+
+### 1. Plan Creation
+- Creates different plan types (monthly, yearly)
+- Demonstrates all plan options
+- Shows unique plan code generation
+
+### 2. Plan Listing
+- Fetches paginated plan lists
+- Filters plans by status and criteria
+- Displays plan metadata
+
+### 3. Plan Details
+- Fetches specific plans by code or ID
+- Shows complete plan information
+- Demonstrates plan properties
+
+### 4. Plan Updates
+- Updates plan names and amounts
+- Shows update limitations
+- Handles validation errors
+
+## Using Plans in Practice
+
+After creating plans, use them for subscriptions:
+
+```dart
+// Initialize a subscription transaction
+final subscriptionResult = await sdk.transaction.initialize(
+  InitializeTransactionOptions(
+    email: 'customer@example.com',
+    amount: '0', // Amount comes from plan
+    plan: 'premium_monthly', // Use your plan code
+    currency: 'NGN',
+    callbackUrl: 'https://your-app.com/callback',
+  ),
+);
+
+if (subscriptionResult.isSuccess) {
+  final transaction = subscriptionResult.data!;
+  // Redirect customer to transaction.authorizationUrl
+  print('Payment URL: ${transaction.authorizationUrl}');
+}
+```
+
+## Common Use Cases
+
+### SaaS Subscription Tiers
+
+```dart
+// Basic tier
+await createPlan('Basic Monthly', 999900, 'monthly', 'basic_monthly');
+await createPlan('Basic Yearly', 9999000, 'annually', 'basic_yearly');
+
+// Professional tier  
+await createPlan('Pro Monthly', 2999900, 'monthly', 'pro_monthly');
+await createPlan('Pro Yearly', 29999000, 'annually', 'pro_yearly');
+
+// Enterprise tier
+await createPlan('Enterprise Monthly', 9999900, 'monthly', 'enterprise_monthly');
+await createPlan('Enterprise Yearly', 99999000, 'annually', 'enterprise_yearly');
+```
+
+### Content Subscription
+
+```dart
+// Weekly newsletter
+await createPlan('Weekly Newsletter', 49900, 'weekly', 'newsletter_weekly');
+
+// Monthly magazine
+await createPlan('Monthly Magazine', 149900, 'monthly', 'magazine_monthly');
+
+// Premium content bundle
+await createPlan('Premium Bundle', 999900, 'monthly', 'premium_bundle');
+```
+
+## Next Steps
+
+1. **Run the demo** to see plan management in action
+2. **Create your own plans** for your subscription tiers  
+3. **Integrate with your UI** to let customers select plans
+4. **Use plans in transactions** to create subscriptions
+5. **Monitor plan performance** through the Paystack dashboard
+
+## Resources
+
+- [Plan Guide](/guides/plans) - Complete plan management documentation
+- [Transaction Guide](/guides/transactions) - Using plans in transactions  
+- [API Reference](/api-reference/entities) - Plan model properties
+- [Configuration](/configuration) - SDK setup and options
