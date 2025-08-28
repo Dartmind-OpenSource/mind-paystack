@@ -1,0 +1,720 @@
+# Direct Charge API
+
+Process payments directly through your application with multiple payment methods including cards, bank transfers, USSD, mobile money, and QR codes.
+
+## Overview
+
+The MindPaystack SDK provides four different approaches for creating charges, giving you flexibility based on your needs:
+
+1. **Individual Parameters** - Quick and simple for basic use cases
+2. **Option Objects** - Clean parameter grouping for better organization
+3. **Factory Methods** - Flexible with built-in validation
+4. **Factory from Options** - Best of both worlds approach
+
+## Getting Started
+
+Initialize the SDK before making any charge requests:
+
+```dart
+await MindPaystack.initialize(
+  PaystackConfig(
+    publicKey: 'pk_test_your_public_key_here',
+    secretKey: 'sk_test_your_secret_key_here',
+    environment: Environment.test,
+  ),
+);
+
+final sdk = MindPaystack.instance;
+```
+
+## Card Payments
+
+> **⚠️ DEPRECATION NOTICE**: Card payment methods that handle raw card details are deprecated due to PCI DSS compliance requirements and will be removed in a future version. For security and compliance reasons, consider using alternative payment methods such as saved cards with authorization codes, bank transfers, mobile money, or USSD payments.
+
+### 1. Individual Parameters Approach
+
+The simplest way to charge a card:
+
+```dart
+final result = await sdk.charge.chargeCard(
+  email: 'customer@example.com',
+  amount: '50000', // ₦500.00 in kobo
+  card: Card(
+    number: '4084084084084081', // Test card
+    cvv: '123',
+    expiryMonth: '12',
+    expiryYear: '2025',
+    pin: '1234', // For debit cards (optional)
+  ),
+  reference: 'TXN_${DateTime.now().millisecondsSinceEpoch}',
+  metadata: PaymentMetadata(
+    narration: 'Product purchase',
+  ),
+);
+
+if (result.isSuccess) {
+  print('✅ Charge successful: ${result.data?.reference}');
+} else {
+  print('❌ Charge failed: ${result.message}');
+}
+```
+
+### 2. Option Objects Approach
+
+Group related parameters for cleaner code:
+
+```dart
+final cardOptions = CardOptions(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(
+    number: '4084084084084081',
+    cvv: '123',
+    expiryMonth: '12',
+    expiryYear: '2025',
+  ),
+  reference: 'TXN_${DateTime.now().millisecondsSinceEpoch}',
+  metadata: PaymentMetadata(
+    narration: 'Product purchase',
+  ),
+);
+
+final result = await sdk.charge.chargeCardWithOptions(cardOptions);
+```
+
+### 3. Factory Methods Approach
+
+Use factory methods for more control:
+
+```dart
+final options = CreateChargeOptions.forCard(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(
+    number: '4084084084084081',
+    cvv: '123',
+    expiryMonth: '12',
+    expiryYear: '2025',
+  ),
+  reference: 'TXN_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+### 4. Factory from Options Approach
+
+Combine the benefits of option objects and factory methods:
+
+```dart
+final cardOptions = CardOptions(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* ... */),
+);
+
+final createOptions = CreateChargeOptions.fromCardOptions(cardOptions);
+final result = await sdk.charge.createCharge(createOptions);
+```
+
+## Saved Card Payments
+
+For returning customers with previously saved payment methods:
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeSavedCard(
+  email: 'customer@example.com',
+  amount: '25000', // ₦250.00 in kobo
+  authorizationCode: 'AUTH_abc123def', // From previous transaction
+  reference: 'TXN_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final savedCardOptions = SavedCardOptions(
+  email: 'customer@example.com',
+  amount: '25000',
+  authorizationCode: 'AUTH_abc123def',
+  reference: 'TXN_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeSavedCardWithOptions(savedCardOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forSavedCard(
+  email: 'customer@example.com',
+  amount: '25000',
+  authorizationCode: 'AUTH_abc123def',
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## Bank Transfer Payments
+
+Ideal for high-value transactions:
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeBankTransfer(
+  email: 'customer@example.com',
+  amount: '100000', // ₦1,000.00 in kobo
+  bankTransfer: BankTransfer(
+    accountExpiresAt: DateTime.now().add(Duration(hours: 24)),
+  ),
+  reference: 'TRANSFER_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final transferOptions = BankTransferOptions(
+  email: 'customer@example.com',
+  amount: '100000',
+  bankTransfer: BankTransfer(
+    accountExpiresAt: DateTime.now().add(Duration(hours: 24)),
+  ),
+  reference: 'TRANSFER_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeBankTransferWithOptions(transferOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forBankTransfer(
+  email: 'customer@example.com',
+  amount: '100000',
+  bankTransfer: BankTransfer(
+    accountExpiresAt: DateTime.now().add(Duration(hours: 24)),
+  ),
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## Mobile Money Payments
+
+Available in Ghana and Kenya:
+
+### Supported Providers
+
+**Ghana:**
+- MTN (`mtn`)
+- Vodafone (`vodafone`)
+- AirtelTigo (`airteltigo`)
+
+**Kenya:**
+- M-Pesa (`mpesa`)
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeMobileMoney(
+  email: 'customer@example.com',
+  amount: '75000', // ₦750.00 in kobo
+  mobileMoney: MobileMoney(
+    provider: 'mtn',
+    phone: '+233501234567',
+  ),
+  reference: 'MOMO_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final mobileMoneyOptions = MobileMoneyOptions(
+  email: 'customer@example.com',
+  amount: '75000',
+  mobileMoney: MobileMoney(
+    provider: 'mtn',
+    phone: '+233501234567',
+  ),
+  reference: 'MOMO_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeMobileMoneyWithOptions(mobileMoneyOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forMobileMoney(
+  email: 'customer@example.com',
+  amount: '75000',
+  mobileMoney: MobileMoney(
+    provider: 'mtn',
+    phone: '+233501234567',
+  ),
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## USSD Payments
+
+For customers without internet connectivity:
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeUssd(
+  email: 'customer@example.com',
+  amount: '30000', // ₦300.00 in kobo
+  ussd: Ussd(type: '*737#'), // GTBank USSD code
+  reference: 'USSD_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final ussdOptions = UssdOptions(
+  email: 'customer@example.com',
+  amount: '30000',
+  ussd: Ussd(type: '*737#'),
+  reference: 'USSD_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeUssdWithOptions(ussdOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forUssd(
+  email: 'customer@example.com',
+  amount: '30000',
+  ussd: Ussd(type: '*737#'),
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## QR Code Payments
+
+For scan-to-pay functionality:
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeQr(
+  email: 'customer@example.com',
+  amount: '40000', // ₦400.00 in kobo
+  qr: Qr(provider: 'scan-to-pay'),
+  reference: 'QR_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final qrOptions = QrOptions(
+  email: 'customer@example.com',
+  amount: '40000',
+  qr: Qr(provider: 'scan-to-pay'),
+  reference: 'QR_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeQrWithOptions(qrOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forQr(
+  email: 'customer@example.com',
+  amount: '40000',
+  qr: Qr(provider: 'scan-to-pay'),
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## Bank Account Direct Debit
+
+Direct debit from customer bank accounts:
+
+### Individual Parameters
+
+```dart
+final result = await sdk.charge.chargeBankAccount(
+  email: 'customer@example.com',
+  amount: '60000', // ₦600.00 in kobo
+  bank: BankDetails(
+    code: '057', // Zenith Bank
+    accountNumber: '1234567890',
+  ),
+  pin: '1234', // Account PIN
+  reference: 'BANK_${DateTime.now().millisecondsSinceEpoch}',
+);
+```
+
+### Option Objects
+
+```dart
+final bankAccountOptions = BankAccountOptions(
+  email: 'customer@example.com',
+  amount: '60000',
+  bank: BankDetails(
+    code: '057',
+    accountNumber: '1234567890',
+  ),
+  pin: '1234',
+  reference: 'BANK_${DateTime.now().millisecondsSinceEpoch}',
+);
+
+final result = await sdk.charge.chargeBankAccountWithOptions(bankAccountOptions);
+```
+
+### Factory Methods
+
+```dart
+final options = CreateChargeOptions.forBankAccount(
+  email: 'customer@example.com',
+  amount: '60000',
+  bank: BankDetails(
+    code: '057',
+    accountNumber: '1234567890',
+  ),
+  pin: '1234',
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+## Handling Charge Authentication
+
+Some charges require additional authentication steps like PIN, OTP, or address verification:
+
+### PIN Authentication
+
+```dart
+if (chargeResult.data?.status == 'send_pin') {
+  final pinResult = await sdk.charge.submitPin(
+    SubmitPinOptions(
+      reference: chargeResult.data!.reference,
+      pin: '1234',
+    ),
+  );
+}
+```
+
+### OTP Authentication
+
+```dart
+if (chargeResult.data?.status == 'send_otp') {
+  final otpResult = await sdk.charge.submitOtp(
+    SubmitOtpOptions(
+      reference: chargeResult.data!.reference,
+      otp: '123456',
+    ),
+  );
+}
+```
+
+### Phone Verification
+
+```dart
+if (chargeResult.data?.status == 'send_phone') {
+  final phoneResult = await sdk.charge.submitPhone(
+    SubmitPhoneOptions(
+      reference: chargeResult.data!.reference,
+      phone: '+2348012345678',
+    ),
+  );
+}
+```
+
+### Address Verification
+
+```dart
+if (chargeResult.data?.status == 'send_address') {
+  final addressResult = await sdk.charge.submitAddress(
+    SubmitAddressOptions(
+      reference: chargeResult.data!.reference,
+      address: '123 Main Street',
+      city: 'Lagos',
+      state: 'Lagos',
+      zipcode: '100001',
+    ),
+  );
+}
+```
+
+### Birthday Verification
+
+```dart
+if (chargeResult.data?.status == 'send_birthday') {
+  final birthdayResult = await sdk.charge.submitBirthday(
+    SubmitBirthdayOptions(
+      reference: chargeResult.data!.reference,
+      birthday: '1990-01-15',
+    ),
+  );
+}
+```
+
+## Checking Charge Status
+
+Monitor the status of pending charges:
+
+```dart
+final statusResult = await sdk.charge.checkPendingCharge(
+  CheckPendingChargeOptions(
+    reference: 'TXN_abc123',
+  ),
+);
+
+switch (statusResult.data?.status) {
+  case 'success':
+    print('✅ Charge completed successfully');
+    break;
+  case 'failed':
+    print('❌ Charge failed');
+    break;
+  case 'pending':
+    print('⏳ Charge is still pending');
+    break;
+}
+```
+
+## Advanced Use Cases
+
+### Split Payments
+
+Distribute payments among multiple accounts:
+
+```dart
+final options = CreateChargeOptions(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */),
+  splitCode: 'SPL_abc123', // Pre-configured split
+  // OR use subaccount
+  subaccount: 'ACCT_xyz789',
+  transactionCharge: 1000, // Fixed charge override
+  bearer: 'subaccount', // Who pays the fees
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+### Custom Metadata
+
+Add custom tracking information:
+
+```dart
+final metadata = PaymentMetadata(
+  customFields: [
+    CustomField(displayName: 'Order ID', value: 'ORD_12345'),
+    CustomField(displayName: 'Category', value: 'Electronics'),
+  ],
+  narration: 'Product purchase with custom metadata',
+);
+
+final result = await sdk.charge.chargeCard(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */),
+  metadata: metadata,
+);
+```
+
+## Error Handling
+
+Always implement proper error handling:
+
+```dart
+try {
+  final result = await sdk.charge.chargeCard(
+    email: 'customer@example.com',
+    amount: '50000',
+    card: Card(/* card details */),
+  );
+  
+  if (result.isSuccess) {
+    // Handle successful charge
+    final chargeData = result.data!;
+    print('Charge successful: ${chargeData.reference}');
+    
+    // Check if additional authentication is needed
+    switch (chargeData.status) {
+      case 'success':
+        print('✅ Payment completed');
+        break;
+      case 'send_pin':
+        // Collect PIN and call submitPin
+        break;
+      case 'send_otp':
+        // Collect OTP and call submitOtp
+        break;
+      // Handle other statuses...
+    }
+  } else {
+    // Handle charge failure
+    print('❌ Charge failed: ${result.message}');
+  }
+} on MindException catch (e) {
+  // Handle specific SDK exceptions
+  print('SDK Error: ${e.message}');
+  print('Error Code: ${e.code}');
+} catch (e) {
+  // Handle other exceptions
+  print('Unexpected error: $e');
+}
+```
+
+## Best Practices
+
+### 1. Choose the Right Approach
+
+- **Individual Parameters**: Quick prototyping and simple use cases
+- **Option Objects**: When you have many parameters or want cleaner code
+- **Factory Methods**: When you need validation or complex configurations
+- **Factory from Options**: When you want both clean parameter grouping and factory benefits
+
+### 2. Security Considerations
+
+- Never log or store sensitive card information
+- Use HTTPS for all API communications
+- Implement proper error handling to avoid information leakage
+- Validate all inputs before sending to the API
+
+### 3. User Experience
+
+- Provide clear feedback during authentication flows
+- Implement proper loading states
+- Handle network errors gracefully
+- Validate card information on the client side before charging
+
+### 4. Testing
+
+Use Paystack's test cards for development:
+
+```dart
+// Test cards
+const testCards = [
+  '4084084084084081', // Successful transaction
+  '4000000000000002', // Declined transaction
+  '5399838383838381', // Successful Mastercard
+  '5061460410120223423', // Successful Verve
+];
+```
+
+### 5. Amount Handling
+
+Always specify amounts in the smallest currency unit:
+
+```dart
+// Correct: ₦500.00 as 50000 kobo
+final amount = '50000';
+
+// Correct: $10.00 as 1000 cents
+final usdAmount = '1000';
+
+// Correct: GH₵5.00 as 500 pesewas
+final ghsAmount = '500';
+```
+
+## Common Bank Codes
+
+Popular Nigerian bank codes for direct debit:
+
+| Bank | Code |
+|------|------|
+| Access Bank | 044 |
+| GTBank | 058 |
+| First Bank | 011 |
+| Zenith Bank | 057 |
+| UBA | 033 |
+| Fidelity Bank | 070 |
+| FCMB | 214 |
+| Sterling Bank | 232 |
+| Unity Bank | 215 |
+| Wema Bank | 035 |
+
+## Migration Guide
+
+If you're upgrading from basic charge methods, here's how to migrate:
+
+> **⚠️ DEPRECATION NOTICE**: The card-related methods shown below are deprecated due to PCI DSS compliance requirements. Consider migrating to alternative payment methods for better security and compliance.
+
+### Before (Basic CreateChargeOptions)
+
+```dart
+final options = CreateChargeOptions(
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */), // DEPRECATED
+);
+
+final result = await sdk.charge.createCharge(options);
+```
+
+### After (Multiple Options)
+
+```dart
+// Option 1: Individual parameters (simplest) - DEPRECATED
+final result = await sdk.charge.chargeCard( // DEPRECATED
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */), // DEPRECATED
+);
+
+// Option 2: Option objects (cleanest) - DEPRECATED
+final cardOptions = CardOptions( // DEPRECATED
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */), // DEPRECATED
+);
+final result = await sdk.charge.chargeCardWithOptions(cardOptions); // DEPRECATED
+
+// Option 3: Factory methods (most flexible) - DEPRECATED
+final options = CreateChargeOptions.forCard( // DEPRECATED
+  email: 'customer@example.com',
+  amount: '50000',
+  card: Card(/* card details */), // DEPRECATED
+);
+final result = await sdk.charge.createCharge(options);
+```
+
+### Recommended Alternatives
+
+For PCI DSS compliant payment processing, use these alternatives:
+
+```dart
+// Saved card payments (Recommended)
+final result = await sdk.charge.chargeSavedCard(
+  email: 'customer@example.com',
+  amount: '50000',
+  authorizationCode: 'AUTH_abc123def', // From previous transaction
+);
+
+// Bank transfer payments
+final result = await sdk.charge.chargeBankTransfer(
+  email: 'customer@example.com',
+  amount: '50000',
+);
+
+// Mobile money payments
+final result = await sdk.charge.chargeMobileMoney(
+  email: 'customer@example.com',
+  amount: '50000',
+  mobileMoney: MobileMoney(
+    provider: 'mtn',
+    phone: '+233501234567',
+  ),
+);
+```
