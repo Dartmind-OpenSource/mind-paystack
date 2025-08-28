@@ -15,6 +15,36 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`mind_paystack` - `v0.1.2+1`](#mind_paystack---v0121)
+ - [`ex00_checkout_basic` - `v1.1.4`](#ex00_checkout_basic---v114)
+ - [`ex02_charge_terminal` - `v1.2.1`](#ex02_charge_terminal---v121)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `ex00_checkout_basic` - `v1.1.4`
+ - `ex02_charge_terminal` - `v1.2.1`
+
+---
+
+#### `mind_paystack` - `v0.1.2+1`
+
+ - **REFACTOR**: improve code readability and consistency in charge flow helper. ([0ee4993e](https://github.com/Dartmind-OpenSource/mind-paystack/commit/0ee4993e5d44b2c373cffb600442158c8b70b57a))
+
+
+## 2025-08-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`ex05_plan_demo` - `v1.1.0`](#ex05_plan_demo---v110)
 
 ---

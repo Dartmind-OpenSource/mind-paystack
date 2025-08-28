@@ -1,3 +1,7 @@
+## 1.2.1
+
+ - Update a dependency to the latest release.
+
 ## 1.2.0
 
  - **FEAT**: add initial project files for ex02_charge_terminal and ex05_plan_demo. ([91645b16](https://github.com/Dartmind-OpenSource/mind-paystack/commit/91645b16b6ce9b428b246f6491f5d4c9a0485518))

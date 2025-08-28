@@ -1,6 +1,6 @@
 name: ex02_charge_terminal
 description: Terminal application demonstrating MindPaystack charge flows with card processing.
-version: 1.2.0
+version: 1.2.1
 # repository: https://github.com/my_org/my_repo
 
 environment:
@@ -8,7 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  mind_paystack: ^0.1.2
+  mind_paystack: ^0.1.2+1
   dotenv: ^4.2.0
 
 dev_dependencies:

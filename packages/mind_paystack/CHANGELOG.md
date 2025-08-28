@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+ - **REFACTOR**: improve code readability and consistency in charge flow helper. ([0ee4993e](https://github.com/Dartmind-OpenSource/mind-paystack/commit/0ee4993e5d44b2c373cffb600442158c8b70b57a))
+
 ## 0.1.2
 
  - **REFACTOR**: update charge flow result and validation logic. ([a1860060](https://github.com/Dartmind-OpenSource/mind-paystack/commit/a1860060af025613c73b536f10b56f9cac89cb56))

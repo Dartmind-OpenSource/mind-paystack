@@ -8,7 +8,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  mind_paystack: ^0.1.2
+  mind_paystack: ^0.1.2+1
   dotenv: ^4.2.0
 
 dev_dependencies:
