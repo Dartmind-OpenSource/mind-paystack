@@ -1,8 +1,8 @@
 import 'package:mind_paystack/src/config/mind_paystack_config.dart';
 import 'package:mind_paystack/src/core/di/injectable.dart';
 import 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
+import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
-// import 'package:mind_paystack/src/.trash/transaction_service_.dart';
 
 // Core exports
 export 'package:mind_paystack/src/config/environment.dart';
@@ -10,7 +10,19 @@ export 'package:mind_paystack/src/config/log_level.dart';
 export 'package:mind_paystack/src/config/mind_paystack_config.dart';
 export 'package:mind_paystack/src/core/di/injectable.dart';
 export 'package:mind_paystack/src/core/errors/models/mind_exception.dart';
-
+export 'package:mind_paystack/src/core/models/models.dart';
+// Charge exports
+export 'package:mind_paystack/src/core/models/src/bank.dart';
+export 'package:mind_paystack/src/core/models/src/bank_transfer.dart';
+export 'package:mind_paystack/src/core/models/src/card.dart';
+export 'package:mind_paystack/src/core/models/src/mobile_money.dart';
+export 'package:mind_paystack/src/core/models/src/qr.dart';
+export 'package:mind_paystack/src/core/models/src/ussd.dart';
+export 'package:mind_paystack/src/features/charge/models/charge/charge.dart';
+export 'package:mind_paystack/src/features/charge/models/options/src/charge_options.dart';
+export 'package:mind_paystack/src/features/charge/models/options/src/check_pending_charge_options.dart';
+export 'package:mind_paystack/src/features/charge/models/options/src/create_charge_options.dart';
+export 'package:mind_paystack/src/features/charge/models/options/src/submit_charge_options.dart';
 // Transaction exports
 export 'package:mind_paystack/src/features/transaction/models/models.dart';
 
@@ -182,20 +194,30 @@ class MindPaystack {
 
   /// Provides access to charge-related operations
   ///
-  /// Handles direct charges, card tokenization, and charge validation.
+  /// Handles direct charges, authentication flows (PIN, OTP, phone, birthday,
+  /// address verification), and charge status monitoring. Use this for
+  /// in-app payment flows where you manage the payment UI yourself.
   ///
   /// Throws [MindException] if the SDK is not properly initialized
   ///
   /// Example:
   /// ```dart
-  /// final chargeResult = await MindPaystack.instance.charge.submit(request);
+  /// // Create a charge
+  /// final chargeResult = await MindPaystack.instance.charge
+  ///     .createCharge(options);
+  ///
+  /// // Handle authentication if required
+  /// if (chargeResult.data?.status == 'send_pin') {
+  ///   final pinResult = await MindPaystack.instance.charge
+  ///       .submitPin(pinOptions);
+  /// }
   /// ```
-  // ChargeService get charge {
-  //   _checkInitialized();
-  //   return resolveWithParameter<ChargeService, PaystackConfig>(
-  //     parameter: config,
-  //   );
-  // }
+  ChargeService get charge {
+    _checkInitialized();
+    return resolveWithParameter<ChargeService, PaystackConfig>(
+      parameter: config,
+    );
+  }
 
   /// Provides access to transaction-related operations
   ///

@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:mind_paystack/src/features/transaction/models/transaction/src/authorization_data.dart';
-import 'package:mind_paystack/src/features/transaction/models/transaction/src/customer.dart';
+import 'package:mind_paystack/src/core/models/src/authorization_data.dart';
+import 'package:mind_paystack/src/core/models/src/customer.dart';
 import 'package:mind_paystack/src/features/transaction/models/transaction/src/timeline_log.dart';
 part 'transaction.mapper.dart';
 

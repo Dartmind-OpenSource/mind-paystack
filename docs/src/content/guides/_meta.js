@@ -1,4 +1,5 @@
 export default {
     transactions: 'Transactions',
-    payments: 'Payments'
+    payments: 'Payments',
+    charges: 'Direct Charges'
 }
