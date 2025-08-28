@@ -1,0 +1,308 @@
+# Subscription Plans
+
+Subscription plans are the foundation of recurring billing on Paystack. They define the amount, billing frequency, and other settings that determine how customers are charged for subscriptions.
+
+## Overview
+
+Plans represent a billing structure that can be reused across multiple subscriptions. Once created, a plan can be used to initialize transactions for customers who want to subscribe to your service with recurring payments.
+
+### Key Concepts
+
+- **Plan Code**: Unique identifier for the plan
+- **Amount**: Billing amount in the smallest currency unit (kobo for NGN)
+- **Interval**: Billing frequency (daily, weekly, monthly, biannually, annually)
+- **Invoice Limit**: Optional limit on the number of billing cycles
+
+## Getting Started
+
+First, initialize the MindPaystack SDK:
+
+```dart
+import 'package:mind_paystack/mind_paystack.dart';
+
+// Initialize the SDK
+await MindPaystack.initialize(
+  PaystackConfig(
+    publicKey: 'pk_test_your_public_key',
+    secretKey: 'sk_test_your_secret_key',
+    environment: Environment.test,
+  ),
+);
+
+final sdk = MindPaystack.instance;
+```
+
+## Creating Plans
+
+Create subscription plans for different service tiers:
+
+```dart
+// Create a monthly premium plan
+final monthlyResult = await sdk.plan.create(
+  CreatePlanOptions(
+    name: 'Premium Monthly',
+    amount: 500000, // ₦5,000 in kobo
+    interval: 'monthly',
+    planCode: 'premium_monthly',
+    description: 'Premium features with monthly billing',
+    currency: 'NGN',
+    invoiceLimit: 12, // 12 months
+    sendInvoices: true,
+    sendSms: true,
+  ),
+);
+
+if (monthlyResult.isSuccess) {
+  final plan = monthlyResult.data!;
+  print('Plan created: ${plan.planCode}');
+  print('Plan ID: ${plan.id}');
+}
+
+// Create a yearly plan with discount
+final yearlyResult = await sdk.plan.create(
+  CreatePlanOptions(
+    name: 'Premium Yearly',
+    amount: 5000000, // ₦50,000 in kobo (2 months free)
+    interval: 'annually',
+    planCode: 'premium_yearly',
+    description: 'Premium features with yearly billing - save 2 months!',
+  ),
+);
+```
+
+### Plan Parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Human-readable plan name |
+| `amount` | Yes | Billing amount in kobo |
+| `interval` | Yes | Billing frequency |
+| `planCode` | No | Unique plan identifier (auto-generated if not provided) |
+| `description` | No | Plan description |
+| `currency` | No | Currency (defaults to NGN) |
+| `invoiceLimit` | No | Maximum number of billing cycles |
+| `sendInvoices` | No | Send email invoices (default: true) |
+| `sendSms` | No | Send SMS notifications (default: true) |
+
+### Billing Intervals
+
+- `daily` - Charge every day
+- `weekly` - Charge every week  
+- `monthly` - Charge every month
+- `biannually` - Charge every 6 months
+- `annually` - Charge every year
+
+## Listing Plans
+
+Retrieve all available plans with optional filtering:
+
+```dart
+// List all active plans
+final listResult = await sdk.plan.list(
+  ListPlansOptions(
+    perPage: 20,
+    page: 1,
+    status: 'active',
+  ),
+);
+
+if (listResult.isSuccess) {
+  final planList = listResult.data!;
+  print('Found ${planList.data.length} plans');
+  print('Total: ${planList.meta.total}');
+  
+  for (final plan in planList.data) {
+    print('${plan.name}: ₦${(plan.amount! / 100).toStringAsFixed(2)} per ${plan.interval}');
+  }
+}
+
+// Filter by specific criteria
+final filteredResult = await sdk.plan.list(
+  ListPlansOptions(
+    interval: 'monthly',
+    currency: 'NGN',
+    amount: 500000,
+  ),
+);
+```
+
+### List Options
+
+| Parameter | Description |
+|-----------|-------------|
+| `perPage` | Number of plans per page (max 100) |
+| `page` | Page number for pagination |
+| `status` | Filter by plan status |
+| `interval` | Filter by billing interval |
+| `amount` | Filter by specific amount |
+| `currency` | Filter by currency |
+
+## Fetching Specific Plans
+
+Get detailed information about a specific plan:
+
+```dart
+// Fetch by plan code
+final planResult = await sdk.plan.fetch('premium_monthly');
+
+if (planResult.isSuccess) {
+  final plan = planResult.data!;
+  print('Plan: ${plan.name}');
+  print('Amount: ₦${(plan.amount! / 100).toStringAsFixed(2)}');
+  print('Interval: ${plan.interval}');
+  print('Active subscriptions: ${plan.subscriptions}');
+}
+
+// Fetch by plan ID
+final planById = await sdk.plan.fetch('12345');
+```
+
+## Updating Plans
+
+Modify existing plan details:
+
+```dart
+final updateResult = await sdk.plan.update(
+  'premium_monthly',
+  UpdatePlanOptions(
+    name: 'Premium Monthly (Updated)',
+    amount: 600000, // ₦6,000 in kobo
+    description: 'Enhanced premium features with monthly billing',
+  ),
+);
+
+if (updateResult.isSuccess) {
+  final updatedPlan = updateResult.data!;
+  print('Plan updated successfully');
+  print('New amount: ₦${(updatedPlan.amount! / 100).toStringAsFixed(2)}');
+}
+```
+
+### Update Limitations
+
+- **Interval**: Cannot be changed after creation
+- **Plan Code**: Cannot be modified
+- **Currency**: May not be changeable if subscriptions exist
+- **Amount**: Changes may affect existing subscriptions differently
+
+## Best Practices
+
+### Plan Naming
+Use clear, descriptive names that customers will understand:
+
+```dart
+// Good examples
+'Basic Monthly'
+'Pro Yearly - Save 20%'
+'Enterprise Quarterly'
+
+// Avoid
+'plan_001'
+'Monthly'
+'PremiumPlan'
+```
+
+### Plan Codes
+Use consistent, readable plan codes:
+
+```dart
+// Good examples
+'basic_monthly'
+'pro_yearly'
+'enterprise_quarterly'
+
+// Avoid
+'plan1'
+'pm_2023'
+'abc123'
+```
+
+### Pricing Strategy
+Consider offering multiple intervals with incentives:
+
+```dart
+// Example pricing tiers
+final basicMonthly = CreatePlanOptions(
+  name: 'Basic Monthly',
+  amount: 299900, // ₦2,999
+  interval: 'monthly',
+  planCode: 'basic_monthly',
+);
+
+final basicYearly = CreatePlanOptions(
+  name: 'Basic Yearly - Save 2 months!',
+  amount: 2999000, // ₦29,990 (10 months price)
+  interval: 'annually',
+  planCode: 'basic_yearly',
+);
+```
+
+## Error Handling
+
+Handle common plan operation errors:
+
+```dart
+try {
+  final result = await sdk.plan.create(planOptions);
+  
+  if (result.isSuccess) {
+    // Plan created successfully
+    final plan = result.data!;
+    handlePlanCreated(plan);
+  } else {
+    // Handle API errors
+    switch (result.message) {
+      case 'Plan code already exists':
+        showError('This plan already exists. Use a different plan code.');
+        break;
+      case 'Invalid interval':
+        showError('Please select a valid billing interval.');
+        break;
+      default:
+        showError('Failed to create plan: ${result.message}');
+    }
+  }
+} catch (e) {
+  // Handle network/system errors
+  showError('Network error: Please check your connection.');
+}
+```
+
+## Using Plans for Subscriptions
+
+Once created, use plans to initialize subscription transactions:
+
+```dart
+// Initialize transaction with a plan
+final transactionResult = await sdk.transaction.initialize(
+  InitializeTransactionOptions(
+    email: 'customer@example.com',
+    amount: '0', // Amount comes from plan
+    plan: 'premium_monthly', // Use plan code
+    currency: 'NGN',
+  ),
+);
+
+if (transactionResult.isSuccess) {
+  final transaction = transactionResult.data!;
+  // Redirect customer to transaction.authorizationUrl
+  launchUrl(transaction.authorizationUrl);
+}
+```
+
+## Demo Application
+
+Check out the complete plan management demo:
+
+```bash
+cd apps/ex05_plan_demo
+dart run bin/ex05_plan_demo.dart
+```
+
+The demo showcases all plan operations in both interactive and automated modes.
+
+## Next Steps
+
+- Learn about [Transactions](/guides/transactions) to use plans for subscriptions
+- Explore [Payment Methods](/guides/payments) for customer payment options
+- Check the [API Reference](/api-reference/entities) for detailed plan properties
