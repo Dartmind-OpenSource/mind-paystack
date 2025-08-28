@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: mind_paystack
+dependency_overrides:
+  mind_paystack:
+    path: ../../packages/mind_paystack
