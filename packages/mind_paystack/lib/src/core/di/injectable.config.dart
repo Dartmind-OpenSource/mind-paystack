@@ -13,6 +13,8 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
 import '../../../mind_paystack.dart' as _i10;
+import '../../features/charge/repositories/charge_repository.dart' as _i79;
+import '../../features/charge/services/charge_service.dart' as _i208;
 import '../../features/transaction/repositories/transaction_repository.dart'
     as _i954;
 import '../../features/transaction/services/transaction_service.dart' as _i894;
@@ -41,11 +43,21 @@ _i174.GetIt init(
     _,
   ) =>
       registerModule.transactionRepository(config));
+  gh.factoryParam<_i79.ChargeRepository, _i10.PaystackConfig, dynamic>((
+    config,
+    _,
+  ) =>
+      registerModule.chargeRepository(config));
   gh.factoryParam<_i894.TransactionService, _i10.PaystackConfig, dynamic>((
     config,
     _,
   ) =>
       registerModule.transactionService(config));
+  gh.factoryParam<_i208.ChargeService, _i10.PaystackConfig, dynamic>((
+    config,
+    _,
+  ) =>
+      registerModule.chargeService(config));
   return getIt;
 }
 

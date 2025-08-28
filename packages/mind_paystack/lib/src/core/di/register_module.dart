@@ -1,6 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:mind_paystack/mind_paystack.dart';
 import 'package:mind_paystack/src/core/network/http_client.dart';
+import 'package:mind_paystack/src/features/charge/repositories/charge_repository.dart';
+import 'package:mind_paystack/src/features/charge/services/charge_service.dart';
 import 'package:mind_paystack/src/features/transaction/repositories/transaction_repository.dart';
 import 'package:mind_paystack/src/features/transaction/services/transaction_service.dart';
 
@@ -88,6 +90,39 @@ abstract class RegisterModule {
   ) =>
       TransactionRepository(provideHttpClient(config));
 
+  /// Provides a ChargeRepository instance for charge-related operations.
+  ///
+  /// The ChargeRepository handles all charge-related API interactions
+  /// including creating charges, submitting authentication data (PIN, OTP,
+  /// phone, birthday, address), and checking pending charge status.
+  ///
+  /// This factory method automatically creates an HttpClient with the provided
+  /// configuration and injects it into the repository, ensuring all network
+  /// requests are properly configured.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A ChargeRepository instance configured for the given environment.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  ///   environment: Environment.test,
+  /// );
+  ///
+  /// final chargeRepo = getIt<ChargeRepository>(param1: config);
+  /// final result = await chargeRepo.createCharge(options);
+  /// ```
+  @factoryMethod
+  ChargeRepository chargeRepository(
+    @factoryParam PaystackConfig config,
+  ) =>
+      ChargeRepository(provideHttpClient(config));
+
   /// Provides a TransactionService instance for transaction business logic.
   ///
   /// The TransactionService provides high-level transaction operations with
@@ -104,4 +139,36 @@ abstract class RegisterModule {
     @factoryParam PaystackConfig config,
   ) =>
       TransactionService(transactionRepository(config));
+
+  /// Provides a ChargeService instance for charge business logic.
+  ///
+  /// The ChargeService provides high-level charge operations with proper
+  /// validation, error handling, and business logic. It uses the
+  /// ChargeRepository for data access operations.
+  ///
+  /// This service handles the complete charge flow including payment creation,
+  /// authentication steps (PIN, OTP, phone verification, etc.), and status
+  /// monitoring.
+  ///
+  /// Parameters:
+  /// - [config]: PaystackConfig containing API keys and environment settings
+  ///
+  /// Returns:
+  /// A ChargeService instance with injected repository dependency.
+  ///
+  /// Example:
+  /// ```dart
+  /// final config = PaystackConfig(
+  ///   publicKey: 'pk_test_your_key',
+  ///   secretKey: 'sk_test_your_key',
+  /// );
+  ///
+  /// final chargeService = getIt<ChargeService>(param1: config);
+  /// final result = await chargeService.createCharge(options);
+  /// ```
+  @factoryMethod
+  ChargeService chargeService(
+    @factoryParam PaystackConfig config,
+  ) =>
+      ChargeService(chargeRepository(config));
 }

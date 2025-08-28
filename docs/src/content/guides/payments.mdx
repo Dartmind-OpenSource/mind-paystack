@@ -16,23 +16,51 @@ final transaction = await MindPaystack.instance.transaction.initialize(
 // Open transaction.data.authorizationUrl in browser/webview
 ```
 
-#### Direct Card Charging (Coming Soon)
+#### Direct Card Charging (Available)
 
-Direct card charging APIs will be available in a future release:
+Direct card charging with multiple API approaches:
 
 ```dart
-// Coming Soon - Direct card charging
+// Individual Parameters - Simple and direct
 final charge = await MindPaystack.instance.charge.chargeCard(
-  ChargeCardOptions(
-    amount: Money.fromCents(150000, Currency.ngn),
-    email: 'user@example.com',
-    cardNumber: '4084084084084081',
+  email: 'user@example.com',
+  amount: '150000', // ₦1,500.00 in kobo
+  card: Card(
+    number: '4084084084084081',
     cvv: '408',
     expiryMonth: '12',
-    expiryYear: '30',
+    expiryYear: '2030',
   ),
 );
+
+// Option Objects - Clean parameter grouping
+final cardOptions = CardOptions(
+  email: 'user@example.com',
+  amount: '150000',
+  card: Card(
+    number: '4084084084084081',
+    cvv: '408',
+    expiryMonth: '12',
+    expiryYear: '2030',
+  ),
+);
+final charge = await MindPaystack.instance.charge.chargeCardWithOptions(cardOptions);
+
+// Factory Methods - Flexible with validation
+final options = CreateChargeOptions.forCard(
+  email: 'user@example.com',
+  amount: '150000',
+  card: Card(
+    number: '4084084084084081',
+    cvv: '408',
+    expiryMonth: '12',
+    expiryYear: '2030',
+  ),
+);
+final charge = await MindPaystack.instance.charge.createCharge(options);
 ```
+
+See the [Charges Guide](/docs/guides/charges) for comprehensive documentation on all supported payment methods and approaches.
 
 #### Verify Payments (Available)
 

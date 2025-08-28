@@ -94,6 +94,7 @@ class HttpClient {
         cancelToken: cancelToken,
       );
     } on DioException catch (e) {
+      print(e.error);
       throw MindException.fromDioError(e);
     } on Exception catch (e) {
       throw e.toMindException();
