@@ -1,0 +1,8 @@
+import 'package:ex04_subscription_demo/ex04_subscription_demo.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('calculate', () {
+    expect(calculate(), 42);
+  });
+}
